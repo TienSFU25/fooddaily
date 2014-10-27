@@ -18,6 +18,7 @@ h2 {
 
 h3 {
   font-family: "Courier New";
+  color: #000066;
 }
 
 div#buttons {
@@ -37,10 +38,14 @@ a:focus { text-decoration: none; color:white; }
 a:hover, a:active { text-decoration: none; color:white }
 
 
-
-
 p {
-/*  color: red; */
+  font-weight: bold;
+}
+
+p.footer {
+  font-weight: italic;
+  font-size: 0.75em;
+  color: #000066;
 }
 
 .btn2 {

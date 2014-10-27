@@ -1,0 +1,75 @@
+<head>
+<link rel="stylesheet" type="text/css" href="stylesheets/style.css">
+</head>
+
+<body>
+
+<center><h1>Report</h1></center>
+
+<h3>Intro to Node</h3>
+
+<p>
+Wikipedia describes Node.js as “an open source cross-platform runtime environment for server-side and networking applications.” The applications themselves are mainly written in JavaScript using the Google V8 engine and can be run on all popular operating systems.
+</p>
+
+<p>
+Node uses an asynchronous, event-driven, non blocking IO architecture to maximize performance. Unlike many other web runtime 
+environments, Node uses a single thread. The reasoning behind this is to increase efficiency and ease of use while avoiding the notorious problem of deadlocks as there are no locks to begin with.
+</p>
+
+<p>
+The main issue with Node is that the architecture is very low level, often making it very time consuming to develop applications. This is where Express comes in.
+</p>
+
+<h3>Express</h3>
+
+<p>
+Express is currently the most popular framework for Node.js. It is a fast, minimalist framework which provides a thin layer of fundamental web application features, without concealing any of Node’s features. Express takes the most common tasks for a web server and makes them ready to use without having to tediously code it yourself . By wrapping native Node.js functions, Express enables things like routing, sessions and cookies. Additionally, a core feature of Express is middleware which is useful for request processing and routing. The moment a request is received by an Express.js app, it triggers various functions referred to as middleware. 
+</p>
+
+<p>
+Middleware is invoked by the Express.js routing layer and as it’s name implies, it sits between a the initial request and the final intended route. Each middleware function has access to and can modify the request and response before forwarding it to the next middleware in line. By using middleware, Express allows web developers to add the features they need, when they need them. Express achieves flexibility because not much is forced much onto the developer, and there are loads of middleware available at our fingertips.
+</p>
+
+<p>
+Express supports routing which are request interfaces of a web application. Routes are user-defined by an HTTP verb and path, and any request that matches a defined route will be routed to a route handler. Route handlers are part of middleware which can process the HTTP request or pass it to the next middleware. Routing essentially controls the flow of the web application.
+</p>
+
+<h3>Express versus Django</h3>
+
+<p>
+Django is a full stack Python web framework, featuring a Model-View-Controller architecture, it’s own object relational mapper, templating engine, routing, and more. Django is built for database driven websites, so it includes everything you need to make data and content based sites. There are also more advanced features such as strong built-in security, caching, form validation, a auto-generated web administration interface and a testing framework.
+</p>
+
+<p>
+All this is a stark contrast from Express where you are essentially given none of the bells and whistles of Django, and must choose and include it yourself. This of course is great for performance and configurability, but it causes longer initial development time. For project with a long life span, choosing Express over Django could be advantageous. For example if a hard-coded part of Django doesn’t meet your needs in the future, you cannot really do anything but find a workaround which may or may not work. With Express you have the option of getting the middleware you need or the tedious option of writing the feature yourself.
+</p>
+
+<h3>Express versus Sails.js</h3>
+
+<p>
+Sails.js is a MVC framework which is based on top of Express.js and Socket.io. Their philosophy is similar to Express’; to provide simplicity, maintainability while adhering to structural conventions of Node. Sails puts an emphasis on convention over configuration and uses Javascript entirely. They use and ORM, Waterline, which allows support for any database; relational or NoSQL. A neat feature of Sails is that in comes with blueprints which auto-generates REST APIs and gives your app’s backend quick start without writing any code. Furthermore, Sails provides security by default in the form of policies which run before any controllers and actions. Policies are middleware functions which motivate encapsulation and dramatically simplifies business logic. As for the front-end, Sails utilizes Grunt- which automates repetitive tasks like minification, compilation, unit testing, linting, and will help make your app load extremely quickly.
+</p>
+
+<p>
+Overall, Sails isn’t much different than Express because it is built on top of the simplicity and power of Express. Sails is just focused on a different level of the stack because they provide an ORM (Waterline), WebSocket integration and basic commonly used middleware like CSRF. In a way, the fact that Sails uses Express for handling requests and as a foundation proves how great and flexible Express is.
+</p>
+
+<h3>Summary</h3>
+
+<p>
+Express is an ideal solution for complex problems which require you to use a configurable and open web framework. If you are looking to create a standard web app relying on a database to save and retrieve data and pass it into html, it is probably better to look elsewhere. If you need complete flexibility and want to do something that is complex and never been done before, it’s probably best you try Express since you can use the Middleware that is suitable for your project, and build on top of that.
+</p>
+
+
+<br />
+
+<p class="footer">
+** We covered 2 comparisions; talking more about how express' approach is better/worse compared having everything included in Django and Sails.js, and then why express is better than using standalone Node.js as discussed in our email. 
+</p>
+
+<a href='/'>Home</a>
+
+</body>
+
+

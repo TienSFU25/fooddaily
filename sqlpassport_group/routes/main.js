@@ -63,6 +63,10 @@ module.exports = function(app, passport, db) {
 		res.render('logout', {message: message})
 	})
 
+	app.get('/report', function(req, res) {
+		res.render('report')
+	})
+
 	// for routing to the list pages
 	var listRouter = require('./list')
 	app.use('/list', listRouter)
