@@ -1,0 +1,37 @@
+<head>
+<link rel="stylesheet" type="text/css" href="stylesheets/style.css">
+<script>
+function check() {
+    if (document.getElementsByName('newitem')[0].value == '') {
+        alert("Please enter a valid item value")
+        return false
+    }
+    return true
+}
+</script>
+</head>
+<body>
+<h1>To-Do List for <%= username %></h1>
+
+<ul>
+    <% for(var i=0; i<rows.length; i++) { %>
+        <ul>
+
+            <form action='/group/list' method='post'>
+                <input type='hidden' value=<%= rows[i]['id'] %> name='id'>
+                <input type='text' value=<%= rows[i]['content'] %> name='content'>
+                <input type='submit' name='type' value='Save' class=btn2>
+                <input type='submit' name='type' value='Delete' class=btn2>
+            </form>
+        </ul>
+    <% } %>
+</ul>
+<br>
+<h3>Add a new item to your list</h3>
+<form action='/group/list/add' method='post' onsubmit="return check();">
+    <input type='text' name='newitem'>
+    <input type='submit' value='Save' class=btn2>
+</form>
+<a href='/group/logout'>Log out</a></br>
+<a href='/group/'>Home</a></br>
+</body>

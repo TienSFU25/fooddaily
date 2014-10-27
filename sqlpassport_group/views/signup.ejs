@@ -1,0 +1,27 @@
+<head>
+<link rel="stylesheet" type="text/css" href="stylesheets/style.css">
+<script>
+function check() {
+	password = document.getElementsByName('password')[0].value
+	passwordRe = document.getElementsByName('passwordre')[0].value
+
+	if (password != passwordRe) {
+		alert("Please make sure your password is retyped correctly")
+		return false
+	}
+	return true
+}
+</script>
+</head>
+<body>
+<h1>Sign up for a new account</h1>
+<p><%= message %></p>
+<form action='/group/signup' name="input" method="post" onsubmit="return check();">
+<h3>Username:</h3> <input type="text" name="username"></br>
+<h3>Password:</h3> <input type="password" name="password"></br>
+<h3>Re-type password:</h3> <input type="password" name="passwordre"></br>
+<input type="submit" value="Submit" class=btn>
+</form>
+<a href='/group/'>Home</a></br>
+<a href='/group/login'>Login</a>
+</body>
