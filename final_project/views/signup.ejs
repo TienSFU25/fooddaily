@@ -1,0 +1,27 @@
+<head>
+<link rel="stylesheet" type="text/css" href="stylesheets/style.css">
+<script>
+function check() {
+	password = document.getElementsByName('password')[0].value
+	passwordRe = document.getElementsByName('passwordre')[0].value
+
+	if (password != passwordRe) {
+		alert("Please make sure your password is retyped correctly")
+		return false
+	}
+	return true
+}
+</script>
+</head>
+<body>
+<p>Sign up for a new account</p>
+<form action='/signup' name="input" method="post" onsubmit="return check();">
+<input type="hidden" name="_csrf" value="<%= csrfToken %>">
+Username: <input type="text" name="username"></br>
+Password: <input type="password" name="password"></br>
+Re-type password: <input type="password" name="passwordre"></br>
+<input type="submit" value="Submit">
+</form>
+<a href='/'>Home</a></br>
+<a href='/login'>Login</a>
+</body>

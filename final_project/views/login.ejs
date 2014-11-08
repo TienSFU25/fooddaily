@@ -1,0 +1,9 @@
+<p>Login</p>
+<form action='/login' name="input" method="post">
+<input type="hidden" name="_csrf" value="<%= csrfToken %>">
+Username: <input type="text" name="username"> </br>
+Password: <input type="password" name="password"> </br>
+<input type="submit" value="Submit">
+</form>
+<a href='/'>Home</a></br>
+<a href='/signup'>Sign up</a>
