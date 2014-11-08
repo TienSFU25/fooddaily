@@ -2,6 +2,8 @@
   "name": "finalProject",
   "dependencies": {
     "body-parser": "^1.9.0",
-    "express": "4.x"
+    "ejs": "^1.0.0",
+    "express": "4.x",
+    "path": "^0.4.9"
   }
 }
