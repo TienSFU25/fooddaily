@@ -44,4 +44,9 @@ module.exports = function(app, passport, db) {
 		req.logout()
 		res.render('index')
 	})
+
+	app.get('/jsontest', function(req, res) {
+		res.render('jsonscrollablelisttest')
+	})
+
 }
