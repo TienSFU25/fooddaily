@@ -33,6 +33,9 @@ app.use(flash({locals:'flash'}))
 // csrf
 app.use(csrf())
 
+// for CSS
+app.use(express.static(__dirname + '/public'));
+
 // error handler
 app.use(function (err, req, res, next) {
   if (err.code !== 'EBADCSRFTOKEN') return next(err)

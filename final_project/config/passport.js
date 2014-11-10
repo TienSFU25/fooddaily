@@ -8,6 +8,7 @@ function User(username, password, id) {
 	this.id = id
 	this.username = username
 	this.password = password
+	this.list = [1, 4, 8, 2]
 }
 
 var LocalStrategy = require('passport-local').Strategy

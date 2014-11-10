@@ -5,9 +5,6 @@ module.exports = function(app, passport, db) {
 			sess.views++
 		else
 			sess.views = 1
-
-		// console.log(req.user)
-		// console.log(sess.views)
 		next()
 	})
 
@@ -25,7 +22,7 @@ module.exports = function(app, passport, db) {
 	})
 
 	app.get('/success', function(req, res) {
-		res.render('success')
+		res.render('success', {user: req.user})
 	})
 
 	app.post('/login', passport.authenticate('local-login',
