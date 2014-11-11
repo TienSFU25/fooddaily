@@ -1,1 +1,1 @@
-$(document).ready(function() {alert('js linked')})
+// $(document).ready(function() {alert('js linked')})

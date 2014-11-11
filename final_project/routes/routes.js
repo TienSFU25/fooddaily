@@ -1,4 +1,6 @@
 module.exports = function(app, passport, db) {
+	
+	// debugging sessions
 	app.use('/', function(req, res, next) {
 		var sess = req.session
 		if (sess.views)
@@ -6,6 +8,24 @@ module.exports = function(app, passport, db) {
 		else
 			sess.views = 1
 		next()
+	})
+
+	// print user
+	app.use('/', function(req, res, next) {
+		console.log(req.user)
+		next()
+	})
+
+	//Authenticator.prototype.authenticate = function(strategy, options, callback) {
+	app.get('/test', function(req, res, next) {
+		req.body.username = 'u'
+		req.body.password = 'p'
+		passport.authenticate('debug-login', {
+			successRedirect: 'success',
+			failureRedirect: 'login',
+			failureFlash: true
+		})
+		(req, res)
 	})
 
 	app.get('/', function(req, res) {
