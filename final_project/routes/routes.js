@@ -32,6 +32,7 @@ module.exports = function(app, passport, db) {
 		res.render('index');
 	})
 
+	// pass in CSRF token for any page with a form
 	app.get('/login', function(req, res) {
 		res.render('login', { csrfToken: req.csrfToken() })
 	})
@@ -60,6 +61,14 @@ module.exports = function(app, passport, db) {
 	app.get('/logout', function(req, res) {
 		req.logout()
 		res.render('index')
+	})
+
+	app.get('/settings', function(req, res) {
+		res.render('settings', { csrfToken: req.csrfToken() })
+	})
+
+	app.post('/settings', function(req, res) {
+		res.redirect('/settings')
 	})
 
 	app.get('/jsontest', function(req, res) {
