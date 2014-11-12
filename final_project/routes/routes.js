@@ -71,8 +71,16 @@ module.exports = function(app, passport, db) {
 		res.redirect('/settings')
 	})
 
-	app.get('/jsontest', function(req, res) {
-		res.render('jsonscrollablelisttest')
+	// app.get('/jsontest', function(req, res) {
+	// 	res.render('jsonscrollablelisttest')
+	// })
+
+	app.get('/search', function(req, res) {
+		res.render('search')
+	})
+
+	app.post('/search', function(req, res) {
+		res.redirect('/jsonscrollablelisttest')
 	})
 
 }
