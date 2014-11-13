@@ -1,52 +1,34 @@
-var mysql = require('mysql')
-var sprintf = require('sprintf-js').sprintf,
-	vsprintf = require('sprintf-js').vsprintf
+function Database(){}
 
-function Database() {
-	this.connection = mysql.createConnection({
-		host: 'localhost',
-		user: 'group',
-		password: 'thisgrouprocks',
-		database: 'groupdb'
-	})
-}
+var Sequelize = require('sequelize')
+var sequelize = new Sequelize('groupdb', 'group', 'thisgrouprocks', {
+	host: 'localhost',
+	dialect: 'mysql',
+	language: 'en',
+	// logging: false
+})
 
-var userTableName = 'users'
-var historyTableName = 'historylist'
+var User = sequelize.define('User2', {
+	userid: {type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true},
+	username: {type: Sequelize.STRING, allowNull: false},
+	password: {type: Sequelize.STRING, allowNull: false},
+	description: {type: Sequelize.STRING}
+})
 
-Database.prototype.searchUser = function f(username, callback) {
-	query = sprintf('select * from %s where username = "%s";', userTableName, username)
-	this.connection.query(query, callback)
-}
+// sequelize.sync({force: true})
 
 Database.prototype.createUser = function f(username, password, callback) {
-	query = sprintf('insert into %s(username, password) values("%s", "%s");', userTableName, username, password)
-	this.connection.query(query, callback)
+	User.build({
+		username: username,
+		password: password,
+		description: "some desc"
+	})
+	.save()
+	.success(callback)
 }
 
-Database.prototype.addFood = function f(userid, foodname, callback) {
-	query = sprintf('insert into %s(userid, foodname) values(%s, "%s");', historyTableName, userid, foodname)
-	this.connection.query(query, callback)
-}
-
-Database.prototype.getAllFoods = function f(userid, callback) {
-	query = sprintf('select * from %s where userid = %s;', historyTableName, userid)
-	this.connection.query(query, callback)
-}
-
-Database.prototype.getFood = function f(userid, foodid, callback) {
-	query = sprintf('select * from %s where userid=%s and foodid=%s;', historyTableName, userid, foodid)
-	this.connection.query(query, callback)
-}
-
-Database.prototype.updateFood = function f(userid, foodid, newFoodName, callback) {
-	query = sprintf('update %s set foodname="%s" where userid=%s and foodid=%s;', historyTableName, newFoodName, userid, foodid)
-	this.connection.query(query, callback)
-}
-
-Database.prototype.deleteFood = function f(userid, foodid, callback) {
-	query = sprintf('delete from %s where userid=%s and foodid=%s;', historyTableName, userid, foodid)
-	this.connection.query(query, callback)
+Database.prototype.searchUser = function f(username, callback) {
+	User.findOne({where: {username: username}}).success(callback)
 }
 
 module.exports = Database

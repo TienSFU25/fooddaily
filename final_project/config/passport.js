@@ -57,27 +57,29 @@ customLogin = new LocalStrategy(customDict, function(req, username, password, do
 
 customSignup = new LocalStrategy(customDict, function(req, username, password, done) {
 	// check to see whether username already exists. if not, create the user
-	lookupUserCallback = function(err, rows) {
-		if (err)
-			return done(err)
-		if (rows.length == 1) {
-			req.flash('signupMessage', 'Username has already been taken')
-			return done(null, false)	
-		}
-		else
-			bcrypt.hash(password, null, null, function(err, hash) {
-				db.createUser(username, hash, function(err, result) {
-					if (err)
-						return done(err)
-					else {
-						currUser = new User(username, hash, result.insertId)
-						return done(null, currUser)
-					}
+	// lookupUserCallback = function(rows) {
+		// TODO: NEED TO CHECK FOR MULTIPLE USERS HERE
+		// if (rows.length == 1) {
+		// 	req.flash('signupMessage', 'Username has already been taken')
+		// 	return done(null, false)	
+		// }
+		// else
+		bcrypt.hash(password, null, null, function(err, hash) {
+			if (err)
+				console.log(err)
+			db.createUser(username, hash, function() {
+				console.log(1)
+				db.searchUser(username, function(user) {
+					console.log(2)
+					id = user.dataValues.userid
+					currUser = new User(username, hash, id)
+					return done(null, currUser)
 				})
 			})
-		}
+		})
+	// }
 
-	db.searchUser(username, lookupUserCallback)
+	// db.searchUser(username, lookupUserCallback)
 })
 
 var debugUser = 'tieny'
@@ -104,13 +106,11 @@ passport.serializeUser(function(user, done) {
 })
 
 passport.deserializeUser(function(userid, done) {
-	callback = function(err, rows) {
-		if (!err) {
-			currUser = new User(userid, rows[0]['password'], rows[0]['userid'])
-			done(null, currUser)
-		}
-	}
-	db.searchUser(userid, callback)
+	db.searchUser(userid, function f(user) {
+		userData = user.dataValues
+		currUser = new User(userData.id, userData.username, userid)
+	})
+	return done(null, currUser)
 })
 
 }

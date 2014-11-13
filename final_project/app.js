@@ -56,6 +56,11 @@ db = new database()
 
 require('./config/passport')(passport, db)
 require('./routes/routes.js')(app, passport, db)
+// db.createUser('tien2', 'pw2', function(p1, p2){
+// 	console.log(p1)
+// 	console.log(p2)
+// })
+
 
 portNumber = 8080
 app.listen(portNumber)
