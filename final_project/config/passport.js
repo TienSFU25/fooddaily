@@ -107,7 +107,7 @@ passport.serializeUser(function(user, done) {
 passport.deserializeUser(function(userid, done) {
 	db.searchUser(userid, function f(user) {
 		userData = user.dataValues
-		currUser = new User(userData.id, userData.username, userid)
+		currUser = new User(userData.username, userData.password, userid)
 	})
 	return done(null, currUser)
 })
