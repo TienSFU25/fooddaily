@@ -25,18 +25,17 @@ customDict = {
 // login strategy
 customLogin = new LocalStrategy(customDict, function(req, username, password, done) {
 	// first, try to search for this user. retrieve the hashed password
-	searchUserCallback = function(err, rows) {
-		if (err)
-			return done(err)
-		if (rows.length == 0) {
+	searchUserCallback = function(user) {
+		if (!user) {
 			req.flash('loginMessage', 'User does not exist')
 			return done(null, false)
 		} 
 
 		else {
 			// if user does exist, compare hash in database with hash(plaintext password)
-			hash = rows[0]['password']
-			userid = rows[0]['userid']
+			userData = user.dataValues
+			hash = userData['password']
+			userid = userData['userid']
 			bcrypt.compare(password, hash, function(err, match) {
 				if (err)
 					return done(err)
