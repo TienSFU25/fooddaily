@@ -71,16 +71,17 @@ module.exports = function(app, passport, db) {
 		res.redirect('/settings')
 	})
 
-	// app.get('/jsontest', function(req, res) {
-	// 	res.render('jsonscrollablelisttest')
-	// })
+	app.get('/jsontest', function(req, res) {
+		res.send("This function is currently being built")
+		// res.render('jsonscrollablelisttest')
+	})
 
 	app.get('/search', function(req, res) {
-		res.render('search')
+		res.render('search',  { csrfToken: req.csrfToken() })
 	})
 
 	app.post('/search', function(req, res) {
-		res.redirect('/jsonscrollablelisttest')
+		res.redirect('/jsontest')
 	})
 
 }

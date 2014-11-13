@@ -33,6 +33,7 @@
 
 	<p>Search Yummly API for Recipes</p>
 	<form action="/search" name="recipesearch" method="post" onsubmit="return reqYummlyAPI();">
+		<input type="hidden" name="_csrf" value="<%= csrfToken %>">
 		<input id="q" name="q" placeholder="Search for a recipe" type="text" value=""/>
 	  	<button type="submit" value="Submit">Search</button>
 	</form>
