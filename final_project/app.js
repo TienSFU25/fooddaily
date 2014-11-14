@@ -57,6 +57,13 @@ db = new database()
 require('./config/passport')(passport, db)
 require('./routes/routes.js')(app, passport, db)
 
+// db.createUser('tien1', 'somepw', function(){})
+// db.addFood(1, 'testfood', function(){console.log('food added')})
+// db.getAllFoods(1, function(){})
+// db.getFood(1, 1, function(food){console.log(food)})
+// db.updateFood(1, 1, "newname", function() {console.log(1234)})
+// db.deleteFood(1, 1, function() {console.log(1234)})
+
 portNumber = 8080
 app.listen(portNumber)
 console.log("Express listening on port " + portNumber)

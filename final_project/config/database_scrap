@@ -29,3 +29,15 @@
 // class for handling database connections
 // TODO: escape these queries, they are all plain text
 // Schema: users(username, password) and todolist(listid, userid, content)
+
+// 	The following methods are injected on the source:
+
+// get[AS] - for example getPictures(finder). The finder object is passed to target.find.
+// set[AS] - for example setPictures(instances, defaultAttributes|options). Update the associations. All currently associated models that are not in instances will be removed.
+// add[AS] - for example addPicture(instance, defaultAttributes|options). Add another associated object.
+// add[AS] [plural] - for example addPictures([instance1, instance2], defaultAttributes|options). Add some more associated objects.
+// create[AS] - for example createPicture(values, options). Build and save a new association.
+// remove[AS] - for example removePicture(instance). Remove a single association
+// has[AS] - for example hasPicture(instance). Is source associated to this target?
+// has[AS] [plural] - for example hasPictures(instances). Is source associated to all these targets?
+// }
