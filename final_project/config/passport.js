@@ -67,9 +67,7 @@ customSignup = new LocalStrategy(customDict, function(req, username, password, d
 			if (err)
 				console.log(err)
 			db.createUser(username, hash, function() {
-				console.log(1)
 				db.searchUser(username, function(user) {
-					console.log(2)
 					id = user.dataValues.userid
 					currUser = new User(username, hash, id)
 					return done(null, currUser)
@@ -81,17 +79,16 @@ customSignup = new LocalStrategy(customDict, function(req, username, password, d
 	// db.searchUser(username, lookupUserCallback)
 })
 
-var debugUser = 'tieny'
+var debugUser = 'tien234'
 // "hack" function for debugging without having to login. DELETE THIS LATER
 debugLogin = new LocalStrategy(function(username, password, done) {
 	console.log("debug login here")
-	db.searchUser(debugUser, function(err, rows) {
-		if (err)
-			return done(err)
-		else {
-			currUser = new User(rows[0].username, rows[0].password, rows[0].id)
-			return done(null, currUser)
-		}
+	db.searchUser(debugUser, function(user) {
+		userData = user.dataValues
+		hash = userData['password']
+		userid = userData['userid']
+		currUser = new User(debugUser, hash, userid)
+		return done(null, currUser)
 	})
 })
 

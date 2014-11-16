@@ -2,8 +2,10 @@
 <link rel="stylesheet" type="text/css" href="stylesheets/style.css">
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
 <script src="javascript/d3.js"></script>
 </head>
+<body>
 <p>Successfully logged in</p>
 <p>Logged in as user <%= user.username %></p>
 <div class="chart"></div>
@@ -12,4 +14,13 @@
 <button onclick="return f()">Click me!</button></br>
 <a href='/settings'>Settings</a></br>
 <a href='/logout'>Log out</a></br>
-<a href='/search'>Search for Recipes</a>
+<a href='/search'>Search for Recipes</a></br>
+
+<p>Search for a common food here!</p>
+<form id="foodSearch">
+	<span><input type="text" placeholder="Search..."></span>
+</form>
+
+<div class="foodChart"></div>
+<script src="javascript/script.js"></script>
+</body>

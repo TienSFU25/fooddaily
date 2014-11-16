@@ -1,6 +1,7 @@
 <head>
 <link rel="stylesheet" type="text/css" href="stylesheets/style.css">
 </head>
+<body>
 <p>Login</p>
 <form action='/login' name="input" method="post">
 <input type="hidden" name="_csrf" value="<%= csrfToken %>">
@@ -10,3 +11,4 @@ Password: <input type="password" name="password"> </br>
 </form>
 <a href='/'>Home</a></br>
 <a href='/signup'>Sign up</a>
+</body>
