@@ -1,0 +1,35 @@
+{"hits": [
+{
+"_index": "f762ef22-e660-434f-9071-a10ea6691c27",
+"_type": "item",
+"_id": "5266a0fa9f05a39eb3007777",
+"_score": null,
+"sort": [
+400
+],
+"fields": {
+"item_name": "Caffe Vanilla Frappuccino - Venti with Soy Milk, No Whipped Cream",
+"brand_name": "Starbucks",
+"nf_calories": 400,
+"nf_sodium": 280,
+"nf_protein": 4,
+"item_type": 1
+}
+},
+{
+"_index": "f762ef22-e660-434f-9071-a10ea6691c27",
+"_type": "item",
+"_id": "5266a0fc9f05a39eb30078ae",
+"_score": null,
+"sort": [
+400
+],
+"fields": {
+"item_name": "Salted Caramel Mocha Frappuccino - Grande with Skimmed Milk, Whipped Cream",
+"brand_name": "Starbucks",
+"nf_calories": 400,
+"nf_sodium": 290,
+"nf_protein": 5,
+"item_type": 1
+}
+}]}
