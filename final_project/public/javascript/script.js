@@ -81,6 +81,11 @@ function resetData() {
 // initialize an empty table
 function googleChartsInit() {
 	googleTable = new google.visualization.Table($('.foodChart').get(0));
+	google.visualization.events.addListener(googleTable, 'select', selectHandler);
+
+	function selectHandler(e) {
+		console.log(e)
+	}
 	resetData()
 
  	googleChartsDraw([])
@@ -95,7 +100,10 @@ function googleChartsDraw(rows) {
 function googleChartsUpdate(data) {
 	resetData()
 	var allRows = []
+	var ids = []
+
 	for (var i = 0; i < data['hits'].length; i++) {
+		// f is a dictionary{item_name, nf_calories...}
 		var f = data['hits'][i]['fields']
 		var thisRow = []
 
@@ -105,8 +113,16 @@ function googleChartsUpdate(data) {
 		}
 
 		allRows[i] = thisRow
+
+		// store ID of food for later data binding
+		ids[i] = data['hits'][i]['_id']
 	}
 	googleChartsDraw(allRows)
+
+	// use d3 to bind _id to the rows
+	var d3Rows = d3.selectAll('.google-visualization-table-table tr:not(.google-visualization-table-tr-head)')
+	d3Rows.attr("_id", function(d, i){
+		return String(ids[i])})
 }
 
 // event listener
