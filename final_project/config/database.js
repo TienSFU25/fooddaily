@@ -57,11 +57,16 @@ Database.prototype.createUser = function f(username, password, callback) {
 }
 
 // callback = Promise<Instance>
-Database.prototype.searchUser = function f(username, callback) {
+Database.prototype.searchUser = function f(userid, callback) {
+	User.findOne({where: {userid: userid}}).done(callback)
+}
+
+Database.prototype.searchUserByName = function f(username, callback) {
 	User.findOne({where: {username: username}}).done(callback)
 }
 
 // helper functions
+// TODO. change this function, returning a dict is ugly. use Food.build() and call save() instead
 function buildFood(foodDict) {
 	var f = {}
 	f['id'] = foodDict['_id']
@@ -97,11 +102,19 @@ function findUserAndCb(userid, callback) {
 	})
 }
 
+// for now, it only makes sense to add foods that are actually chosen by user
 // callback = (err)
 Database.prototype.addFood = function f(userid, foodDict, callback) {
 	var food = buildFood(foodDict);
 	user = findUserAndCb(userid, function(user){
-		user.createFood(food).done(callback)
+		var f = Food.findOne({where: {id: food['id']}}).done(function(err, result){
+			if (result) {
+				// food already in exists, link it to this user
+				user.addFood(result.dataValues.id)
+			} else {
+				user.createFood(food).done(callback)
+			}
+		})
 	});
 }
 

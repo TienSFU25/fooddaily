@@ -84,4 +84,46 @@ module.exports = function(app, passport, db) {
 		res.redirect('/jsontest')
 	})
 
+	var testDict = {
+		"_id": "dcmm23",
+		"item_name": "food name",
+		"brand_name": "some brand",
+		"nf_calories": 4000,
+		"nf_total_fat": 40,
+		"nf_protein": 30,
+		"nf_total_carbohydrate": 25,
+		"nf_sodium": 25,
+		"item_type": 4
+	}
+	
+	// db.createUser('tien234', 'test', function(err){console.log(err)})
+	db.addFood(4, testDict, function(err) {console.log(err)})
+
+	// display all foods related to this user
+	// TODO: move this to config
+	var cols = ['id', 'foodname', 'brandName', 'calories', 'totalFat', 'totalCarb', 'totalProtein', 'sodium', 'type']
+
+	app.get('/foods', function(req, res, next) {
+		db.getAllFoods(req.user.id, function(err, result){
+			if (err) {
+				next(err);
+			} else {
+				var rows = []
+				var row = {}
+				var temp
+
+				// only pass relevant data to the page
+				for (var i = 0; i < result.length; i++) {
+					temp = result[i]['dataValues']
+					for (var j = 0; j < cols.length; j++) {
+						row[cols[j]] = temp[cols[j]]
+					}
+
+					rows[i] = row
+				}
+
+				res.render('foods', {foodList: rows})
+			}
+		})
+	})
 }

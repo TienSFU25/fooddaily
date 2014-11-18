@@ -61,14 +61,6 @@ var testDict = {
 	"item_type": 4
 }
 
-function cb(err) {
-	console.log(err)
-}
-
-function cb2(err, result) {
-	console.log(result)
-}
-
 require('./config/passport')(passport, db)
 require('./routes/routes.js')(app, passport, db)
 

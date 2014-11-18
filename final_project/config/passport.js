@@ -55,7 +55,7 @@ customLogin = new LocalStrategy(customDict, function(req, username, password, do
 		}
 	}
 
-	db.searchUser(username, searchUserCallback)
+	db.searchUserByName(username, searchUserCallback)
 })
 
 customSignup = new LocalStrategy(customDict, function(req, username, password, done) {
@@ -71,7 +71,7 @@ customSignup = new LocalStrategy(customDict, function(req, username, password, d
 					return done(null, false)
 				}
 			} else {
-				db.searchUser(username, function(err, user) {
+				db.searchUserByName(username, function(err, user) {
 					id = user.dataValues.userid
 					currUser = new User(username, hash, id)
 					return done(null, currUser)
@@ -85,7 +85,7 @@ var debugUser = 'tien234'
 // "hack" function for debugging without having to login. DELETE THIS LATER
 debugLogin = new LocalStrategy(function(username, password, done) {
 	console.log("debug login here")
-	db.searchUser(debugUser, function(err, user) {
+	db.searchUserByName(debugUser, function(err, user) {
 		userData = user.dataValues
 		hash = userData['password']
 		userid = userData['userid']
@@ -98,9 +98,9 @@ passport.use('debug-login', debugLogin)
 passport.use('local-login', customLogin)
 passport.use('local-signup', customSignup)
 
-// use username for deserializing
+// use userid for deserializing
 passport.serializeUser(function(user, done) {
-	done(null, user.username)
+	done(null, user.id)
 })
 
 passport.deserializeUser(function(userid, done) {
@@ -109,6 +109,12 @@ passport.deserializeUser(function(userid, done) {
 			console.log(err)
 			return done(null, false)
 		}
+
+		if (!user) {
+			console.log("User with id " + userid + " does not exist")
+			return done(null, false)
+		}
+
 		userData = user.dataValues
 		currUser = new User(userData.username, userData.password, userid)
 	})
