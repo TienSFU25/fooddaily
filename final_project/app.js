@@ -49,7 +49,25 @@ app.use(function (err, req, res, next) {
 var database = require('./config/database')
 db = new database()
 
-db.createUser('tien234', 'dummypw', function(){console.log("successfully created dummy user")})
+var testDict = {
+	"_id": "dcmm23",
+	"item_name": "food name",
+	"brand_name": "some brand",
+	"nf_calories": 4000,
+	"nf_total_fat": 40,
+	"nf_protein": 30,
+	"nf_total_carbohydrate": 25,
+	"nf_sodium": 25,
+	"item_type": 4
+}
+
+function cb(err) {
+	console.log(err)
+}
+
+function cb2(err, result) {
+	console.log(result)
+}
 
 require('./config/passport')(passport, db)
 require('./routes/routes.js')(app, passport, db)

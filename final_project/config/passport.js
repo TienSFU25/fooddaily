@@ -25,7 +25,11 @@ customDict = {
 // login strategy
 customLogin = new LocalStrategy(customDict, function(req, username, password, done) {
 	// first, try to search for this user. retrieve the hashed password
-	searchUserCallback = function(user) {
+	searchUserCallback = function(err, user) {
+		if (err) {
+			console.log(err)
+			return done(null, false)
+		}
 		if (!user) {
 			req.flash('loginMessage', 'User does not exist')
 			return done(null, false)
@@ -56,34 +60,32 @@ customLogin = new LocalStrategy(customDict, function(req, username, password, do
 
 customSignup = new LocalStrategy(customDict, function(req, username, password, done) {
 	// check to see whether username already exists. if not, create the user
-	// lookupUserCallback = function(rows) {
-		// TODO: NEED TO CHECK FOR MULTIPLE USERS HERE
-		// if (rows.length == 1) {
-		// 	req.flash('signupMessage', 'Username has already been taken')
-		// 	return done(null, false)	
-		// }
-		// else
-		bcrypt.hash(password, null, null, function(err, hash) {
-			if (err)
-				console.log(err)
-			db.createUser(username, hash, function() {
-				db.searchUser(username, function(user) {
+	bcrypt.hash(password, null, null, function(err, hash) {
+		if (err)
+			console.log(err)
+		db.createUser(username, hash, function(err) {
+			if (err) {
+				// 
+				if (err.name == 'SequelizeUniqueConstraintError') {
+					console.log("Username has already been taken")
+					return done(null, false)
+				}
+			} else {
+				db.searchUser(username, function(err, user) {
 					id = user.dataValues.userid
 					currUser = new User(username, hash, id)
 					return done(null, currUser)
 				})
-			})
+			}
 		})
-	// }
-
-	// db.searchUser(username, lookupUserCallback)
+	})
 })
 
 var debugUser = 'tien234'
 // "hack" function for debugging without having to login. DELETE THIS LATER
 debugLogin = new LocalStrategy(function(username, password, done) {
 	console.log("debug login here")
-	db.searchUser(debugUser, function(user) {
+	db.searchUser(debugUser, function(err, user) {
 		userData = user.dataValues
 		hash = userData['password']
 		userid = userData['userid']
@@ -102,7 +104,11 @@ passport.serializeUser(function(user, done) {
 })
 
 passport.deserializeUser(function(userid, done) {
-	db.searchUser(userid, function f(user) {
+	db.searchUser(userid, function(err, user) {
+		if (err) {
+			console.log(err)
+			return done(null, false)
+		}
 		userData = user.dataValues
 		currUser = new User(userData.username, userData.password, userid)
 	})
