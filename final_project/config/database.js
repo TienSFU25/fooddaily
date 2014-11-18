@@ -10,7 +10,7 @@ var sequelize = new Sequelize('groupdb', 'group', 'thisgrouprocks', {
 
 var User = sequelize.define('User2', {
 	userid: {type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true},
-	username: {type: Sequelize.STRING, allowNull: false},
+	username: {type: Sequelize.STRING, allowNull: false, unique: true},
 	password: {type: Sequelize.STRING, allowNull: false},
 	description: {type: Sequelize.STRING}
 })
@@ -24,13 +24,15 @@ User.hasMany(Food)
 // sequelize.sync({force: true})
 
 Database.prototype.createUser = function f(username, password, callback) {
-	User.build({
+	var instance = User.build({
 		username: username,
 		password: password,
 		description: "some desc"
 	})
 	.save()
-	.success(callback)
+
+	instance.success(callback)
+	instance.error(function(e){console.log(e)})
 }
 
 Database.prototype.searchUser = function f(username, callback) {

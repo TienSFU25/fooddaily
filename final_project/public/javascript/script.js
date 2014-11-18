@@ -10,8 +10,10 @@ var queryDict = {
     "item_name",
     "brand_name",
     "nf_calories",
-    "nf_sodium",
+    "nf_total_fat",
     "nf_protein",
+    "nf_total_carbohydrate",
+    "nf_sodium",
     "item_type"
   ],
   "offset": 0,

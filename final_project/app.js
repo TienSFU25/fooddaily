@@ -33,7 +33,7 @@ app.use(flash({locals:'flash'}))
 // csrf
 app.use(csrf())
 
-// for CSS
+// expost static files (images, javascript and css)
 app.use(express.static(__dirname + '/public'));
 
 // error handler
@@ -49,10 +49,7 @@ app.use(function (err, req, res, next) {
 var database = require('./config/database')
 db = new database()
 
-// use the db like this
-// db.searchUser("username", function(err, rows) {
-	// console.log(rows)
-// })
+db.createUser('tien234', 'dummypw', function(){console.log("successfully created dummy user")})
 
 require('./config/passport')(passport, db)
 require('./routes/routes.js')(app, passport, db)
