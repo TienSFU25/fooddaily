@@ -38,21 +38,7 @@ var nutrition = [
 	"nf_sodium"
 ]
 
-// function searchFoodById(foodid) {
-// 	xmlhttp = new XMLHttpRequest();
-
-// 	xmlhttp.onreadystatechange=function()
-// 	  {
-// 	  if (xmlhttp.readyState==4 && xmlhttp.status==200)
-// 	    {
-// 			googlePieUpdate(xmlhttp['responseText'])
-// 	    }
-// 	  }
-// 	xmlhttp.open("get",, true)
-// 	xmlhttp.send()
-// }
-// requests nutritionix, parse json and update google table
-
+// gets a single food
 function searchFoodById(foodid) {
 	$.ajax({
 		type: "GET",
@@ -85,89 +71,83 @@ var tableData;
 var pieData;
 var googleTable;
 var googlePieChart;
+var tableView;
+var pieView;
 
 var fields = queryDict['fields']
 
 
-// initialize the columns. use all string fields
-
-// TODO: better way to update table than restarting?
-function resetTableData() {
-	tableData = new google.visualization.DataTable()
- 	for (var i = 0; i < fields.length; i++) {
- 		tableData.addColumn('string', fields[i])
- 	}
-}
-
 // initialize an empty table and pie chart
 function googleChartsInit() {
 	googleTable = new google.visualization.Table($('.foodChart').get(0));
+	
+	// initialize the columns. use all string fields
+	tableData = new google.visualization.DataTable()
+ 	
+ 	var i;
+ 	for (i = 0; i < fields.length; i++) {
+ 		tableData.addColumn('string', fields[i])
+ 	}
+ 	// add the ID column
+ 	tableData.addColumn('string', 'id')
+ 	tableView = new google.visualization.DataView(tableData)
+
+ 	// hide ID when showing table
+ 	tableView.hideColumns([i])
+
+ 	// initialize the pie chart
 	googlePieChart = new google.visualization.PieChart($('.pieChart').get(0))
+	pieData = new google.visualization.DataTable()
+ 	pieData.addColumn('string', 'Name')
+ 	pieData.addColumn('number', 'Data')
+	pieView = new google.visualization.DataView(pieData)
 
 	google.visualization.events.addListener(googleTable, 'select', selectHandler);
 
 	function selectHandler(e) {
-		var selectedId = $('.google-visualization-table-tr-sel').attr('_id')
+		var rowIndex = (googleTable.getSelection()[0].row)
+		var selectedId = tableData.getValue(rowIndex, i)
 		searchFoodById(selectedId)
 	}
-	resetTableData()
  	googleChartsDraw([])
-
- 	resetPieData()
 }
 
 function googleChartsDraw(rows) {
+	// reset rows
+	tableData.removeRows(0, tableData.getNumberOfRows())
 	tableData.addRows(rows)
-    googleTable.draw(tableData, {showRowNumber: true});
+    googleTable.draw(tableView, {showRowNumber: true});
 }
 
 // generate an array of arrays, with each element having fields matching queryDict['fields']
 function googleChartsUpdate(data) {
-	resetTableData()
 	var allRows = []
-	var ids = []
 
+	// parse the JSON into allRows
 	for (var i = 0; i < data['hits'].length; i++) {
 		// f is a dictionary{item_name, nf_calories...}
 		var f = data['hits'][i]['fields']
 		var thisRow = []
+		var j = 0
 
-		for (var j = 0; j < fields.length; j++) {
+		for (j = 0; j < fields.length; j++) {
 			var fieldName = fields[j]
 			thisRow[j] = String(f[fieldName])
 		}
-
+		thisRow[j] = data['hits'][i]['_id']
 		allRows[i] = thisRow
-
-		// store ID of food for later data binding
-		ids[i] = data['hits'][i]['_id']
 	}
 	googleChartsDraw(allRows)
-
-	// use d3 to bind _id to the rows
-	var d3Rows = d3.selectAll('.google-visualization-table-table tr:not(.google-visualization-table-tr-head)')
-	d3Rows.attr("_id", function(d, i){
-		return String(ids[i])})
 }
 
 // pie chart implementation
-function resetPieData() {
-	pieData = new google.visualization.DataTable()
- 	pieData.addColumn('string', 'Name')
- 	pieData.addColumn('number', 'Data')
-}
-
 function googlePieDraw(rows) {
+	pieData.removeRows(0, pieData.getNumberOfRows())
 	pieData.addRows(rows)
-	googlePieChart.draw(pieData);
+	googlePieChart.draw(pieView);
 }
 
 function googlePieUpdate(data) {
-	console.log(data)
-	console.log(data[2])
-	console.log(data.item_id)
-	console.log(data['nf_calories'])
-	resetPieData()
 	var allRows = []
 	for (var i = 0; i < nutrition.length; i++) {
 		// fieldName is a string, like "nf_calories"
