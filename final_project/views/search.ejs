@@ -1,43 +1,19 @@
 <head>
-	<script>
-		function reqYummlyAPI() {
-			var APP_ID = "1aeab161"
-			var APP_KEY = "30949c53cf846dfc493a20eebfbbd422"
-			var searchParams = document.getElementById('q')[0].value
-
-			var params = searchParams.split(" ");
-
-			var call = "http://api.yummly.com/v1/api/recipes?_"
-			call += "app_id=" + APP_ID + "&_app_key=" + APP_KEY + "&"
-
-			for (var i = 0; i < params.length; i++) {
-				call += "+" + params[i]
-			};
-
-			// alert(call)
-			// console.log(call)
-
-			var xhr = XmlHttpRequest()
-			xhr.open("GET", call, false)
-			xhr.send()
-
-			console.log(xhr.status)
-			console.log(xhr.statusText)
-			console.log(xhr.response)
-		}
-	</script>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+	<script type="text/javascript" src="javascript/search.js"></script>
 </head>
 
 <body>
 	<a href='/logout'>Log out</a></br>
 
 	<p>Search Yummly API for Recipes</p>
-	<form action="/search" name="recipesearch" method="post" onsubmit="return reqYummlyAPI();">
+	<form id="recipeSearch">
 		<input type="hidden" name="_csrf" value="<%= csrfToken %>">
-		<input id="q" name="q" placeholder="Search for a recipe" type="text" value=""/>
-	  	<button type="submit" value="Submit">Search</button>
+		<input id="q" placeholder="Search for a recipe" type="text" value=""/>
 	</form>
 
 	<p>Results</p>
-
+	<ul id="resultsList">
+	</ul>
+	
 </body>
