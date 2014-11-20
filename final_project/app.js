@@ -32,7 +32,7 @@ app.use(flash({locals:'flash'}))
 
 // csrf
 app.use(csrf())
-//For angular integration
+//For angular csrf integration
 app.use(function(req, res, next) {
 	res.cookie('XSRF-TOKEN', req.csrfToken());
 	next();

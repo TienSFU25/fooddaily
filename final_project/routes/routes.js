@@ -29,8 +29,36 @@ module.exports = function(app, passport, db) {
 	})
 
 	app.get('/', function(req, res) {
-		res.render('index');
+		res.render('index', { csrfToken: req.csrfToken() });
 	})
+
+	app.get('/api/foodlist', function(req,res) {
+		db.getAllFoods(req.user.id, function(rows) {
+			res.json(rows);
+		})
+	})
+
+	app.post('/api/foodlist', function(req,res) {
+		db.addFood(req.user.id, req.body.text, function(rows) {
+			// get and returns the food list after deletion (refresh)
+			db.getAllFoods(req.user.id, function(rows) {
+				res.json(rows);						
+			})
+		})
+	})
+
+	app.delete('/api/foodlist/:food_id', function(req, res) {
+		db.deleteFood(req.user.id, req.params.food_id, function(rows) {
+			// get and returns the food list after adding a new one (refresh)
+			db.getAllFoods(req.user.id, function(rows) {
+				res.json(rows);
+			})
+		}) 
+    })
+
+    app.get('/test/addfood', function (req, res) {
+    	db.addFood(req.user.id, "testfood", function(err){})
+    })
 
 	// pass in CSRF token for any page with a form
 	app.get('/login', function(req, res) {
@@ -60,7 +88,8 @@ module.exports = function(app, passport, db) {
 
 	app.get('/logout', function(req, res) {
 		req.logout()
-		res.render('index')
+
+		res.render('index', { csrfToken: req.csrfToken() })
 	})
 
 	app.get('/settings', function(req, res) {
