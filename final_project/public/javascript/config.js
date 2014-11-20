@@ -9,8 +9,11 @@ var fields = [
     "nf_protein",
     "nf_total_carbohydrate",
     "nf_sodium",
-    "item_type"
+    "item_type",
+    "item_id"
   ]
+
+var hidden = [fields.length - 1]
 
 var queryDict = {
  "appId":appId,
@@ -25,10 +28,6 @@ var queryDict = {
   "min_score": 0.5,
   "query": "",
   "filters": {
-    // "nf_calories": {
-    //   "from": 0,
-    //   "to": 400
-    // },
     "item_type": 3
   }
 }
@@ -38,3 +37,15 @@ var nutrition = [
 	"nf_total_carbohydrate",
 	"nf_protein",
 ]
+
+// sloppy way to get the column indexes of items in nutrition
+// or fields[map[i]] == nutrition[i] 
+var map = []
+
+for (var i = 0; i < nutrition.length; i++) {
+  for (var j = 0; j < fields.length; j++) {
+    if (nutrition[i] == fields[j]) {
+      map[i] = j
+    }
+  }
+}

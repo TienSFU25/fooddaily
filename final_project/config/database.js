@@ -5,7 +5,7 @@ var sequelize = new Sequelize('groupdb', 'group', 'thisgrouprocks', {
 	host: 'localhost',
 	dialect: 'mysql',
 	language: 'en',
-	logging: true
+	logging: false
 })
 
 var User = sequelize.define('User2', {

@@ -11,11 +11,12 @@
 <div class="foodChart"></div>
 </br>
 <div class="pieChart"></div>
-<script src="javascript/script.js"></script>
-<script src="javascript/helper.js"></script>
+<script src="javascript/GoogleTable.js"></script>
+<script src="javascript/parser.js"></script>
+<script src="javascript/config.js"></script>
 <script>
 	var i = <%- JSON.stringify(foodList) %>
-	initGoogleCharts('foodResults', i);
+	myChart = new GoogleTable('.foodChart', i, function(){alert(1)}, fields, hidden)
 </script>
 <% 	console.log(foodList) %>
 </body>
