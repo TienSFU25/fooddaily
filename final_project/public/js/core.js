@@ -19,7 +19,8 @@ function foodListController($scope, $http) {
             .success(function(data) {
                 $scope.formData = {}; // clear the form so our user is ready to enter another
                 $scope.list = data;
-                console.log(data);
+                console.log("THIS IS WHAT API/FOODLIST IS SENT:")
+                console.log($scope.formData);
             })
             .error(function(data) {
                 console.log('Error: ' + data);

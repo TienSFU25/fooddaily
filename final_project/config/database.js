@@ -5,7 +5,7 @@ var sequelize = new Sequelize('groupdb', 'group', 'thisgrouprocks', {
 	host: 'localhost',
 	dialect: 'mysql',
 	language: 'en',
-	logging: false
+	logging: true
 })
 
 var User = sequelize.define('User2', {
@@ -112,7 +112,9 @@ Database.prototype.addFood = function f(userid, foodDict, callback) {
 				// food already in exists, link it to this user
 				user.addFood(result.dataValues.id)
 			} else {
-				user.createFood(food).done(callback)
+				console.log(food);
+				user.createFood(food).done(callback);
+
 			}
 		})
 	});
