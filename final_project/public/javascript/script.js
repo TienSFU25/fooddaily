@@ -1,10 +1,6 @@
-var $foodIn = $('#foodSearch')
 var appId="065c98a7"
 var appKey="ac97e296e021c5ea6c0e51389f966307"
 
-// this variable is used to store array of arrays
-// after google init callback is called, this will be displayed
-var globalRows;
 var fields = [
     "item_name",
     "brand_name",
@@ -29,10 +25,6 @@ var queryDict = {
   "min_score": 0.5,
   "query": "",
   "filters": {
-    // "nf_calories": {
-    //   "from": 0,
-    //   "to": 400
-    // },
     "item_type": 3
   }
 }
@@ -42,6 +34,13 @@ var nutrition = [
 	"nf_total_carbohydrate",
 	"nf_protein",
 ]
+
+
+var $foodIn = $('#foodSearch')
+
+// this variable is used to store array of arrays
+// after google init callback is called, this will be displayed
+var globalRows;
 
 // get the indexes. rather poor way to do this
 var map = []
@@ -60,69 +59,61 @@ var googlePieChart;
 var tableView;
 var pieView;
 
-// requests nutritionix, parse json and update google table
-function searchFoodsByName(foodName) {
-	queryDict["query"] = foodName
+function GoogleTable(foodSearchId, rows, handlerFunction) {
+	$foodOut = $('#' + foodSearchId)
 
-	$.ajax({
-		type: "POST",
-		url: "https://api.nutritionix.com/v1_1/search",
-		data: queryDict,
-		success: function(d) {
-			googleChartsUpdate(d)
-		},
+	// load rows
+	globalRows = rows
+
+	// vcl closure
+	var myTable = this
+	google.load("visualization", "1", {packages:["corechart", "table"]});
+	google.setOnLoadCallback(function() {
+		googleTable = new google.visualization.Table($('.foodChart').get(0));
+		
+		// initialize the columns. use all string fields
+		tableData = new google.visualization.DataTable()
+	 	
+	 	var i;
+	 	for (i = 0; i < fields.length; i++) {
+	 		tableData.addColumn('string', fields[i])
+	 	}
+	 	// add the ID column
+	 	tableData.addColumn('string', 'id')
+	 	tableView = new google.visualization.DataView(tableData)
+
+	 	// hide ID when showing table
+	 	tableView.hideColumns([i])
+
+	 	// initialize the pie chart
+		googlePieChart = new google.visualization.PieChart($('.pieChart').get(0))
+		pieData = new google.visualization.DataTable()
+	 	pieData.addColumn('string', 'Name')
+	 	pieData.addColumn('number', 'Data')
+		pieView = new google.visualization.DataView(pieData)
+
+		// set the handler
+		google.visualization.events.addListener(googleTable, 'select', handlerFunction)
+
+		// for initially loading the chart
+	 	myTable.googleChartsDraw(globalRows)		
 	})
 }
 
-// initialize an empty table and pie chart
-function googleChartsInit() {
-	googleTable = new google.visualization.Table($('.foodChart').get(0));
-	
-	// initialize the columns. use all string fields
-	tableData = new google.visualization.DataTable()
- 	
- 	var i;
- 	for (i = 0; i < fields.length; i++) {
- 		tableData.addColumn('string', fields[i])
- 	}
- 	// add the ID column
- 	tableData.addColumn('string', 'id')
- 	tableView = new google.visualization.DataView(tableData)
-
- 	// hide ID when showing table
- 	tableView.hideColumns([i])
-
- 	// initialize the pie chart
-	googlePieChart = new google.visualization.PieChart($('.pieChart').get(0))
-	pieData = new google.visualization.DataTable()
- 	pieData.addColumn('string', 'Name')
- 	pieData.addColumn('number', 'Data')
-	pieView = new google.visualization.DataView(pieData)
-
-	google.visualization.events.addListener(googleTable, 'select', selectHandler);
-
-	function selectHandler(e) {
-		var rowIndex = (googleTable.getSelection()[0].row)
-
-		// 3 macros in here
-		var info = []
-		for (var i = 0; i < map.length; i++) {
-			info[i] = tableData.getValue(rowIndex, map[i])
-		}
-
-		googlePieUpdate(info)
-	}
-
-	// for initially loading the chart
- 	googleChartsDraw(globalRows)
-}
-
 // rows is an ARRAY OF ARRAYS
-function googleChartsDraw(rows) {
+GoogleTable.prototype.googleChartsDraw = function f(rows) {
 	// reset rows
 	tableData.removeRows(0, tableData.getNumberOfRows())
 	tableData.addRows(rows)
     googleTable.draw(tableView, {showRowNumber: true});
+}
+
+GoogleTable.prototype.getValue = function f(row, col) {
+	return tableData.getValue(row, col)
+}
+
+GoogleTable.prototype.getSelectedRow = function f() {
+	return googleTable.getSelection()[0].row
 }
 
 // damn data parsing
@@ -150,8 +141,8 @@ function jsonToArrayArrays(data) {
 // generate an array of arrays, with each element having fields matching queryDict['fields']
 // only happens when a new search is called
 // loading from the server should give array of arrays
-function googleChartsUpdate(json) {
-	googleChartsDraw(jsonToArrayArrays(json))
+GoogleTable.prototype.googleChartsUpdate= function f(json) {
+	this.googleChartsDraw(jsonToArrayArrays(json))
 }
 
 // pie chart implementation
@@ -174,16 +165,6 @@ function googlePieUpdate(data) {
 		allRows[i] = row
 	}
 	googlePieDraw(allRows)
-}
-
-function initGoogleCharts(foodSearchId, rows) {
-	// use google charts to draw a table
-	$foodOut = $('#' + foodSearchId)
-
-	// load rows
-	globalRows = rows
-	google.load("visualization", "1", {packages:["corechart", "table"]});
-	google.setOnLoadCallback(googleChartsInit)
 }
 
 // event listener
