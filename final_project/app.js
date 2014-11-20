@@ -32,6 +32,11 @@ app.use(flash({locals:'flash'}))
 
 // csrf
 app.use(csrf())
+//For angular integration
+app.use(function(req, res, next) {
+	res.cookie('XSRF-TOKEN', req.csrfToken());
+	next();
+});
 
 // expost static files (images, javascript and css)
 app.use(express.static(__dirname + '/public'));
