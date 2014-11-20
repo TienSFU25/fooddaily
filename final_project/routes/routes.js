@@ -85,7 +85,7 @@ module.exports = function(app, passport, db) {
 	})
 
 	var testDict = {
-		"_id": "dcmm23",
+		"_id": "dcmm2345",
 		"item_name": "food name",
 		"brand_name": "some brand",
 		"nf_calories": 4000,
@@ -101,7 +101,9 @@ module.exports = function(app, passport, db) {
 
 	// display all foods related to this user
 	// TODO: move this to config
-	var cols = ['id', 'foodname', 'brandName', 'calories', 'totalFat', 'totalCarb', 'totalProtein', 'sodium', 'type']
+
+	var cols = ['foodname', 'brandName', 'calories', 'totalFat', 'totalProtein', 'totalCarb', 'sodium', 'type', 'id']
+	var cols2 = ['item_name', 'brand_name', 'nf_calories', 'nf_total_fat', 'nf_protein', 'nf_total_carbohydrate', 'nf_sodium', 'item_type', '_id']
 
 	app.get('/foods', function(req, res, next) {
 		db.getAllFoods(req.user.id, function(err, result){
@@ -109,20 +111,21 @@ module.exports = function(app, passport, db) {
 				next(err);
 			} else {
 				var rows = []
-				var row = {}
+				var row = []
 				var temp
 
 				// only pass relevant data to the page
 				for (var i = 0; i < result.length; i++) {
 					temp = result[i]['dataValues']
 					for (var j = 0; j < cols.length; j++) {
-						row[cols[j]] = temp[cols[j]]
+						row[j] = String(temp[cols[j]])
 					}
 
 					rows[i] = row
 				}
 
-				res.render('foods', {foodList: rows})
+				console.log(rows)
+				res.render('foods', {user: req.user, foodList: rows})
 			}
 		})
 	})

@@ -1,0 +1,21 @@
+<head>
+<link rel="stylesheet" type="text/css" href="stylesheets/style.css">
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+</head>
+<body>
+<p>Showing food list for <%= user.username %></p>
+<a href='/success'>Back</a></br>
+<a href='/logout'>Log out</a></br>
+
+<div class="foodChart"></div>
+</br>
+<div class="pieChart"></div>
+<script src="javascript/script.js"></script>
+<script src="javascript/helper.js"></script>
+<script>
+	var i = <%- JSON.stringify(foodList) %>
+	initGoogleCharts('foodResults', i);
+</script>
+<% 	console.log(foodList) %>
+</body>
