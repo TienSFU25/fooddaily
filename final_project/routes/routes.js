@@ -113,6 +113,10 @@ module.exports = function(app, passport, db) {
 		res.redirect('/jsontest')
 	})
 
+	app.get('/favourites', function(req, res) {
+		res.render('favrecipes', {user: req.user})
+	})
+
 	var testDict = {
 		"_id": "dcmm2345",
 		"item_name": "food name",
