@@ -1,4 +1,42 @@
-var foodList = angular.module('foodList', []);
+var foodaily = angular.module('foodaily', ['ngRoute', 'ngResource']);
+
+//ROUTING
+foodaily.config(function($routeProvider){
+    $routeProvider
+        .when('/', {
+            templateUrl : 'partials/dashboard',
+            controller : 'ctrl'
+        })
+
+        .when('/addfood', {
+            templateUrl : 'partials/addfood',
+            controller : 'ctrl'
+        })
+
+        .when('/recipesearch',{
+            templateUrl : 'partials/recipesearch',
+            controller : 'ctrl'
+        })
+
+        .when('/favoriterecipes', {
+            templateUrl : 'partials/favoriterecipes',
+            controller : 'ctrl'
+        })
+
+        .when('/signup',{
+            templateUrl : 'partials/signup',
+            controller : 'ctrl'
+        })
+
+        .when('/settings',{
+            templateUrl : 'partials/settings',
+            controller : 'ctrl'
+        })
+
+        .otherwise({redirectTo:'/'});
+})
+
+//CONTROLLERS
 
 function foodListController($scope, $http) {
     $scope.formData = {};
@@ -20,7 +58,7 @@ function foodListController($scope, $http) {
                 $scope.formData = {}; // clear the form so our user is ready to enter another
                 $scope.list = data;
                 console.log("THIS IS WHAT API/FOODLIST IS SENT:")
-                console.log($scope.formData);
+                console.log(data);
             })
             .error(function(data) {
                 console.log('Error: ' + data);
@@ -39,4 +77,7 @@ function foodListController($scope, $http) {
            });
    };
 
-}
+};
+
+foodaily.controller('ctrl', function($scope){
+});
