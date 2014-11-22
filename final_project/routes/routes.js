@@ -37,6 +37,10 @@ module.exports = function(app, passport, db) {
 		res.render('index', { csrfToken: req.csrfToken() });
 	})
 
+	app.get('/partials/:filename', function(req,res){
+		res.render('partials/' + req.params.filename, { csrfToken: req.csrfToken() })
+	})
+
 	app.get('/api/foodlist', function(req,res) {
 		db.getAllFoods(req.user.id, function(rows) {
 			res.json(rows);
