@@ -54,10 +54,11 @@ app.use(function (err, req, res, next) {
 var database = require('./config/database')
 db = new database()
 
+var testid = "dcmm23"
 var testDict = {
-	"_id": "dcmm23",
-	"item_name": "food name",
-	"brand_name": "some brand",
+	"item_id": testid,
+	"item_name": "foodname",
+	"brand_name": "somebrand",
 	"nf_calories": 4000,
 	"nf_total_fat": 40,
 	"nf_protein": 30,

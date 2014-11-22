@@ -1,5 +1,10 @@
 module.exports = function(app, passport, db) {
-	
+
+	var nutritionix = require('nutritionix')({
+	    appId: '065c98a7',
+	    appKey: 'ac97e296e021c5ea6c0e51389f966307'
+	}, false).v1_1;
+
 	// debugging sessions
 	app.use('/', function(req, res, next) {
 		var sess = req.session
@@ -116,55 +121,100 @@ module.exports = function(app, passport, db) {
 	app.get('/favourites', function(req, res) {
 		res.render('favrecipes', {user: req.user})
 	})
-
-	var testDict = {
-		"_id": "dcmm2345",
-		"item_name": "food name",
-		"brand_name": "some brand",
-		"nf_calories": 4000,
-		"nf_total_fat": 40,
-		"nf_protein": 30,
-		"nf_total_carbohydrate": 25,
-		"nf_sodium": 25,
-		"item_type": 4
-	}
 	
-	// db.createUser('tien234', 'test', function(err){console.log(err)})
-	db.addFood(4, testDict, function(err) {console.log(err)})
+	var shortFields = [
+	  'id',
+	  'foodname',
+	  'brandName',
+	  'calories',
+	  'totalFat',
+	  'totalCarb',
+	  'totalProtein',
+	  'sodium',
+	  'type'
+	]
 
-	// display all foods related to this user
-	// TODO: move this to config
+	app.get('/foods', function(req, response, next) {
+		db.getAllFoods(req.user.id, function(err, res){
+			var json = {}
+			var allIds = {}
+			var rows = []
 
-	var cols = ['foodname', 'brandName', 'calories', 'totalFat', 'totalProtein', 'totalCarb', 'sodium', 'type', 'id']
-	var cols2 = ['item_name', 'brand_name', 'nf_calories', 'nf_total_fat', 'nf_protein', 'nf_total_carbohydrate', 'nf_sodium', 'item_type', '_id']
+			// javascript "set"
+			for (var i = 0; i < res.length; i++) {
+				id = res[i].dataValues['foodId']
+				allIds[id] = true
+			}
 
-	app.get('/foods', function(req, res, next) {
-		db.getAllFoods(req.user.id, function(err, result){
-			if (err) {
-				next(err);
-			} else {
-				var rows = []
-				var row = []
-				var temp
-
-				// only pass relevant data to the page
-				for (var i = 0; i < result.length; i++) {
-					temp = result[i]['dataValues']
-					for (var j = 0; j < cols.length; j++) {
-						row[j] = String(temp[cols[j]])
-					}
-
-					rows[i] = row
+			db.getFoodsInArray(Object.keys(allIds), function(err, results) {
+				// loop over results and store their associated data
+				// for example
+				// rtn[32][foodname] should give foodname of food id "32"
+				var foodDict = {}
+				for (var j = 0; j < results.length; j++) {
+					var attr = results[j]['dataValues']
+					var id = attr['id']
+					// store id twice, oh well
+					foodDict[id] = attr
 				}
 
-				console.log(rows)
-				res.render('foods', {user: req.user, foodList: rows})
-			}
+				// now loop over chosen foods again and attach associated data from food dict
+				for (var k = 0; k < res.length; k++) {
+					var eatenFood = res[k].dataValues
+					var row = []
+
+					// deep copy from the food dict
+					json[k] = JSON.parse(JSON.stringify(foodDict[eatenFood['foodId']]))
+					json[k]['myDate'] = eatenFood['myDate']
+					json[k]['amount'] = eatenFood['amount']
+
+					var id = eatenFood['foodId']
+					var p
+					for (p = 0; p < shortFields.length; p++) {
+						row[p] = String(foodDict[id][shortFields[p]])
+					}
+
+					row[p] = String(eatenFood['myDate'])
+					row[p + 1] = String(eatenFood['amount'])
+					rows[k] = row
+				}
+
+				response.render('foods', {user:req.user, chartData: rows})
+				// console.log(rows)
+				// console.log(json)
+			})
 		})
 	})
 
 	app.post('/saveFood', function(req, res, next) {
-		console.log(req.body)
-		res.send(200)
+		var id = req.body.chosenFood
+		var query = {id: id}
+		db.checkFood(id, function(count) {
+			if (count == 0) {
+				// query nutritionix and save the food
+				nutritionix.item(query, function(err, food) {
+					db.createFood(food, function(err, result) {
+						if (err) {
+							console.log(err)
+							next()
+						} else {
+							db.eatFood(req.user.id, id, req.body.amount, function(err, r) {
+								console.log(err)
+								console.log(r)
+								res.send(200)
+							})
+						}
+					})
+				})				
+			} else {
+				// regardless, save eating food information to ChosenFoods
+				db.eatFood(req.user.id, id, req.body.amount, function(err, r) {
+					console.log(err)
+					console.log(r)
+					res.send(200)
+				})
+			}
+		})
+
 	})
 }

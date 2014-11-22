@@ -28,7 +28,7 @@ var queryDict = {
   "min_score": 0.5,
   "query": "",
   "filters": {
-    "item_type": 3
+    // "item_type": 3
   }
 }
 
@@ -49,3 +49,29 @@ for (var i = 0; i < nutrition.length; i++) {
     }
   }
 }
+
+var shortFields = [
+  'id',
+  'foodname',
+  'brandName',
+  'calories',
+  'totalFat',
+  'totalCarb',
+  'totalProtein',
+  'sodium',
+  'type'
+]
+
+var sf = [
+  'id',
+  'foodname',
+  'brandName',
+  'calories',
+  'totalFat',
+  'totalCarb',
+  'totalProtein',
+  'sodium',
+  'type',
+  'myDate',
+  'amount'
+]

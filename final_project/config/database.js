@@ -5,7 +5,8 @@ var sequelize = new Sequelize('groupdb', 'group', 'thisgrouprocks', {
 	host: 'localhost',
 	dialect: 'mysql',
 	language: 'en',
-	logging: false
+	timezone: '-08:00',
+	// logging: false
 })
 
 var User = sequelize.define('User2', {
@@ -26,20 +27,89 @@ var Food = sequelize.define('Food', {
 	totalCarb: {type: Sequelize.INTEGER},
 	totalProtein: {type: Sequelize.INTEGER},
 	sodium: {type: Sequelize.INTEGER},
-	type: {type: Sequelize.INTEGER, allowNull: false},	
+	type: {type: Sequelize.INTEGER},	
 }, {
 	tableName: "Foods"
 })
 
 var ChosenFood = sequelize.define('ChosenFood', {
-	timesEaten: {type: Sequelize.INTEGER, default: 1}
+	id: {type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true},
+	amount: {type: Sequelize.INTEGER, allowNull: false, defaultValue: 1},
+	myDate: {type: Sequelize.STRING, allowNull: false}
 }, {
+	timestamps: true,
 	tableName: "ChosenFoods"
 })
 
-User.hasMany(Food, {through: ChosenFood, foreignKey: "userId"})
-Food.hasMany(User, {through: ChosenFood, foreignKey: "foodId"})
+// User.hasMany(Food, {through: ChosenFood, foreignKey: "userId"})
+// Food.hasMany(User, {through: ChosenFood, foreignKey: "foodId"})
+User.hasMany(ChosenFood, {allowNull:false, foreignKey: "userId"});
+Food.hasMany(ChosenFood, {allowNull:false, foreignKey: "foodId"});
 
+// ChosenFood.sync({force: true});
+// Food.sync({force: true})
+
+// adds item in ChosenFoods table
+// if item doesn't exist, make it. otherwise, update the table
+Database.prototype.eatFood = function f(userid, foodid, amountEaten, callback) {
+	amountEaten = parseInt(amountEaten)
+
+	// store just the first part of the date as a string
+	// too much work dealing with javascript dates
+	var now = new Date().toString()
+	var arr = now.split(" ")
+
+	// arr[2] -= 1
+
+	var myDate = ""
+	for (var i = 0; i < 4; i++) {
+		myDate += arr[i] + " "
+	}
+
+	ChosenFood.findOne({
+		where: ['userid = ? AND foodId = ? AND myDate = ?', userid, foodid, myDate]
+	})
+	.done(function(err, res){
+		if (err) {
+			console.log(err)
+			return
+		}
+
+		if (res == null) {
+			ChosenFood.build({
+				userId: userid,
+				foodId: foodid,
+				amount: amountEaten,
+				myDate: myDate
+			})
+			.save()
+			.done(callback)
+		} else {
+			var oldAmount = res.getDataValue('amount')
+			res.setDataValue('amount', oldAmount + amountEaten)
+			res.save().done(callback)
+		}
+	})
+}
+
+Database.prototype.createFood = function f(foodDict, callback) {
+	var myDict = buildFood(foodDict)
+	this.checkFood(myDict['id'], function(count){
+		if (count == 0)
+			Food.create(myDict).done(callback)
+
+		else {
+			console.log("Food id " + myDict['id'] + " already exists ")
+			callback()
+		}
+	})
+}
+
+
+// helper function, check if food already in db
+Database.prototype.checkFood = function f(foodid, callback) {
+	Food.count({where: {id: foodid}}).success(callback)
+}
 
 // do not uncomment this unless you want to change the schema
 // db and all tables will be reset
@@ -69,7 +139,7 @@ Database.prototype.searchUserByName = function f(username, callback) {
 // TODO. change this function, returning a dict is ugly. use Food.build() and call save() instead
 function buildFood(foodDict) {
 	var f = {}
-	f['id'] = foodDict['_id']
+	f['id'] = foodDict['item_id']
 	f['foodname'] = foodDict['item_name'],
 	f['brandName'] = foodDict['brand_name'],
 	f['calories'] = foodDict['nf_calories'],
@@ -102,36 +172,13 @@ function findUserAndCb(userid, callback) {
 	})
 }
 
-// for now, it only makes sense to add foods that are actually chosen by user
-// callback = (err)
-Database.prototype.addFood = function f(userid, foodDict, callback) {
-	var food = buildFood(foodDict);
-	user = findUserAndCb(userid, function(user){
-		var f = Food.findOne({where: {id: food['id']}}).done(function(err, result){
-			if (result) {
-				// food already in exists, link it to this user
-				user.addFood(result.dataValues.id)
-			} else {
-				console.log(food);
-				user.createFood(food).done(callback);
-
-			}
-		})
-	});
-}
-
 // callback = (err, result)
 Database.prototype.getAllFoods = function f(userid, callback) {
-	findUserAndCb(userid, function(user){
-		user.getFoods().done(callback)
-	})
+	ChosenFood.findAll({where: {userId: userid}}).done(callback)
 }
 
-// callback = (err, result)
-Database.prototype.getFood = function f(userid, foodid, callback) {
-	findUserAndCb(userid, function(user){
-		user.getFoods({where: {id: foodid}}).done(callback)
-	})
+Database.prototype.getFoodsInArray = function f(arr, callback) {
+	Food.findAll({where: {id: arr}}).done(callback)
 }
 
 // callback = (err, result)

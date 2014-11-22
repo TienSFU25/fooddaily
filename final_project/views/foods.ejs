@@ -15,8 +15,7 @@
 <script src="javascript/parser.js"></script>
 <script src="javascript/config.js"></script>
 <script>
-	var i = <%- JSON.stringify(foodList) %>
-	myChart = new GoogleTable('.foodChart', i, function(){alert(1)}, fields, hidden)
+	var i = <%- JSON.stringify(chartData) %>
+	myChart = new GoogleTable('.foodChart', i, function(){alert(1)}, sf, [hidden])
 </script>
-<% 	console.log(foodList) %>
 </body>
