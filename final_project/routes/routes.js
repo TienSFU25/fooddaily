@@ -75,7 +75,7 @@ module.exports = function(app, passport, db) {
 	})
 
 	app.get('/success', function(req, res) {
-		res.render('success', {user: req.user})
+		res.render('success', {user: req.user, csrfToken: req.csrfToken()})
 	})
 
 	app.post('/login', passport.authenticate('local-login',
@@ -115,6 +115,10 @@ module.exports = function(app, passport, db) {
 
 	app.post('/search', function(req, res) {
 		res.redirect('/jsontest')
+	})
+
+	app.get('/favourites', function(req, res) {
+		res.render('favrecipes', {user: req.user})
 	})
 
 	var testDict = {
@@ -161,5 +165,10 @@ module.exports = function(app, passport, db) {
 				res.render('foods', {user: req.user, foodList: rows})
 			}
 		})
+	})
+
+	app.post('/saveFood', function(req, res, next) {
+		console.log(req.body)
+		res.send(200)
 	})
 }
