@@ -1,24 +1,24 @@
 <head>
-<link rel="stylesheet" type="text/css" href="stylesheets/style.css">
-<link rel="stylesheet" href="magnificPopup/magnific-popup.css">
+<link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
+<link rel="stylesheet" href="/magnificPopup/magnific-popup.css">
 <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.5.0/pure-min.css">
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-<script src="magnificPopup/jquery.magnific-popup.js"></script> 
+<script src="/magnificPopup/jquery.magnific-popup.js"></script> 
 <script src="https://www.google.com/jsapi"></script>
 </head>
 <body>
 <p>Successfully logged in</p>
-<p>Logged in as user <%= user.username %></p>
-<a href='/settings'>Settings</a></br>
+<p>Logged in as user <%= user.firstname + ' ' + user.lastname %></p>
+<a href='<%= user.slug %>/settings'>Settings</a></br>
 <a href='/logout'>Log out</a></br>
 <a href='/search'>Search for Recipes</a></br>
-<a href='/foods'>See your foods here</a></br>
+<a href='<%= user.slug %>/foods'>See your foods here</a></br>
 
 <!-- link that opens popup -->
 <p class="popup-with-form" href="#test-form">Open form</p>
 
 <!-- form itself -->
-<form method="POST" action = "/saveFood" id="test-form" class="white-popup mfp-hide pure-form">
+<form method="POST" action = "<%= user.slug %>/foods" id="test-form" class="white-popup mfp-hide pure-form">
 	<h1>Form</h1>
 		<ol>
 			<li>
@@ -41,11 +41,11 @@
 </br>
 
 <!-- custom scripts go down here -->
-<script src="javascript/GoogleTable.js"></script>
-<script src="javascript/GooglePie.js"></script>
-<script src="javascript/config.js"></script>
-<script src="javascript/parser.js"></script>
-<script src="javascript/magnificPopup.js"></script>
+<script src="/javascript/GoogleTable.js"></script>
+<script src="/javascript/GooglePie.js"></script>
+<script src="/javascript/config.js"></script>
+<script src="/javascript/parser.js"></script>
+<script src="/javascript/magnificPopup.js"></script>
 <script>
 	var myPieChart = new GooglePie()
 	// don't draw anything to begin with

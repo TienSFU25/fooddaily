@@ -1,34 +1,84 @@
 module.exports = function(app, passport, db) {
 
-	var nutritionix = require('nutritionix')({
-	    appId: '065c98a7',
-	    appKey: 'ac97e296e021c5ea6c0e51389f966307'
-	}, false).v1_1;
-
-	// debugging sessions
-	app.use('/', function(req, res, next) {
-		var sess = req.session
-		if (sess.views)
-			sess.views++
-		else
-			sess.views = 1
-		next()
-	})
-
+	var s = require('string')
 	// print user
 	app.use('/', function(req, res, next) {
 		console.log(req.user)
 		next()
 	})
 
-	//Authenticator.prototype.authenticate = function(strategy, options, callback) {
-	app.get('/test', function(req, res, next) {
-		req.body.username = 'u'
-		req.body.password = 'p'
-		passport.authenticate('debug-login', {
-			successRedirect: 'success',
-			failureRedirect: 'login',
-			failureFlash: true
+	// app.get(/\/user\/(\d*)\/(edit)\/(\d+)/, function(req, res) {
+
+	app.get(/(\w+)/, function(req, res, next) {
+		var str = req.params[0]
+
+		if (str == 'login') {
+			res.render('login', { csrfToken: req.csrfToken() })
+		} else if (str == 'signup') {
+			res.render('signup', { csrfToken: req.csrfToken() })
+		} else if (str == '!test') {
+			req.body.username = 'u'
+			req.body.password = 'p'
+			passport.authenticate('debug-login', {
+				successRedirect: 'success',
+				failureRedirect: 'login',
+				failureFlash: true
+			})
+			(req, res)			
+		} else {
+			next()
+		}
+	})
+
+	app.get('/:slug', function(req, res, next) {
+		if (req.user) {
+			if (req.user.slug == req.params.slug) {
+				next()
+			} else {
+				// TODO: implement this part
+				res.send("Unauthorized to view this source")
+			}			
+		} else {
+			res.redirect('/login')
+		}
+	})
+
+	app.use('/:slug', require('./userRouter'))
+
+	app.post('/login', function(req, res, next) {
+		passport.authenticate('local-login', function(err, user, info) {
+			if (err) {
+				console.log(err)
+				next(err)
+			}
+
+			if (!user) {
+				res.redirect('/login')
+			} else {
+				req.logIn(user, function(err){
+					if (err) return next(err)
+					res.redirect(user.slug)
+				})
+			}
+		})
+		(req, res)
+	})
+
+	app.post('/signup', function(req, res, next) {
+		passport.authenticate('local-signup', function(err, user, info) {
+			if (err) {
+				console.log(err)
+				next(err)
+			}
+
+			if (!user) {
+				res.redirect('/signup')
+			} else {
+				req.logIn(user, function(err){
+					if (err) return next(err)
+					res.redirect(user.slug)
+				})
+			}
 		})
 		(req, res)
 	})
@@ -69,32 +119,6 @@ module.exports = function(app, passport, db) {
     	db.addFood(req.user.id, "testfood", function(err){})
     })
 
-	// pass in CSRF token for any page with a form
-	app.get('/login', function(req, res) {
-		res.render('login', { csrfToken: req.csrfToken() })
-	})
-
-	app.get('/signup', function(req, res) {
-		console.log(req.csrfToken())
-		res.render('signup', { csrfToken: req.csrfToken() })
-	})
-
-	app.get('/success', function(req, res) {
-		res.render('success', {user: req.user, csrfToken: req.csrfToken()})
-	})
-
-	app.post('/login', passport.authenticate('local-login',
-											{successRedirect: 'success',
-											failureRedirect: 'login',
-											failureFlash: true})
-	)
-
-	app.post('/signup', passport.authenticate('local-signup',
-										{successRedirect: 'success',
-										failureRedirect: 'signup',
-										failureFlash: true})
-	)
-
 	app.get('/logout', function(req, res) {
 		req.logout()
 
@@ -111,7 +135,6 @@ module.exports = function(app, passport, db) {
 
 	app.get('/jsontest', function(req, res) {
 		res.send("This function is currently being built")
-		// res.render('jsonscrollablelisttest')
 	})
 
 	app.get('/search', function(req, res) {
@@ -124,101 +147,5 @@ module.exports = function(app, passport, db) {
 
 	app.get('/favourites', function(req, res) {
 		res.render('favrecipes', {user: req.user})
-	})
-	
-	var shortFields = [
-	  'id',
-	  'foodname',
-	  'brandName',
-	  'calories',
-	  'totalFat',
-	  'totalCarb',
-	  'totalProtein',
-	  'sodium',
-	  'type'
-	]
-
-	app.get('/foods', function(req, response, next) {
-		db.getAllFoods(req.user.id, function(err, res){
-			var json = {}
-			var allIds = {}
-			var rows = []
-
-			// javascript "set"
-			for (var i = 0; i < res.length; i++) {
-				id = res[i].dataValues['foodId']
-				allIds[id] = true
-			}
-
-			db.getFoodsInArray(Object.keys(allIds), function(err, results) {
-				// loop over results and store their associated data
-				// for example
-				// rtn[32][foodname] should give foodname of food id "32"
-				var foodDict = {}
-				for (var j = 0; j < results.length; j++) {
-					var attr = results[j]['dataValues']
-					var id = attr['id']
-					// store id twice, oh well
-					foodDict[id] = attr
-				}
-
-				// now loop over chosen foods again and attach associated data from food dict
-				for (var k = 0; k < res.length; k++) {
-					var eatenFood = res[k].dataValues
-					var row = []
-
-					// deep copy from the food dict
-					json[k] = JSON.parse(JSON.stringify(foodDict[eatenFood['foodId']]))
-					json[k]['myDate'] = eatenFood['myDate']
-					json[k]['amount'] = eatenFood['amount']
-
-					var id = eatenFood['foodId']
-					var p
-					for (p = 0; p < shortFields.length; p++) {
-						row[p] = String(foodDict[id][shortFields[p]])
-					}
-
-					row[p] = String(eatenFood['myDate'])
-					row[p + 1] = String(eatenFood['amount'])
-					rows[k] = row
-				}
-
-				response.render('foods', {user:req.user, chartData: rows})
-				// console.log(rows)
-				// console.log(json)
-			})
-		})
-	})
-
-	app.post('/saveFood', function(req, res, next) {
-		var id = req.body.chosenFood
-		var query = {id: id}
-		db.checkFood(id, function(count) {
-			if (count == 0) {
-				// query nutritionix and save the food
-				nutritionix.item(query, function(err, food) {
-					db.createFood(food, function(err, result) {
-						if (err) {
-							console.log(err)
-							next()
-						} else {
-							db.eatFood(req.user.id, id, req.body.amount, function(err, r) {
-								console.log(err)
-								console.log(r)
-								res.send(200)
-							})
-						}
-					})
-				})				
-			} else {
-				// regardless, save eating food information to ChosenFoods
-				db.eatFood(req.user.id, id, req.body.amount, function(err, r) {
-					console.log(err)
-					console.log(r)
-					res.send(200)
-				})
-			}
-		})
-
 	})
 }

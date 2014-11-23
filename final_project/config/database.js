@@ -6,13 +6,16 @@ var sequelize = new Sequelize('groupdb', 'group', 'thisgrouprocks', {
 	dialect: 'mysql',
 	language: 'en',
 	timezone: '-08:00',
-	// logging: false
+	logging: false
 })
 
 var User = sequelize.define('User2', {
 	userid: {type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true},
 	username: {type: Sequelize.STRING, allowNull: false, unique: true},
 	password: {type: Sequelize.STRING, allowNull: false},
+	firstname: {type: Sequelize.STRING, allowNull: false},
+	lastname: {type: Sequelize.STRING, allowNull: false},
+	slug: {type: Sequelize.STRING, allowNull: false, unique: true},
 	description: {type: Sequelize.STRING}
 }, {
 	tableName: "User2"
@@ -41,8 +44,6 @@ var ChosenFood = sequelize.define('ChosenFood', {
 	tableName: "ChosenFoods"
 })
 
-// User.hasMany(Food, {through: ChosenFood, foreignKey: "userId"})
-// Food.hasMany(User, {through: ChosenFood, foreignKey: "foodId"})
 User.hasMany(ChosenFood, {allowNull:false, foreignKey: "userId"});
 Food.hasMany(ChosenFood, {allowNull:false, foreignKey: "foodId"});
 
@@ -105,7 +106,6 @@ Database.prototype.createFood = function f(foodDict, callback) {
 	})
 }
 
-
 // helper function, check if food already in db
 Database.prototype.checkFood = function f(foodid, callback) {
 	Food.count({where: {id: foodid}}).success(callback)
@@ -116,10 +116,13 @@ Database.prototype.checkFood = function f(foodid, callback) {
 // sequelize.sync({force: true})
 
 // callback = Promise<this|Errors.ValidationError>
-Database.prototype.createUser = function f(username, password, callback) {
+Database.prototype.createUser = function f(username, password, firstname, lastname, slug, callback) {
 	User.build({
 		username: username,
 		password: password,
+		firstname: firstname,
+		lastname: lastname,
+		slug: slug,
 		description: "some desc"
 	})
 	.save()
@@ -133,6 +136,18 @@ Database.prototype.searchUser = function f(userid, callback) {
 
 Database.prototype.searchUserByName = function f(username, callback) {
 	User.findOne({where: {username: username}}).done(callback)
+}
+
+Database.prototype.searchUserBySlug = function f(slug, callback) {
+	User.findOne({where: {slug: slug}}).done(callback)
+}
+
+Database.prototype.countUserByName = function f(username, callback) {
+	User.count({where: {username: username}}).success(callback)
+}
+
+Database.prototype.searchAllSlugs = function f(callback) {
+	User.findAll({attributes: ['slug']}).done(callback)
 }
 
 // helper functions

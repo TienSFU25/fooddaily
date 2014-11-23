@@ -3,122 +3,162 @@
 // bcrypt is used for hashing passwords
 
 module.exports = function(passport, db) {
+	var s = require('string')
+	var LocalStrategy = require('passport-local').Strategy
+	var bcrypt = require('bcrypt-nodejs')
 
-function User(username, password, id) {
-	this.id = id
-	this.username = username
-	this.password = password
-	this.list = [1, 4, 8, 2]
-}
-
-var LocalStrategy = require('passport-local').Strategy
-var bcrypt = require('bcrypt-nodejs')
-var sprintf = require('sprintf-js').sprintf,
-	vsprintf = require('sprintf-js').vsprintf
-
-customDict = {
-	usernameField: 'username',
-	passwordField: 'password',
-	passReqToCallback: true
-}
-
-// login strategy
-customLogin = new LocalStrategy(customDict, function(req, username, password, done) {
-	// first, try to search for this user. retrieve the hashed password
-	searchUserCallback = function(err, user) {
-		if (err) {
-			console.log(err)
-			return done(null, false)
-		}
-		if (!user) {
-			req.flash('loginMessage', 'User does not exist')
-			return done(null, false)
-		} 
-
-		else {
-			// if user does exist, compare hash in database with hash(plaintext password)
-			userData = user.dataValues
-			hash = userData['password']
-			userid = userData['userid']
-			bcrypt.compare(password, hash, function(err, match) {
-				if (err)
-					return done(err)
-				if (!match) {
-					req.flash('loginMessage', 'Wrong password')
-					return done(null, false)
-				}
-				else {
-					currUser = new User(username, hash, userid)
-					return done(null, currUser)
-				}
-			})
-		}
+	function User(first, last, slug) {
+		this.first = first
+		this.last = last
+		this.slug = slug
 	}
 
-	db.searchUserByName(username, searchUserCallback)
-})
+	customDict = {
+		usernameField: 'username',
+		passwordField: 'password',
+		passReqToCallback: true
+	}
 
-customSignup = new LocalStrategy(customDict, function(req, username, password, done) {
-	// check to see whether username already exists. if not, create the user
-	bcrypt.hash(password, null, null, function(err, hash) {
-		if (err)
-			console.log(err)
-		db.createUser(username, hash, function(err) {
+	// login strategy
+	customLogin = new LocalStrategy(customDict, function(req, username, password, done) {
+		// first, try to search for this user. retrieve the hashed password
+		db.searchUserByName(username, function(err, user) {
 			if (err) {
-				// 
-				if (err.name == 'SequelizeUniqueConstraintError') {
-					console.log("Username has already been taken")
-					return done(null, false)
-				}
-			} else {
-				db.searchUserByName(username, function(err, user) {
-					id = user.dataValues.userid
-					currUser = new User(username, hash, id)
-					return done(null, currUser)
+				console.log(err)
+				return done(null, false)
+			}
+			if (!user) {
+				req.flash('loginMessage', 'User does not exist')
+				return done(null, false)
+			} 
+
+			else {
+				// if user does exist, compare hash in database with hash(plaintext password)
+				userData = user.dataValues
+				hash = userData['password']
+				bcrypt.compare(password, hash, function(err, match) {
+					if (err)
+						return done(err)
+					if (!match) {
+						req.flash('loginMessage', 'Wrong password')
+						return done(null, false)
+					}
+					else {
+						currUser = new User(userData['firstname'], userData['lastname'], userData['slug'])
+						return done(null, currUser)
+					}
 				})
 			}
 		})
 	})
-})
 
-var debugUser = 'tien234'
-// "hack" function for debugging without having to login. DELETE THIS LATER
-debugLogin = new LocalStrategy(function(username, password, done) {
-	console.log("debug login here")
-	db.searchUserByName(debugUser, function(err, user) {
-		userData = user.dataValues
-		hash = userData['password']
-		userid = userData['userid']
-		currUser = new User(debugUser, hash, userid)
+
+	// db.createUser('username2', 'pw', 'first', 'last', 'sluggy2', function(){})
+	// db.searchAllSlugs(function(err, res){console.log(res)})
+
+	customSignup = new LocalStrategy(customDict, function(req, username, password, done) {
+		db.countUserByName(username, function(count){
+			if (count != 0) {
+				// user name already exists
+				console.log("Username has already been taken")
+				return done(null, false)
+			} else {
+				db.searchAllSlugs(function(err, res) {
+					if (err) {
+						console.log("Unknown error in searchAllSlugs")
+						return done(null, false)
+					} else {
+						var allSlugs = {}
+						// copy all slugs into dictionary
+						for (var i = 0; i < res.length; i++) {
+							allSlugs[res[i]['dataValues']['slug']] = true
+						}
+
+						var slug = s(req.body.firstname + ' ' + req.body.lastname).slugify().s
+						// attempt to make a unique slug by adding 1, 2...to slug if it exists
+						if (allSlugs[slug]) {
+							var j = 1
+							slug += j
+							if (allSlugs[slug]) {
+								j++							
+								for (j; j < 100; j++) {
+									slug = slug.substring(0, slug.length - 1) + j
+									if (!allSlugs[slug]) break
+								}
+							}
+						}
+
+						// create a(n unsalted for now) hash
+						bcrypt.hash(password, null, null, function(err, hash) {
+							if (err) {
+								console.log(err)
+								return done(null, false)
+							}
+
+							db.createUser(username, hash, req.body.firstname, req.body.lastname, slug, function(err) {
+								if (err) {
+									console.log("Unknown error in db.createUser")
+									return done(null, false)
+								} else {
+									currUser = new User(req.body.firstname, req.body.lastname, slug)
+									return done(null, currUser)
+								}
+							})
+						})	
+					}
+				})
+			}
+		})
+	})
+
+	var debugUser = 'tien234'
+	// "hack" function for debugging without having to login. DELETE THIS LATER
+	debugLogin = new LocalStrategy(customDict, function(req, username, password, done) {
+		console.log("debug login here")
+		db.searchUserByName(debugUser, function(err, user) {
+			if (user == null) {
+				db.createUser(debugUser, 'a', 'b', 'c', 'd', function(err, res){
+					userData = res.dataValues
+					hash = userData['password']
+					userid = userData['userid']
+					currUser = new User('b', 'c', 'd')
+					return done(null, currUser)
+				})
+			}
+
+			userData = user.dataValues
+			hash = userData['password']
+			userid = userData['userid']
+			currUser = new User('b', 'c', 'd')
+			return done(null, currUser)
+		})
+	})
+
+	passport.use('debug-login', debugLogin)
+	passport.use('local-login', customLogin)
+	passport.use('local-signup', customSignup)
+
+	// use userid for deserializing
+	passport.serializeUser(function(user, done) {
+		done(null, user.slug)
+	})
+
+	passport.deserializeUser(function(slug, done) {
+		db.searchUserBySlug(slug, function(err, user) {
+			if (err) {
+				console.log(err)
+				return done(null, false)
+			}
+
+			// this should never happen
+			if (!user) {
+				console.log("User with slug " + slug + " does not exist")
+				return done(null, false)
+			}
+			var userData = user.dataValues
+			currUser = new User(userData['firstname'], userData['lastname'], slug)
+		})
 		return done(null, currUser)
 	})
-})
-
-passport.use('debug-login', debugLogin)
-passport.use('local-login', customLogin)
-passport.use('local-signup', customSignup)
-
-// use userid for deserializing
-passport.serializeUser(function(user, done) {
-	done(null, user.id)
-})
-
-passport.deserializeUser(function(userid, done) {
-	db.searchUser(userid, function(err, user) {
-		if (err) {
-			console.log(err)
-			return done(null, false)
-		}
-
-		if (!user) {
-			console.log("User with id " + userid + " does not exist")
-			return done(null, false)
-		}
-
-		userData = user.dataValues
-		currUser = new User(userData.username, userData.password, userid)
-	})
-	return done(null, currUser)
-})
 
 }

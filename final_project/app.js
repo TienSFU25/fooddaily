@@ -38,8 +38,8 @@ app.use(function(req, res, next) {
 	next();
 });
 
-// expost static files (images, javascript and css)
-app.use(express.static(__dirname + '/public'));
+// expose static files (images, javascript and css)
+app.use(express.static(path.join(__dirname, 'public'))); //  "public" off of current is root
 
 // error handler
 app.use(function (err, req, res, next) {

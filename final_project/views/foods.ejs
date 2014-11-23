@@ -1,19 +1,19 @@
 <head>
-<link rel="stylesheet" type="text/css" href="stylesheets/style.css">
+<link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <script type="text/javascript" src="https://www.google.com/jsapi"></script>
 </head>
 <body>
-<p>Showing food list for <%= user.username %></p>
+<p>Showing food list for <%= user.first + user.last %></p>
 <a href='/success'>Back</a></br>
 <a href='/logout'>Log out</a></br>
 
 <div class="foodChart"></div>
 </br>
 <div class="pieChart"></div>
-<script src="javascript/GoogleTable.js"></script>
-<script src="javascript/parser.js"></script>
-<script src="javascript/config.js"></script>
+<script src="/javascript/GoogleTable.js"></script>
+<script src="/javascript/parser.js"></script>
+<script src="/javascript/config.js"></script>
 <script>
 	var i = <%- JSON.stringify(chartData) %>
 	myChart = new GoogleTable('.foodChart', i, function(){alert(1)}, sf, [hidden])
