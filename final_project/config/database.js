@@ -47,6 +47,31 @@ var ChosenFood = sequelize.define('ChosenFood', {
 User.hasMany(ChosenFood, {allowNull:false, foreignKey: "userId"});
 Food.hasMany(ChosenFood, {allowNull:false, foreignKey: "foodId"});
 
+var FavRecipe = sequelize.define('FavRecipe', {
+	id: {type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true},
+	recipeName: {type: Sequelize.STRING, allowNull: false},
+	yield: {type: Sequelize.STRING},
+	ingredientsList: {type: Sequelize.STRING},
+	URL: {type: Sequelize.STRING},
+	IMG_URL: {type: Sequelize.STRING},
+}, {
+	tableName: "FavRecipes"
+})
+
+User.hasMany(FavRecipe, {allowNull: false, foreignKey: "userId"})
+
+Database.prototype.getFavs = function f(userid, callback) {
+	User.getFavRecipes({where: {userId: userid}}).done(callback)
+}
+
+Database.prototype.createFav = function f(userid, recipeName, callback) {
+	FavRecipe.create({
+		userId: userid,
+		recipeName: recipeName
+	}).done(callback)
+}
+
+// FavRecipe.sync()
 // ChosenFood.sync({force: true});
 // Food.sync({force: true})
 

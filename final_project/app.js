@@ -95,10 +95,6 @@ passport.deserializeUser(function(obj, done) {
 });
 
 
-
-
-
-
 /* BE SURE TO PICK ONE OF THE LINES BELOW DEPENDING ON WHETHER OR NOT YOU'RE WORKING LOCALLY */
 var WEBSITE_URL = "http://localhost:8080/";
 // var WEBSITE_URL = "http://cmpt470.csil.sfu.ca:9001/"

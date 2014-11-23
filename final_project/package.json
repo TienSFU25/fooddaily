@@ -12,11 +12,11 @@
     "mysql": "^2.5.3",
     "nutritionix": "0.0.5",
     "passport": "^0.2.1",
+    "passport-facebook": "^1.0.3",
     "passport-local": "^1.0.0",
     "path": "^0.4.9",
     "sequelize": "^2.0.0-rc2",
     "sprintf-js": "^1.0.2",
-    "string": "^2.2.0",
-    "passport-facebook": "^1.0.3"
+    "string": "^2.2.0"
   }
 }
