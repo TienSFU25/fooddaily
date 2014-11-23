@@ -1,4 +1,4 @@
-module.exports = function(app, passport, db) {
+module.exports = function(app, passport, db, fbProfile) {
 
 	var s = require('string')
 	// print user
@@ -118,6 +118,76 @@ module.exports = function(app, passport, db) {
     app.get('/test/addfood', function (req, res) {
     	db.addFood(req.user.id, "testfood", function(err){})
     })
+
+	// pass in CSRF token for any page with a form
+	app.get('/login', function(req, res) {
+		res.render('login', { csrfToken: req.csrfToken() })
+	})
+
+	app.get('/signup', function(req, res) {
+		console.log(req.csrfToken())
+		res.render('signup', { csrfToken: req.csrfToken() })
+	})
+
+	app.get('/success', function(req, res) {
+		res.render('success', {user: req.user, csrfToken: req.csrfToken()})
+	})
+
+	app.post('/login', passport.authenticate('local-login',
+											{successRedirect: 'success',
+											failureRedirect: 'login',
+											failureFlash: true})
+	)
+
+
+
+
+
+// GET /auth/facebook
+//   Use passport.authenticate() as route middleware to authenticate the
+//   request.  The first step in Facebook authentication will involve
+//   redirecting the user to facebook.com.  After authorization, Facebook will
+//   redirect the user back to this application at /auth/facebook/callback
+app.get('/auth/facebook',
+  passport.authenticate('facebook'),
+  function(req, res){
+    // The request will be redirected to Facebook for authentication, so this function will not be called.
+  });
+
+// GET /auth/facebook/callback
+app.get('/auth/facebook/callback', 
+  passport.authenticate('facebook', { failureRedirect: '/login' }),
+  function(req, res, profile) {
+  	req.user.username = fbProfile.displayName + " (Facebook)";
+    res.redirect('/success');
+  });
+
+
+// Simple route middleware to ensure user is authenticated.
+//   Use this route middleware on any resource that needs to be protected.  If
+//   the request is authenticated (typically via a persistent login session),
+//   the request will proceed.  Otherwise, the user will be redirected to the
+//   login page.
+function ensureAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) { return next(); }
+
+    console.log("req.id is : " + req.id);
+  res.redirect('/login')
+}
+
+
+
+
+
+
+
+
+
+	app.post('/signup', passport.authenticate('local-signup',
+										{successRedirect: 'success',
+										failureRedirect: 'signup',
+										failureFlash: true})
+	)
 
 	app.get('/logout', function(req, res) {
 		req.logout()
