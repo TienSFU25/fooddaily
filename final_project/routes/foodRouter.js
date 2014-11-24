@@ -20,9 +20,9 @@ var shortFields = [
   'type'
 ]
 
+// too much black magic in here
 foodRouter.get('/', function(req, response, next) {
 	db.getAllFoods(req.user.id, function(err, res){
-		var json = {}
 		var allIds = {}
 		var rows = []
 
@@ -45,14 +45,14 @@ foodRouter.get('/', function(req, response, next) {
 			}
 
 			// now loop over chosen foods again and attach associated data from food dict
-			for (var k = 0; k < res.length; k++) {
-				var eatenFood = res[k].dataValues
-				var row = []
+			var oneDay = []
+			var index = 0
+			var days = 0
+			var last = (res.length > 0) ? res[0]['dataValues']['myDate'] : ''
 
-				// deep copy from the food dict
-				json[k] = JSON.parse(JSON.stringify(foodDict[eatenFood['foodId']]))
-				json[k]['myDate'] = eatenFood['myDate']
-				json[k]['amount'] = eatenFood['amount']
+			for (var k = 0; k < res.length; k++) {
+				var eatenFood = res[k]['dataValues']
+				var row = []
 
 				var id = eatenFood['foodId']
 				var p
@@ -62,12 +62,22 @@ foodRouter.get('/', function(req, response, next) {
 
 				row[p] = String(eatenFood['myDate'])
 				row[p + 1] = String(eatenFood['amount'])
-				rows[k] = row
-			}
 
+				if (row[p] == last) {
+					oneDay[index++] = row
+				} else {
+					// date changed
+					last = row[p]
+
+					// put one day's items in rows
+					rows[days++] = oneDay
+
+					// reset oneDay
+					oneDay = [row]
+				}
+			}
+			rows[days] = oneDay
 			response.render('foods', {user:req.user, chartData: rows})
-			// console.log(rows)
-			// console.log(json)
 		})
 	})
 })
@@ -85,9 +95,12 @@ foodRouter.post('/', function(req, res, next) {
 						next()
 					} else {
 						db.eatFood(req.user.id, id, req.body.amount, function(err, r) {
-							console.log(err)
-							console.log(r)
-							res.send(200)
+							if (err) {
+								console.log(err)
+								res.send(500)
+							}
+
+							res.json(r)
 						})
 					}
 				})
@@ -95,9 +108,12 @@ foodRouter.post('/', function(req, res, next) {
 		} else {
 			// regardless, save eating food information to ChosenFoods
 			db.eatFood(req.user.id, id, req.body.amount, function(err, r) {
-				console.log(err)
-				console.log(r)
-				res.send(200)
+				if (err) {
+					console.log(err)
+					res.send(500)
+				}
+
+				res.json(r)
 			})
 		}
 	})

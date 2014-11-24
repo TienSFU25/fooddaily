@@ -8,14 +8,21 @@
 <a href='/success'>Back</a></br>
 <a href='/logout'>Log out</a></br>
 
-<div class="foodChart"></div>
+<div class="allFoods"></div>
 </br>
 <div class="pieChart"></div>
 <script src="/javascript/GoogleTable.js"></script>
 <script src="/javascript/parser.js"></script>
 <script src="/javascript/config.js"></script>
 <script>
-	var i = <%- JSON.stringify(chartData) %>
-	myChart = new GoogleTable('.foodChart', i, function(){alert(1)}, sf, [hidden])
+	var charts = <%- JSON.stringify(chartData) %>
+	var $allFoods = $('.allFoods')
+
+	var allTables = []
+	for (var i = 0; i < charts.length; i++) {
+		var classname = 'foodChart' + i
+		$allFoods.append($('<div class = ' + classname + '>'))
+		allTables[i] = new GoogleTable('.'+classname, charts[i], function(){alert(1)}, sf, hidden)
+	}
 </script>
 </body>

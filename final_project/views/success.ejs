@@ -15,10 +15,10 @@
 <a href='<%= user.slug %>/foods'>See your foods here</a></br>
 
 <!-- link that opens popup -->
-<p class="popup-with-form" href="#test-form">Open form</p>
+<p class="popup-with-form" href="#foodForm">Open form</p>
 
 <!-- form itself -->
-<form method="POST" action = "<%= user.slug %>/foods" id="test-form" class="white-popup mfp-hide pure-form">
+<form id="foodForm" class="white-popup mfp-hide pure-form">
 	<h1>Form</h1>
 		<ol>
 			<li>
@@ -26,9 +26,10 @@
 				<input id="amount" name="amount" type="text" placeholder="Amount eaten" required="">
 			</li>
 		</ol>
-	<input id="chosenFood" name="chosenFood" type="hidden" value="">
-	<input type="hidden" name="_csrf" value="<%= csrfToken %>">
-	<button form="test-form" class="pure-button">Save!</button>
+	<input type="hidden" id="chosenFood" name="chosenFood" value="">
+	<input type="hidden" id="csrf" name="_csrf" value="<%= csrfToken %>">
+	<input type="hidden" id="slug" value="<%= user.slug %>">
+	<button form="foodForm" class="pure-button">Save!</button>
 	<div class="pieChart"></div>
 </form>
 
@@ -67,38 +68,60 @@
 		myPieChart.googlePieDraw(rows)
 	};
 
-	// requests nutritionix, parse json and update google table
-	function searchFoodsByName(foodName) {
-		queryDict["query"] = foodName;
-
-		$.ajax({
-			type: "POST",
-			url: "https://api.nutritionix.com/v1_1/search",
-			data: queryDict,
-			success: function(d) {
-				myTable.googleChartsDraw(jsonToArrayArrays(d, fields))
-				$('.google-visualization-table-table td').attr({
-					class: 'popup-with-form',
-					href: '#test-form' 
-				})
-
-				$('.popup-with-form').magnificPopup({
-					type: 'inline',
-					focus: '#name',
-				});
-			},
-		});
-	};
 
 	var $foodIn = $('#foodSearch')
+	var $foodForm = $('#foodForm')
 
-	// event listener
+	// event listener for search box
 	$foodIn.keypress(function(e){
 		if(e.keyCode == 13) {
 			// disable form submission
 			e.preventDefault()
-			searchFoodsByName($('#foodSearch input').val())
+
+			// requests nutritionix, parse json and update google table
+			queryDict["query"] = $('#foodSearch input').val();
+
+			$.ajax({
+				type: "POST",
+				url: "https://api.nutritionix.com/v1_1/search",
+				data: queryDict,
+				success: function(d) {
+					myTable.googleChartsDraw(jsonToArrayArrays(d, fields))
+
+					// stick the magnific popup class to all rows
+					$('.google-visualization-table-table tr:not(.google-visualization-table-tr-head) td')
+						.attr({
+						class: 'popup-with-form',
+						href: '#foodForm' 
+					})
+
+					$('.popup-with-form').magnificPopup({
+						type: 'inline',
+						focus: '#name',
+					});
+				},
+			});
 		}
+	})
+
+	// popup form
+	var userSlug = $('#slug').val()
+	var csrf = $('#csrf').val()
+
+	$foodForm.on('submit', function(e){
+		e.preventDefault()
+		$.ajax({
+			type: 'POST',
+			url: userSlug+'/foods',
+			data: {
+			  _csrf: csrf,
+			  amount: $('#amount').val(),
+			  chosenFood: $('#chosenFood').val()
+			},
+			success: function(d) {
+			  console.log(d)
+			}
+		})
 	})
 
 </script>

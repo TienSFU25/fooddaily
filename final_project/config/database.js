@@ -6,7 +6,7 @@ var sequelize = new Sequelize('groupdb', 'group', 'thisgrouprocks', {
 	dialect: 'mysql',
 	language: 'en',
 	timezone: '-08:00',
-	logging: false
+	// logging: false
 })
 
 var User = sequelize.define('User2', {
@@ -214,7 +214,27 @@ function findUserAndCb(userid, callback) {
 
 // callback = (err, result)
 Database.prototype.getAllFoods = function f(userid, callback) {
-	ChosenFood.findAll({where: {userId: userid}}).done(callback)
+	ChosenFood.findAll({where: {userId: userid}, order: 'myDate desc'}).done(callback)
+}
+
+Database.prototype.fixFood = function f(chosenfoodid, days, callback) {
+	ChosenFood.findOne(chosenfoodid).done(function(err, food) {
+		var myDate = food['dataValues']['myDate']
+		var arr = myDate.split(' ')
+		arr[2] = parseInt(arr[2]) - days
+		myDate = ''
+		for (var i = 0; i < arr.length; i++) {
+			myDate += (arr[i] + ' ') 
+		}
+
+		ChosenFood.update({
+			myDate: myDate
+		}, {
+			where: {
+				id: chosenfoodid
+			}
+		})
+	}).done(callback)
 }
 
 Database.prototype.getFoodsInArray = function f(arr, callback) {

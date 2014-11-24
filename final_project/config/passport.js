@@ -7,10 +7,11 @@ module.exports = function(passport, db) {
 	var LocalStrategy = require('passport-local').Strategy
 	var bcrypt = require('bcrypt-nodejs')
 
-	function User(first, last, slug) {
+	function User(first, last, slug, id) {
 		this.first = first
 		this.last = last
 		this.slug = slug
+		this.id = id
 	}
 
 	customDict = {
@@ -44,7 +45,7 @@ module.exports = function(passport, db) {
 						return done(null, false)
 					}
 					else {
-						currUser = new User(userData['firstname'], userData['lastname'], userData['slug'])
+						currUser = new User(userData['firstname'], userData['lastname'], userData['slug'], userData['userid'])
 						return done(null, currUser)
 					}
 				})
@@ -95,12 +96,12 @@ module.exports = function(passport, db) {
 								return done(null, false)
 							}
 
-							db.createUser(username, hash, req.body.firstname, req.body.lastname, slug, function(err) {
+							db.createUser(username, hash, req.body.firstname, req.body.lastname, slug, function(err, res) {
 								if (err) {
 									console.log("Unknown error in db.createUser")
 									return done(null, false)
 								} else {
-									currUser = new User(req.body.firstname, req.body.lastname, slug)
+									currUser = new User(req.body.firstname, req.body.lastname, slug, res['dataValues']['userid'])
 									return done(null, currUser)
 								}
 							})
@@ -121,7 +122,7 @@ module.exports = function(passport, db) {
 					userData = res.dataValues
 					hash = userData['password']
 					userid = userData['userid']
-					currUser = new User('b', 'c', 'd')
+					currUser = new User('b', 'c', 'd', res['dataValues']['userid'])
 					return done(null, currUser)
 				})
 			}
@@ -129,7 +130,7 @@ module.exports = function(passport, db) {
 			userData = user.dataValues
 			hash = userData['password']
 			userid = userData['userid']
-			currUser = new User('b', 'c', 'd')
+			currUser = new User('b', 'c', 'd', user['dataValues']['userid'])
 			return done(null, currUser)
 		})
 	})
@@ -156,7 +157,7 @@ module.exports = function(passport, db) {
 				return done(null, false)
 			}
 			var userData = user.dataValues
-			currUser = new User(userData['firstname'], userData['lastname'], slug)
+			currUser = new User(userData['firstname'], userData['lastname'], slug, user['dataValues']['userid'])
 		})
 		return done(null, currUser)
 	})
