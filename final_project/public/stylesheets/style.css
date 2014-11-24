@@ -52,3 +52,12 @@ input[type=text]{
   max-width: 500px;
   margin: 20px auto;
 }
+
+.notification {
+  position: fixed;
+  top: 5px;
+  right: 60px;
+  padding: 20px;
+  background-color: steelblue;
+  z-index: 1
+}
