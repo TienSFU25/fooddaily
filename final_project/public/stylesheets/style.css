@@ -61,3 +61,7 @@ input[type=text]{
   background-color: steelblue;
   z-index: 1
 }
+
+.googleTable {
+  margin-bottom: 50px
+}

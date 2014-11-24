@@ -21,7 +21,9 @@
 	var allTables = []
 	for (var i = 0; i < charts.length; i++) {
 		var classname = 'foodChart' + i
-		$allFoods.append($('<div class = ' + classname + '>'))
+		var fullClass = "<div class ='" + classname + "' 'googleTable'>"
+		console.log(fullClass)
+		$allFoods.append($(fullClass))
 		allTables[i] = new GoogleTable('.'+classname, charts[i], function(){alert(1)}, sf, hidden)
 	}
 </script>

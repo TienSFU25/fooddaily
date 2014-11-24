@@ -14,4 +14,6 @@ userRouter.get('/', function(req, res){
 })
 
 userRouter.use('/foods', require('./foodRouter'))
+userRouter.use('/progress', require('./progressRouter'))
+
 module.exports = userRouter

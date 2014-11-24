@@ -120,7 +120,6 @@ passport.use(new FacebookStrategy({
   }
 ));
 
-
 require('./config/passport')(passport, db)
 require('./routes/routes.js')(app, passport, db, fbProfile)
 

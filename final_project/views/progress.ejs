@@ -1,0 +1,17 @@
+<head>
+<link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
+<link rel="stylesheet" href="/magnificPopup/magnific-popup.css">
+<link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.5.0/pure-min.css">
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="/magnificPopup/jquery.magnific-popup.js"></script> 
+<script src="https://www.google.com/jsapi"></script>
+</head>
+<body>
+	<div class="lineChart"></div>
+<script src="/javascript/GoogleLine.js"></script>
+<script>
+	var i = <%- JSON.stringify(chartData) %>
+	var fields = ['Date', 'Calories Eaten']
+	var lineChart = new GoogleLine('.lineChart', i, function(){}, fields)
+</script>
+</body>

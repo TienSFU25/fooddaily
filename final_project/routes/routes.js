@@ -7,16 +7,6 @@ module.exports = function(app, passport, db, fbProfile) {
 		next()
 	})
 
-
-	app.get('/', function(req, res, next) {
-		res.render('index', { csrfToken: req.csrfToken() })
-	})
-
-	app.post('/fuq', function(req, res) {
-		console.log(req.body)
-		res.send(200)
-	})
-
 	// app.get(/\/user\/(\d*)\/(edit)\/(\d+)/, function(req, res) {
 
 	app.get(/(\w+)/, function(req, res, next) {

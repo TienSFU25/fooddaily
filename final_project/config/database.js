@@ -237,6 +237,16 @@ Database.prototype.fixFood = function f(chosenfoodid, days, callback) {
 	}).done(callback)
 }
 
+Database.prototype.getAmounts = function f(userid, callback) {
+	sequelize
+	.query(
+		'select mydate, sum(amount) from chosenfoods where userid=:id group by mydate order by createdAt desc',
+		null,
+		{raw: true},
+		{id: userid}
+	).done(callback)
+}
+
 Database.prototype.getFoodsInArray = function f(arr, callback) {
 	Food.findAll({where: {id: arr}}).done(callback)
 }
