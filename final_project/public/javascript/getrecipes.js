@@ -1,6 +1,8 @@
 var APP_ID = "1aeab161";
 var APP_KEY = "30949c53cf846dfc493a20eebfbbd422";
 
+var example = "Hot-Turkey-Salad-Sandwiches-Allrecipes";
+
 
 
 // The base url for the a Get Recipe GET is:
@@ -13,16 +15,22 @@ var APP_KEY = "30949c53cf846dfc493a20eebfbbd422";
 
 // GET QUERY example:
 // http://api.yummly.com/v1/api/recipe/Hot-Turkey-Salad-Sandwiches-Allrecipes?_app_id=1aeab161&_app_key=30949c53cf846dfc493a20eebfbbd422
-// ex 2:
-// http://api.yummly.com/v1/api/recipe/French-Onion-Soup-The-Pioneer-Woman-Cooks-_-Ree-Drummond-41364?_app_id=1aeab161&_app_key=30949c53cf846dfc493a20eebfbbd422
 
 
 
-function queryYummly(foodId) {
+function queryYummly(foodName) {
+	var params = foodName.split(" ");
 
-	var call = "http://api.yummly.com/v1/api/recipe/";
-	call += foodId + "?_";
-	call += "app_id=" + APP_ID + "&_app_key=" + APP_KEY;
+	// var call = "http://api.yummly.com/v1/api/recipe/";
+
+	// for (var i = 0; i < params.length; i++) {
+	// 	call += "+" + params[i];
+	// };
+
+	// call += recipe + "recipes?_";
+	// call += "app_id=" + APP_ID + "&_app_key=" + APP_KEY;
+
+	var call = "http://api.yummly.com/v1/api/recipe/Hot-Turkey-Salad-Sandwiches-Allrecipes?_app_id=1aeab161&_app_key=30949c53cf846dfc493a20eebfbbd422";
 
 	var jqhxr = $.ajax({
 		type: "GET",
@@ -34,41 +42,33 @@ function queryYummly(foodId) {
 }
 
 function updateResults(data) {
-		var info = "<li>" + data.name + "</li>";
-	  	info += "<ul>";
-	  	info += "<li> img goes here </li>"; // eg 	  	info += "<li><img src=\"http://lh6.ggpht.com/Sn2qCFY3fG8cI71t9BdZ-Jyb9RyPh_0Dg79ii9iRNHhd97yQy5MYg0e9sun3HxY9inRax15XWkBSrQ3RCQGq0A=s360\"></img></li>";
-		info += "<li>Yield: " + data.yield + "</li>";
+	// var j = JSON.parse(data);
 
-
-		info += "<li>Ingredients: ";
-		info += "<ul>"
-		for (i = 0; i < data.ingredientLines.length; i++){
-			info += "<li>" + data.ingredientLines[i] + "</li>";
-		}
-		info += "</ul></li>"
-
-		info += "<li><a href=\"" + data.source.sourceRecipeUrl + "\">URL</a></li>";
-		info += "</ul><br>"
-		// info += "<li><img src=\"" + data.images.hostedLargeUrl + "\"></img></li>";
-		// info += data.images.hostedLargeUrl; // <img src="http://i2.yummly.com/Hot-Turkey-Salad-Sandwiches-Allrecipes.l.png"></img>
-	// info +="<li><img src=\"http://i2.yummly.com/Hot-Turkey-Salad-Sandwiches-Allrecipes.l.png\"></img></li>";
-		
-	$("#favRecipes").append(info);
+    // var obj = JSON && JSON.parse(data) || $.parseJSON(data);
+	var test = "<li>" + data.yield + "</li>";
+	$("ul").append(test);
 }
 
+// event listener
+// $("#getRecipes").click(function(e){
+// 	alert('Heyo');
+// 	// if(e.keyCode == 13) {
+// 		// disable form submission
+// 		// e.preventDefault();
+// 		// queryYummly($("#recipeSearch input").val());
+// 		queryYummly("test");
+// 	// }
+// })
 
- $( document ).ready(function() {
-	var example = "Hot-Turkey-Salad-Sandwiches-Allrecipes";
-	var example2 = "French-Onion-Soup-The-Pioneer-Woman-Cooks-_-Ree-Drummond-41364";
+  $("#getR").click(function(e){
+    // $("p").toggle();
+    // alert("eeeeee");
+		queryYummly("test");
 
-	var examples = [
-		"Hot-Turkey-Salad-Sandwiches-Allrecipes",
-		"French-Onion-Soup-The-Pioneer-Woman-Cooks-_-Ree-Drummond-41364"
-	]
+	// var test = "<li> test </li>";
 
-	for (i = 0; i < examples.length; i++) { 
-		queryYummly(examples[i]);
-	}
+    // $("ul").append("<li>Appended item</li>");
+    // $("ul").append(test);
   });
 
 
