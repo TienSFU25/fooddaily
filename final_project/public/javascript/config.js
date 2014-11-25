@@ -20,7 +20,7 @@ var mainTableOptions = {
   nf_total_fat: {
     type: 'number',
     hidden: false,
-    display: 'Fat(g)'
+    display: 'Fats(g)'
   },
   nf_saturated_fat: {
     type: 'number',

@@ -43,6 +43,11 @@ var foodTableOptions = {
     type: 'number',
     hidden: false,
     display: 'Protein(g)'
+  },
+  fiber: {
+    type: 'number',
+    hidden: false,
+    display: 'Fiber'
   }, 
   sodium: {
     type: 'number',
@@ -69,4 +74,27 @@ var foodTableOptions = {
     hidden: true,
     display: ''
   }, 
+  totalCalories: {
+    type: 'number',
+    hidden: false,
+    display: 'Total Calories'
+  }
+}
+
+var fields = _.keys(foodTableOptions)
+
+var nutrition = [
+  "totalFat",
+  "totalCarb",
+  "totalProtein",
+]
+
+var map = []
+
+for (var i = 0; i < nutrition.length; i++) {
+  for (var j = 0; j < fields.length; j++) {
+    if (nutrition[i] == fields[j]) {
+      map[i] = j
+    }
+  }
 }

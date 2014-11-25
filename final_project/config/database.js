@@ -25,22 +25,70 @@ var User = sequelize.define('User2', {
 	tableName: "User2"
 })
 
-var Food = sequelize.define('Food', {
-	id: {type: Sequelize.STRING, primaryKey: true},
-	foodname: {type: Sequelize.STRING, allowNull: false},
-	brandName: {type: Sequelize.STRING, allowNull: false},
-	calories: {type: Sequelize.INTEGER},
-	totalFat: {type: Sequelize.INTEGER},
-	satFat: {type: Sequelize.INTEGER},
-	totalCarb: {type: Sequelize.INTEGER},
-	sugar: {type: Sequelize.INTEGER},
-	totalProtein: {type: Sequelize.INTEGER},
-	sodium: {type: Sequelize.INTEGER},
-	servingQuantity: {type: Sequelize.INTEGER},
-	servingUnit: {type: Sequelize.STRING}
-}, {
+var config = {
+	id: {
+		type: Sequelize.STRING, 
+		primaryKey: true,
+		nutritionix: 'item_id'
+	}, 
+	foodname: {
+		type: Sequelize.STRING, 
+		allowNull: false,
+		nutritionix: 'item_name'
+	},
+	brandName: {
+		type: Sequelize.STRING, 
+		allowNull: false,
+		nutritionix:'brand_name'
+	}, 
+	calories: {
+		type: Sequelize.INTEGER,
+		nutritionix:'nf_calories'
+	},
+	fat: {
+		type: Sequelize.INTEGER,
+		nutritionix:'nf_total_fat'
+	},
+	satFat: {
+		type: Sequelize.INTEGER,
+		nutritionix:'nf_saturated_fat'
+	},
+	totalCarb: {
+		type: Sequelize.INTEGER,
+		nutritionix:'nf_total_carbohydrate'
+	},
+	sugar: {
+		type: Sequelize.INTEGER,
+		nutritionix:'nf_sugars'
+	},
+	totalProtein: {
+		type: Sequelize.INTEGER,
+		nutritionix:'nf_protein'
+	},
+	fiber: {
+    	type: Sequelize.INTEGER,
+    	nutritionix:'nf_dietary_fiber'
+  	},
+	sodium: {
+		type: Sequelize.INTEGER,
+		nutritionix:'nf_sodium'
+	},
+	servingQuantity: {
+		type: Sequelize.INTEGER,
+		nutritionix:'nf_serving_size_qty'
+	},
+	servingUnit: {
+		type: Sequelize.STRING,
+		nutritionix:'nf_serving_size_unit'
+	}
+}
+
+var Food = sequelize.define('Food', config, {
 	tableName: "Foods"
 })
+
+var dbFields = _.keys(config)
+var nutritionixFields = _.pluck(config, 'nutritionix')
 
 var ChosenFood = sequelize.define('ChosenFood', {
 	id: {type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true},
@@ -49,8 +97,8 @@ var ChosenFood = sequelize.define('ChosenFood', {
 	timestamps: true,
 	tableName: "ChosenFoods",
 	classMethods: {
-		setTime: function(foodid, daysback, callback) {
-			ChosenFood.findOne({where: {foodId: foodid}}).done(function(err, food){
+		setTime: function(id, daysback, callback) {
+			ChosenFood.findOne({where: {id: id}}).done(function(err, food){
 				var createdAt = food['dataValues']['createdAt']
 				createdAt.setDate(createdAt.getDate() - daysback)
 
@@ -131,15 +179,12 @@ Database.prototype.eatFood = function f(userid, foodid, amountEaten, callback) {
 	})
 }
 
-var dbFields = ['id', 'foodname', 'brandName', 'calories', 'totalFat', 'satFat', 'totalCarb', 'sugar', 'totalProtein', 'sodium', 'servingQuantity', 'servingUnit']
-var nutritionixFields = ['item_id', 'item_name', 'brand_name', 'nf_calories', 'nf_total_fat', 'nf_saturated_fat', 'nf_total_carbohydrate', 'nf_sugars', 'nf_protein', 'nf_sodium', 'nf_serving_size_qty', 'nf_serving_size_unit']
-
 Database.prototype.getAllChosenFoods = function f(userid, callback) {
 	var customQuery = 'select '
 	_.each(dbFields, function(value, index) {
 		customQuery += (' foods.' + value + ',')
 	})
-	customQuery += ' chosenfoods.amount, chosenfoods.createdAt from chosenfoods, foods, user2 where chosenfoods.foodid = foods.id and user2.userid=' + userid + ' order by chosenfoods.createdAt'
+	customQuery += ' chosenfoods.amount, chosenfoods.createdAt, (chosenfoods.amount*foods.calories) as "Total Calories" from chosenfoods, foods, user2 where chosenfoods.foodid = foods.id and user2.userid=' + userid + ' order by chosenfoods.createdAt'
 
 	sequelize.query(customQuery, null, {raw: true}).done(callback)	
 }
@@ -206,15 +251,17 @@ Database.prototype.searchAllSlugs = function f(callback) {
 	User.findAll({attributes: ['slug']}).done(callback)
 }
 
-Database.prototype.getAmounts = function f(userid, callback) {
+Database.prototype.getCaloriesByDay = function f(userid, callback) {
 	sequelize
 	.query(
-		'select c.createdAt, sum(amount) as amount from chosenfoods c where userid=:id group by day(c.createdat)',
+		'select date(c.createdAt) as "Date", sum(c.amount*f.calories) as "Total Calories" from chosenfoods c, foods f where userid=:id and c.foodid = f.id group by date(c.createdat)',
 		null,
 		{raw: true},
 		{id: userid}
 	).done(callback)
 }
+
+// ChosenFood.setTime(2, 4, function(){})
 
 Database.prototype.exec = function f(query, callback) {
 	sequelize

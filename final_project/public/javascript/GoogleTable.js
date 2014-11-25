@@ -34,7 +34,6 @@ function GoogleTable(chartSelector, initRows, handlerFunction, options) {
 
 // rows is an ARRAY OF ARRAYS
 GoogleTable.prototype.googleChartsDraw = function f(rows) {
-	console.log(rows)
 	// reset rows
 	this.data.removeRows(0, this.data.getNumberOfRows())
 	this.data.addRows(rows)

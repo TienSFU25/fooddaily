@@ -3,20 +3,21 @@ var _ = require('underscore')
 
 progressRouter = express.Router()
 progressRouter.get('/', function(req, res){
-	db.getAmounts(req.user.id, function(err, result){
+	db.getCaloriesByDay(req.user.id, function(err, result){
 		if (err) {
 			console.log("Error in db.get Amounts")
 			next
 		} else {
-			var keys = _.keys(result)
-			// should just be 2, whatever the string is, date created and amount eaten that day
-			var createds = _.pluck(result, 'createdAt')
-			createds = _.map(createds, function(created){
-				return created.toDateString()
-			})
-			var amounts = _.pluck(result, 'amount')
-			var rr = _.zip(createds, amounts)
-
+			var rr = [[]]
+			if (!_.isEmpty(result)) {
+				var keys = _.keys(result[0])
+				var createds = _.pluck(result, keys[0])
+				createds = _.map(createds, function(val, index){
+					return val.toDateString()
+				})
+				var amounts = _.pluck(result, keys[1])
+				rr = _.zip(createds, amounts)
+			}
 			res.render('progress', {user: req.user, chartData: rr})
 		}
 	})
