@@ -139,7 +139,7 @@ Database.prototype.createFav = function f(userid, recipeName, callback) {
 
 // do not uncomment this unless you want to change the schema
 // db and all tables will be reset
-sequelize.sync({force: true})
+//sequelize.sync({force: true})
 
 // adds item in ChosenFoods table
 // if item doesn't exist, make it. otherwise, update the table
