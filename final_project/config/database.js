@@ -137,6 +137,10 @@ Database.prototype.createFav = function f(userid, recipeName, callback) {
 	}).done(callback)
 }
 
+// do not uncomment this unless you want to change the schema
+// db and all tables will be reset
+sequelize.sync({force: true})
+
 // adds item in ChosenFoods table
 // if item doesn't exist, make it. otherwise, update the table
 Database.prototype.eatFood = function f(userid, foodid, amountEaten, callback) {
@@ -211,10 +215,6 @@ Database.prototype.createFood = function f(nutritionixFood, callback) {
 Database.prototype.checkFood = function f(foodid, callback) {
 	Food.count({where: {id: foodid}}).success(callback)
 }
-
-// do not uncomment this unless you want to change the schema
-// db and all tables will be reset
-// sequelize.sync({force: true})
 
 // callback = Promise<this|Errors.ValidationError>
 Database.prototype.createUser = function f(username, password, firstname, lastname, slug, callback) {

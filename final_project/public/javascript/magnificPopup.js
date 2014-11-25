@@ -4,6 +4,9 @@ $(document).ready(function() {
 		preloader: true, 
 		focus: '#name',
 		removalDelay: 300,
+		gallery: {
+			enabled: true
+		},
 		  mainClass: 'mfp-fade',
 		  callbacks: {
 		    open: function() {
