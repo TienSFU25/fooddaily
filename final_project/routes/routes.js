@@ -24,24 +24,29 @@ module.exports = function(app, passport, db, fbProfile) {
 				failureRedirect: 'login',
 				failureFlash: true
 			})
-			(req, res)			
+			(req, res)	
+		//temporary routing for new frontend - tien please fix	
+		} else if (str == 'newindex') {		
+			res.render('newindex', { csrfToken: req.csrfToken(), user: req.user })
+		} else if (str == 'loginnew') {		
+			res.render('loginnew', { csrfToken: req.csrfToken(), user: req.user })
+		} else if (str == 'dashboard') {		
+			res.render('favrecipesnew', { csrfToken: req.csrfToken(), user: req.user })
+		// } else if (str == '') {		
+		// 	res.render('', { csrfToken: req.csrfToken(), user: req.user })
+		// } else if (str == '') {		
+		// 	res.render('', { csrfToken: req.csrfToken(), user: req.user })
+		// } else if (str == '') {		
+		// 	res.render('', { csrfToken: req.csrfToken(), user: req.user })
+		// } else if (str == '') {		
+		// 	res.render('', { csrfToken: req.csrfToken(), user: req.user })
+		
 		} else {
 			next()
 		}
 	})
 
-	app.get('/:slug', function(req, res, next) {
-		if (req.user) {
-			if (req.user.slug == req.params.slug) {
-				next()
-			} else {
-				// TODO: implement this part
-				res.send("Unauthorized to view this source")
-			}			
-		} else {
-			res.redirect('/login')
-		}
-	})
+
 
 	app.use('/:slug', require('./userRouter'))
 
@@ -163,5 +168,18 @@ function ensureAuthenticated(req, res, next) {
 
 	app.get('/favourites', function(req, res) {
 		res.render('favrecipes', {user: req.user})
+	})
+
+	app.get('/:slug', function(req, res, next) {
+		if (req.user) {
+			if (req.user.slug == req.params.slug) {
+				next()
+			} else {
+				// TODO: implement this part
+				res.send("Unauthorized to view this source")
+			}			
+		} else {
+			res.redirect('/login')
+		}
 	})
 }
