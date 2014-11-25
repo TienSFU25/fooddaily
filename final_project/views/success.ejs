@@ -5,6 +5,7 @@
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <script src="/magnificPopup/jquery.magnific-popup.js"></script> 
 <script src="https://www.google.com/jsapi"></script>
+<script src="http://underscorejs.org/underscore.js"></script>
 </head>
 <body>
 <p>Successfully logged in</p>
@@ -55,7 +56,7 @@
 	// don't draw anything to begin with
 	var initRows = []
 
-	var myTable = new GoogleTable('.foodChart', initRows, tableHandler, fields, fieldTypes, hidden)
+	var myTable = new GoogleTable('.foodChart', initRows, tableHandler, mainTableOptions)
 	var $chosenFood= $('#chosenFood')
 
 	function tableHandler(e) {

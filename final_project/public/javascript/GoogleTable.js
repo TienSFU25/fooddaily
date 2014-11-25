@@ -1,4 +1,14 @@
-function GoogleTable(chartSelector, initRows, handlerFunction, fields, fieldTypes, hiddenFields) {
+function GoogleTable(chartSelector, initRows, handlerFunction, options) {
+
+	var fields = _.keys(options)
+	var values = _.values(options)
+	var fieldTypes = _.pluck(values, 'type')
+	var hiddenFields = []
+	_.each(_.pluck(values, 'hidden'), function(val, index){
+		if (val)
+			hiddenFields.push(index)
+	})
+
 	// vcl closure
 	var myTable = this
 	google.load("visualization", "1", {packages:["corechart", "table"]});

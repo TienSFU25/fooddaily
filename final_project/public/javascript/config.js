@@ -1,25 +1,49 @@
 var appId="065c98a7"
 var appKey="ac97e296e021c5ea6c0e51389f966307"
 
-var fields = [
-    "item_name",
-    "brand_name",
-    "nf_calories",
-    "nf_total_fat",
-    "nf_protein",
-    "nf_total_carbohydrate",
-    "nf_sodium",
-    "item_type",
-    "item_id"
-  ]
-
-var fieldTypes = ['string', 'string', 'number', 'number', 'number', 'number', 'number', 'number', 'string']
-var hidden = [fields.length - 1]
+var mainTableOptions = {
+  item_name: {
+    type: 'string',
+    hidden: false
+  },
+  brand_name: {
+    type: 'string',
+    hidden: false
+  },
+  nf_calories: {
+    type: 'number',
+    hidden: false
+  },
+  nf_total_fat: {
+    type: 'number',
+    hidden: false
+  }, 
+  nf_total_protein: {
+    type: 'number',
+    hidden: false
+  }, 
+  nf_total_carbohydrate: {
+    type: 'number',
+    hidden: false
+  },  
+  nf_total_sodium: {
+    type: 'number',
+    hidden: false
+  }, 
+  item_type: {
+    type: 'number',
+    hidden: false
+  }, 
+  item_id: {
+    type: 'string',
+    hidden: true
+  },  
+}
 
 var queryDict = {
  "appId":appId,
  "appKey":appKey,
- "fields": fields,
+ "fields": _.keys(mainTableOptions),
   "offset": 0,
   "limit": 50,
   "sort": {
@@ -40,7 +64,8 @@ var nutrition = [
 ]
 
 // sloppy way to get the column indexes of items in nutrition
-// or fields[map[i]] == nutrition[i] 
+// or fields[map[i]] == nutrition[i]
+var fields = _.keys(mainTableOptions)
 var map = []
 
 for (var i = 0; i < nutrition.length; i++) {
@@ -51,5 +76,61 @@ for (var i = 0; i < nutrition.length; i++) {
   }
 }
 
-var sf = ['id', 'foodname', 'brandName', 'calories', 'totalFat', 'satFat', 'totalCarb', 'sugar', 'totalProtein', 'sodium', 'servingQuantity', 'servingUnit', 'amount', 'createdAt']
-var sfTypes = ['string', 'string', 'string', 'number', 'number', 'number', 'number', 'number', 'number', 'number', 'number', 'string', 'number', 'string']
+var foodTableOptions = {
+  id: {
+    type: 'string',
+    hidden: false
+  }, 
+  foodname: {
+    type: 'string',
+    hidden: false
+  },
+  brandName: {
+    type: 'string',
+    hidden: false
+  }, 
+  calories: {
+    type: 'number',
+    hidden: false
+  },   
+  totalFat: {
+    type: 'number',
+    hidden: false
+  }, 
+  satFat: {
+    type: 'number',
+    hidden: false
+  }, 
+  totalCarb: {
+    type: 'number',
+    hidden: false
+  }, 
+  sugar: {
+    type: 'number',
+    hidden: false
+  }, 
+  totalProtein: {
+    type: 'number',
+    hidden: false
+  }, 
+  sodium: {
+    type: 'number',
+    hidden: false
+  }, 
+  servingQuantity: {
+    type: 'number',
+    hidden: false
+  }, 
+  servingUnit: {
+    type: 'string',
+    hidden: false
+  }, 
+  amount: {
+    type: 'number',
+    hidden: false
+  }, 
+  createdAt: {
+    type: 'string',
+    hidden: false
+  }, 
+}
