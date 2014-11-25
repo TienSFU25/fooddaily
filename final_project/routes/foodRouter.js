@@ -1,6 +1,7 @@
 // this class is used for the list page, after a user logs in
 
 var express = require('express')
+var _ = require('underscore')
 foodRouter = express.Router()
 
 var nutritionix = require('nutritionix')({
@@ -8,77 +9,26 @@ var nutritionix = require('nutritionix')({
     appKey: 'ac97e296e021c5ea6c0e51389f966307'
 }, false).v1_1;
 
-var shortFields = [
-  'id',
-  'foodname',
-  'brandName',
-  'calories',
-  'totalFat',
-  'totalCarb',
-  'totalProtein',
-  'sodium',
-  'type'
-]
-
-// too much black magic in here
 foodRouter.get('/', function(req, response, next) {
-	db.getAllFoods(req.user.id, function(err, res){
-		var allIds = {}
-		var rows = []
-
-		// javascript "set"
-		for (var i = 0; i < res.length; i++) {
-			id = res[i].dataValues['foodId']
-			allIds[id] = true
-		}
-
-		db.getFoodsInArray(Object.keys(allIds), function(err, results) {
-			// loop over results and store their associated data
-			// for example
-			// rtn[32][foodname] should give foodname of food id "32"
-			var foodDict = {}
-			for (var j = 0; j < results.length; j++) {
-				var attr = results[j]['dataValues']
-				var id = attr['id']
-				// store id twice, oh well
-				foodDict[id] = attr
+	db.getAllChosenFoods(req.user.id, function(err, allFoods) {
+		var allRows = []
+		var thisRow = []
+		var lastDate = (allFoods.length > 0) ? allFoods[0]['createdAt'].toDateString() : ' '
+		_.each(allFoods, function(foodDict, index){
+			foodDict['createdAt'] = foodDict['createdAt'].toDateString()
+			if (foodDict['createdAt'] == lastDate) {
+				thisRow.push(_.values(foodDict))
+			} else {
+				allRows.push(thisRow)
+				thisRow = []
+				thisRow.push(_.values(foodDict))
+				lastDate = foodDict['createdAt']
 			}
-
-			// now loop over chosen foods again and attach associated data from food dict
-			var oneDay = []
-			var index = 0
-			var days = 0
-			var last = (res.length > 0) ? res[0]['dataValues']['myDate'] : ''
-
-			for (var k = 0; k < res.length; k++) {
-				var eatenFood = res[k]['dataValues']
-				var row = []
-
-				var id = eatenFood['foodId']
-				var p
-				for (p = 0; p < shortFields.length; p++) {
-					row[p] = String(foodDict[id][shortFields[p]])
-				}
-
-				row[p] = String(eatenFood['myDate'])
-				row[p + 1] = String(eatenFood['amount'])
-
-				if (row[p] == last) {
-					oneDay[index++] = row
-				} else {
-					// date changed
-					last = row[p]
-
-					// put one day's items in rows
-					rows[days++] = oneDay
-
-					// reset oneDay
-					oneDay = [row]
-				}
-			}
-			rows[days] = oneDay
-			response.render('foods', {user:req.user, chartData: rows})
 		})
+
+		allRows.push(thisRow)
+		response.render('foods', {user:req.user, chartData: allRows})
+		return
 	})
 })
 

@@ -55,7 +55,7 @@
 	// don't draw anything to begin with
 	var initRows = []
 
-	var myTable = new GoogleTable('.foodChart', initRows, tableHandler, fields, hidden)
+	var myTable = new GoogleTable('.foodChart', initRows, tableHandler, fields, fieldTypes, hidden)
 	var $chosenFood= $('#chosenFood')
 
 	function tableHandler(e) {
@@ -125,6 +125,15 @@
 			},
 			success: function(d) {
 				notification.text("Successfully added food " + d['foodId'])
+				notification.removeClass('mfp-hide')
+				window.setInterval(function(){
+					notification.addClass('mfp-hide')
+				}, 5000)
+
+			  magnificPopup.close()
+			},
+			error: function(xhr, textStatus) {
+				notification.text("Unknown error " + textStatus)
 				notification.removeClass('mfp-hide')
 				window.setInterval(function(){
 					notification.addClass('mfp-hide')

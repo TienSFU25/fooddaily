@@ -27,7 +27,7 @@ function jsonToArrayArrays(data, fields) {
 
 		for (j = 0; j < fields.length; j++) {
 			var fieldName = fields[j]
-			thisRow[j] = String(f[fieldName])
+			thisRow[j] = f[fieldName]
 		}
 
 		allRows[i] = thisRow

@@ -68,6 +68,11 @@ var testDict = {
 	"item_type": 4
 }
 
+
+// db.createUser('a', 'b', 'c', 'd', 'e', function(){})
+// db.createFood(testDict, function(){})
+// db.eatFood(1, testid, 300, function(){})
+
 // default fbProfile
 var fbProfile = {
   "id": '000000000000000',

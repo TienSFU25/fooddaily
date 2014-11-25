@@ -13,6 +13,7 @@ var fields = [
     "item_id"
   ]
 
+var fieldTypes = ['string', 'string', 'number', 'number', 'number', 'number', 'number', 'number', 'string']
 var hidden = [fields.length - 1]
 
 var queryDict = {
@@ -50,28 +51,5 @@ for (var i = 0; i < nutrition.length; i++) {
   }
 }
 
-var shortFields = [
-  'id',
-  'foodname',
-  'brandName',
-  'calories',
-  'totalFat',
-  'totalCarb',
-  'totalProtein',
-  'sodium',
-  'type'
-]
-
-var sf = [
-  'id',
-  'foodname',
-  'brandName',
-  'calories',
-  'totalFat',
-  'totalCarb',
-  'totalProtein',
-  'sodium',
-  'type',
-  'myDate',
-  'amount'
-]
+var sf = ['id', 'foodname', 'brandName', 'calories', 'totalFat', 'satFat', 'totalCarb', 'sugar', 'totalProtein', 'sodium', 'servingQuantity', 'servingUnit', 'amount', 'createdAt']
+var sfTypes = ['string', 'string', 'string', 'number', 'number', 'number', 'number', 'number', 'number', 'number', 'number', 'string', 'number', 'string']

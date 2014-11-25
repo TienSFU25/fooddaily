@@ -1,4 +1,4 @@
-function GoogleTable(chartSelector, initRows, handlerFunction, fields, hiddenFields) {
+function GoogleTable(chartSelector, initRows, handlerFunction, fields, fieldTypes, hiddenFields) {
 	// vcl closure
 	var myTable = this
 	google.load("visualization", "1", {packages:["corechart", "table"]});
@@ -9,7 +9,7 @@ function GoogleTable(chartSelector, initRows, handlerFunction, fields, hiddenFie
 		// initialize the columns. use all string fields
 		myTable.data = new google.visualization.DataTable()	 	
 	 	for (var i = 0; i < fields.length; i++) {
-	 		myTable.data.addColumn('string', fields[i])
+	 		myTable.data.addColumn(fieldTypes[i], fields[i])
 	 	}
 
 	 	myTable.view = new google.visualization.DataView(myTable.data)

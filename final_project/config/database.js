@@ -1,5 +1,9 @@
 function Database(){}
 
+var sprintf = require('sprintf-js').sprintf,
+	vsprintf = require('sprintf-js').vsprintf
+var _ = require('underscore')
+
 var Sequelize = require('sequelize')
 var sequelize = new Sequelize('groupdb', 'group', 'thisgrouprocks', {
 	host: 'localhost',
@@ -27,21 +31,35 @@ var Food = sequelize.define('Food', {
 	brandName: {type: Sequelize.STRING, allowNull: false},
 	calories: {type: Sequelize.INTEGER},
 	totalFat: {type: Sequelize.INTEGER},
+	satFat: {type: Sequelize.INTEGER},
 	totalCarb: {type: Sequelize.INTEGER},
+	sugar: {type: Sequelize.INTEGER},
 	totalProtein: {type: Sequelize.INTEGER},
 	sodium: {type: Sequelize.INTEGER},
-	type: {type: Sequelize.INTEGER},	
+	servingQuantity: {type: Sequelize.INTEGER},
+	servingUnit: {type: Sequelize.STRING}
 }, {
 	tableName: "Foods"
 })
 
 var ChosenFood = sequelize.define('ChosenFood', {
 	id: {type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true},
-	amount: {type: Sequelize.INTEGER, allowNull: false, defaultValue: 1},
-	myDate: {type: Sequelize.STRING, allowNull: false}
+	amount: {type: Sequelize.INTEGER, allowNull: false, defaultValue: 1}
 }, {
 	timestamps: true,
-	tableName: "ChosenFoods"
+	tableName: "ChosenFoods",
+	classMethods: {
+		setTime: function(foodid, daysback, callback) {
+			ChosenFood.findOne({where: {foodId: foodid}}).done(function(err, food){
+				var createdAt = food['dataValues']['createdAt']
+				createdAt.setDate(createdAt.getDate() - daysback)
+
+				food.updateAttributes({
+					createdAt: createdAt
+				}).done(callback)
+			})
+		}
+	}
 })
 
 User.hasMany(ChosenFood, {allowNull:false, foreignKey: "userId"});
@@ -71,55 +89,68 @@ Database.prototype.createFav = function f(userid, recipeName, callback) {
 	}).done(callback)
 }
 
-// FavRecipe.sync()
-// ChosenFood.sync({force: true});
-// Food.sync({force: true})
-
 // adds item in ChosenFoods table
 // if item doesn't exist, make it. otherwise, update the table
 Database.prototype.eatFood = function f(userid, foodid, amountEaten, callback) {
 	amountEaten = parseInt(amountEaten)
 
-	// store just the first part of the date as a string
-	// too much work dealing with javascript dates
-	var now = new Date().toString()
-	var arr = now.split(" ")
+	var d = new Date()
+	var month = d.getMonth() + 1
+	var day = d.getDate()
+	var year = d.getFullYear()
 
-	// arr[2] -= 1
+	// better way to do this?
+	var query = sprintf('select c.id, c.amount from chosenfoods c where c.userid = %s and c.foodid="%s" and day(c.createdat)=%s and month(c.createdat)=%s and year(c.createdat)=%s', userid, foodid, day, month, year)
 
-	var myDate = ""
-	for (var i = 0; i < 4; i++) {
-		myDate += arr[i] + " "
-	}
-
-	ChosenFood.findOne({
-		where: ['userid = ? AND foodId = ? AND myDate = ?', userid, foodid, myDate]
-	})
-	.done(function(err, res){
+	sequelize
+	.query(
+		query,
+		null,
+		{raw: true}
+	).done(function(err, res){
 		if (err) {
 			console.log(err)
 			return
 		}
-
-		if (res == null) {
+		if (_.isEmpty(res)) {
 			ChosenFood.build({
 				userId: userid,
 				foodId: foodid,
-				amount: amountEaten,
-				myDate: myDate
+				amount: amountEaten
 			})
 			.save()
 			.done(callback)
 		} else {
-			var oldAmount = res.getDataValue('amount')
-			res.setDataValue('amount', oldAmount + amountEaten)
-			res.save().done(callback)
+			var oldAmount = res[0]['amount']
+			ChosenFood.findOne({where: {foodId: foodid}}).done(function(err, res) {
+				res.updateAttributes({
+					amount: oldAmount + amountEaten
+				})
+			}).done(callback)
 		}
 	})
 }
 
-Database.prototype.createFood = function f(foodDict, callback) {
-	var myDict = buildFood(foodDict)
+var dbFields = ['id', 'foodname', 'brandName', 'calories', 'totalFat', 'satFat', 'totalCarb', 'sugar', 'totalProtein', 'sodium', 'servingQuantity', 'servingUnit']
+var nutritionixFields = ['item_id', 'item_name', 'brand_name', 'nf_calories', 'nf_total_fat', 'nf_saturated_fat', 'nf_total_carbohydrate', 'nf_sugars', 'nf_protein', 'nf_sodium', 'nf_serving_size_qty', 'nf_serving_size_unit']
+
+Database.prototype.getAllChosenFoods = function f(userid, callback) {
+	var customQuery = 'select '
+	_.each(dbFields, function(value, index) {
+		customQuery += (' foods.' + value + ',')
+	})
+	customQuery += ' chosenfoods.amount, chosenfoods.createdAt from chosenfoods, foods, user2 where chosenfoods.foodid = foods.id and user2.userid=' + userid + ' order by chosenfoods.createdAt'
+
+	sequelize.query(customQuery, null, {raw: true}).done(callback)	
+}
+
+
+Database.prototype.createFood = function f(nutritionixFood, callback) {
+	var myDict = {}
+	_.each(dbFields, function(value, index) {
+		myDict[value] = nutritionixFood[nutritionixFields[index]]
+	})
+
 	this.checkFood(myDict['id'], function(count){
 		if (count == 0)
 			Food.create(myDict).done(callback)
@@ -175,90 +206,23 @@ Database.prototype.searchAllSlugs = function f(callback) {
 	User.findAll({attributes: ['slug']}).done(callback)
 }
 
-// helper functions
-// TODO. change this function, returning a dict is ugly. use Food.build() and call save() instead
-function buildFood(foodDict) {
-	var f = {}
-	f['id'] = foodDict['item_id']
-	f['foodname'] = foodDict['item_name'],
-	f['brandName'] = foodDict['brand_name'],
-	f['calories'] = foodDict['nf_calories'],
-	f['totalFat'] = foodDict['nf_total_fat'],
-	f['totalCarb'] = foodDict['nf_total_carbohydrate'],
-	f['totalProtein'] = foodDict['nf_protein'],
-	f['sodium'] = foodDict['nf_sodium'],
-	f['type'] = foodDict['item_type']
-
-	return f;
-}
-
-// find a user by id and perform the callback function on the user
-// this is here because finding user before doing something else (i.e add a food) is very common
-// callback only happens if no errors and a user is found
-
-function findUserAndCb(userid, callback) {
-	User.findOne(userid).done(function(err, user) {
-		if (err) {
-			console.log(err)
-			return
-		}
-
-		if (!user){
-			console.log("User with id " + userid + " does not exist")
-			return
-		}
-
-		callback(user)
-	})
-}
-
-// callback = (err, result)
-Database.prototype.getAllFoods = function f(userid, callback) {
-	ChosenFood.findAll({where: {userId: userid}, order: 'myDate desc'}).done(callback)
-}
-
-Database.prototype.fixFood = function f(chosenfoodid, days, callback) {
-	ChosenFood.findOne(chosenfoodid).done(function(err, food) {
-		var myDate = food['dataValues']['myDate']
-		var arr = myDate.split(' ')
-		arr[2] = parseInt(arr[2]) - days
-		myDate = ''
-		for (var i = 0; i < arr.length; i++) {
-			myDate += (arr[i] + ' ') 
-		}
-
-		ChosenFood.update({
-			myDate: myDate
-		}, {
-			where: {
-				id: chosenfoodid
-			}
-		})
-	}).done(callback)
-}
-
 Database.prototype.getAmounts = function f(userid, callback) {
 	sequelize
 	.query(
-		'select mydate, sum(amount) from chosenfoods where userid=:id group by mydate order by createdAt desc',
+		'select c.createdAt, sum(amount) as amount from chosenfoods c where userid=:id group by day(c.createdat)',
 		null,
 		{raw: true},
 		{id: userid}
 	).done(callback)
 }
 
-Database.prototype.getFoodsInArray = function f(arr, callback) {
-	Food.findAll({where: {id: arr}}).done(callback)
-}
-
-// callback = (err, result)
-Database.prototype.deleteFood = function f(foodid, callback) {
-	Food.destroy(
-	{
-		where: {
-			id: foodid
-		}
-	}).done(callback)
+Database.prototype.exec = function f(query, callback) {
+	sequelize
+	.query(
+		query,
+		null,
+		{raw: true}
+	).done(callback)
 }
 
 module.exports = Database
