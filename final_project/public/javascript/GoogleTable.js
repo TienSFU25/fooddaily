@@ -1,7 +1,7 @@
 function GoogleTable(chartSelector, initRows, handlerFunction, options) {
 
-	var fields = _.keys(options)
 	var values = _.values(options)
+	var display = _.pluck(values, 'display')
 	var fieldTypes = _.pluck(values, 'type')
 	var hiddenFields = []
 	_.each(_.pluck(values, 'hidden'), function(val, index){
@@ -18,8 +18,8 @@ function GoogleTable(chartSelector, initRows, handlerFunction, options) {
 
 		// initialize the columns. use all string fields
 		myTable.data = new google.visualization.DataTable()	 	
-	 	for (var i = 0; i < fields.length; i++) {
-	 		myTable.data.addColumn(fieldTypes[i], fields[i])
+	 	for (var i = 0; i < display.length; i++) {
+	 		myTable.data.addColumn(fieldTypes[i], display[i])
 	 	}
 
 	 	myTable.view = new google.visualization.DataView(myTable.data)
@@ -34,6 +34,7 @@ function GoogleTable(chartSelector, initRows, handlerFunction, options) {
 
 // rows is an ARRAY OF ARRAYS
 GoogleTable.prototype.googleChartsDraw = function f(rows) {
+	console.log(rows)
 	// reset rows
 	this.data.removeRows(0, this.data.getNumberOfRows())
 	this.data.addRows(rows)

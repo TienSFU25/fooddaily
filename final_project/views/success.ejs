@@ -49,7 +49,6 @@
 <script src="/javascript/GoogleTable.js"></script>
 <script src="/javascript/GooglePie.js"></script>
 <script src="/javascript/config.js"></script>
-<script src="/javascript/parser.js"></script>
 <script src="/javascript/magnificPopup.js"></script>
 <script>
 	var myPieChart = new GooglePie()
@@ -72,7 +71,6 @@
 		myPieChart.googlePieDraw(rows)
 	};
 
-
 	var $foodIn = $('#foodSearch')
 	var $foodForm = $('#foodForm')
 
@@ -90,7 +88,11 @@
 				url: "https://api.nutritionix.com/v1_1/search",
 				data: queryDict,
 				success: function(d) {
-					myTable.googleChartsDraw(jsonToArrayArrays(d, fields))
+					d = _.pluck(d['hits'], 'fields')
+					d = _.map(d, function(val, index){
+						return _.values(val)
+					})
+					myTable.googleChartsDraw(d)
 
 					// stick the magnific popup class to all rows
 					$('.google-visualization-table-table tr:not(.google-visualization-table-tr-head) td')

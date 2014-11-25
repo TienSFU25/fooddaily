@@ -4,46 +4,82 @@ var appKey="ac97e296e021c5ea6c0e51389f966307"
 var mainTableOptions = {
   item_name: {
     type: 'string',
-    hidden: false
+    hidden: false,
+    display: 'Item'
   },
   brand_name: {
     type: 'string',
-    hidden: false
+    hidden: false,
+    display: 'Brand'
   },
   nf_calories: {
     type: 'number',
-    hidden: false
+    hidden: false, 
+    display: 'Calories'
   },
   nf_total_fat: {
     type: 'number',
-    hidden: false
-  }, 
-  nf_total_protein: {
+    hidden: false,
+    display: 'Fat(g)'
+  },
+  nf_saturated_fat: {
     type: 'number',
-    hidden: false
+    hidden: true,
+    display: 'Saturated Fat'
+  },
+  nf_protein: {
+    type: 'number',
+    hidden: false,
+    display: 'Protein(g)'
   }, 
   nf_total_carbohydrate: {
     type: 'number',
-    hidden: false
-  },  
-  nf_total_sodium: {
+    hidden: false,
+    display: 'Carbohydrates(g)'
+  },
+  nf_sugars: {
     type: 'number',
-    hidden: false
+    hidden: false,
+    display: 'Sugar(g)'
+  },
+  nf_dietary_fiber: {
+    type: 'number',
+    hidden: true,
+    display: ''
+  },
+  nf_sodium: {
+    type: 'number',
+    hidden: false,
+    display: 'Sodium(mg)'
   }, 
+  nf_serving_size_qty: {
+    type: 'number',
+    hidden: false,
+    display: 'Serving size quantity'
+  },
+  nf_serving_size_unit: {
+    type: 'string',
+    hidden: false,
+    display: 'Serving size units'
+  },
   item_type: {
     type: 'number',
-    hidden: false
+    hidden: true,
+    display: ''
   }, 
   item_id: {
     type: 'string',
-    hidden: true
+    hidden: true,
+    display: ''
   },  
 }
+
+var fields = _.keys(mainTableOptions)
 
 var queryDict = {
  "appId":appId,
  "appKey":appKey,
- "fields": _.keys(mainTableOptions),
+ "fields": fields,
   "offset": 0,
   "limit": 50,
   "sort": {
@@ -65,7 +101,6 @@ var nutrition = [
 
 // sloppy way to get the column indexes of items in nutrition
 // or fields[map[i]] == nutrition[i]
-var fields = _.keys(mainTableOptions)
 var map = []
 
 for (var i = 0; i < nutrition.length; i++) {
@@ -74,63 +109,4 @@ for (var i = 0; i < nutrition.length; i++) {
       map[i] = j
     }
   }
-}
-
-var foodTableOptions = {
-  id: {
-    type: 'string',
-    hidden: false
-  }, 
-  foodname: {
-    type: 'string',
-    hidden: false
-  },
-  brandName: {
-    type: 'string',
-    hidden: false
-  }, 
-  calories: {
-    type: 'number',
-    hidden: false
-  },   
-  totalFat: {
-    type: 'number',
-    hidden: false
-  }, 
-  satFat: {
-    type: 'number',
-    hidden: false
-  }, 
-  totalCarb: {
-    type: 'number',
-    hidden: false
-  }, 
-  sugar: {
-    type: 'number',
-    hidden: false
-  }, 
-  totalProtein: {
-    type: 'number',
-    hidden: false
-  }, 
-  sodium: {
-    type: 'number',
-    hidden: false
-  }, 
-  servingQuantity: {
-    type: 'number',
-    hidden: false
-  }, 
-  servingUnit: {
-    type: 'string',
-    hidden: false
-  }, 
-  amount: {
-    type: 'number',
-    hidden: false
-  }, 
-  createdAt: {
-    type: 'string',
-    hidden: false
-  }, 
 }
