@@ -1,4 +1,5 @@
 module.exports = function(app, passport, db, fbProfile) {
+
 	var s = require('string')
 	// print user
 	app.use('/', function(req, res, next) {
@@ -139,7 +140,7 @@ app.get('/auth/facebook/callback',
   	console.log('FACEBOOK UCMNSER')
   	console.log(req.user)
   	req.user.username = fbProfile.displayName + " (Facebook)";
-    res.redirect('/success');
+    res.redirect('/dashboard');
   });
 
 
