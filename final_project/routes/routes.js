@@ -28,10 +28,8 @@ module.exports = function(app, passport, db, fbProfile) {
 		//temporary routing for new frontend - tien please fix	
 		} else if (str == 'newindex') {		
 			res.render('newindex', { csrfToken: req.csrfToken(), user: req.user })
-		} else if (str == 'loginnew') {		
-			res.render('loginnew', { csrfToken: req.csrfToken(), user: req.user })
-		} else if (str == 'dashboard') {		
-			res.render('favrecipesnew', { csrfToken: req.csrfToken(), user: req.user })
+		} else if (str == 'about') {		
+			res.render('about', { csrfToken: req.csrfToken(), user: req.user })
 		// } else if (str == '') {		
 		// 	res.render('', { csrfToken: req.csrfToken(), user: req.user })
 		// } else if (str == '') {		
@@ -89,7 +87,11 @@ module.exports = function(app, passport, db, fbProfile) {
 	})
 
 	app.get('/', function(req, res) {
-		res.render('index', { csrfToken: req.csrfToken() });
+		if (req.user) {
+			res.render('dashboard', { csrfToken: req.csrfToken(), user: req.user })
+		} else {
+			res.render('about', { csrfToken: req.csrfToken() })
+		}
 	})
 
 
