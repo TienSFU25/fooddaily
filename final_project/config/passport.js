@@ -6,8 +6,9 @@ module.exports = function(passport, db) {
 	var s = require('string')
 	var LocalStrategy = require('passport-local').Strategy
 	var bcrypt = require('bcrypt-nodejs')
+	var User = db.model('User')
 
-	function User(first, last, slug, id) {
+	function PassportUser(first, last, slug, id) {
 		this.first = first
 		this.last = last
 		this.slug = slug
@@ -23,7 +24,7 @@ module.exports = function(passport, db) {
 	// login strategy
 	customLogin = new LocalStrategy(customDict, function(req, username, password, done) {
 		// first, try to search for this user. retrieve the hashed password
-		db.searchUserByName(username, function(err, user) {
+		User.findOne({where: {username: username}}).done(function(err, user) {
 			if (err) {
 				console.log(err)
 				return done(null, false)
@@ -45,7 +46,7 @@ module.exports = function(passport, db) {
 						return done(null, false)
 					}
 					else {
-						currUser = new User(userData['firstname'], userData['lastname'], userData['slug'], userData['userid'])
+						currUser = new PassportUser(userData['firstname'], userData['lastname'], userData['slug'], userData['userid'])
 						return done(null, currUser)
 					}
 				})
@@ -53,18 +54,14 @@ module.exports = function(passport, db) {
 		})
 	})
 
-
-	// db.createUser('username2', 'pw', 'first', 'last', 'sluggy2', function(){})
-	// db.searchAllSlugs(function(err, res){console.log(res)})
-
 	customSignup = new LocalStrategy(customDict, function(req, username, password, done) {
-		db.countUserByName(username, function(count){
+		User.count({where: {username: username}}).success(function(count){
 			if (count != 0) {
 				// user name already exists
 				console.log("Username has already been taken")
 				return done(null, false)
 			} else {
-				db.searchAllSlugs(function(err, res) {
+				User.findAll({attributes: ['slug']}).done(function(err, res) {
 					if (err) {
 						console.log("Unknown error in searchAllSlugs")
 						return done(null, false)
@@ -96,12 +93,12 @@ module.exports = function(passport, db) {
 								return done(null, false)
 							}
 
-							db.createUser(username, hash, req.body.firstname, req.body.lastname, slug, function(err, res) {
+							User.createUser(username, hash, req.body.firstname, req.body.lastname, slug, function(err, res) {
 								if (err) {
 									console.log("Unknown error in db.createUser")
 									return done(null, false)
 								} else {
-									currUser = new User(req.body.firstname, req.body.lastname, slug, res['dataValues']['userid'])
+									currUser = new PassportUser(req.body.firstname, req.body.lastname, slug, res['dataValues']['userid'])
 									return done(null, currUser)
 								}
 							})
@@ -116,13 +113,13 @@ module.exports = function(passport, db) {
 	// "hack" function for debugging without having to login. DELETE THIS LATER
 	debugLogin = new LocalStrategy(customDict, function(req, username, password, done) {
 		console.log("debug login here")
-		db.searchUserByName(debugUser, function(err, user) {
+		User.findOne({where: {username: debugUser}}).done(function(err, user) {
 			if (user == null) {
-				db.createUser(debugUser, 'a', 'b', 'c', 'd', function(err, res){
+				User.createUser(debugUser, 'a', 'b', 'c', 'd', function(err, res){
 					userData = res.dataValues
 					hash = userData['password']
 					userid = userData['userid']
-					currUser = new User('b', 'c', 'd', res['dataValues']['userid'])
+					currUser = new PassportUser('b', 'c', 'd', res['dataValues']['userid'])
 					return done(null, currUser)
 				})
 			}
@@ -130,7 +127,7 @@ module.exports = function(passport, db) {
 			userData = user.dataValues
 			hash = userData['password']
 			userid = userData['userid']
-			currUser = new User('b', 'c', 'd', user['dataValues']['userid'])
+			currUser = new PassportUser('b', 'c', 'd', user['dataValues']['userid'])
 			return done(null, currUser)
 		})
 	})
@@ -145,7 +142,7 @@ module.exports = function(passport, db) {
 	})
 
 	passport.deserializeUser(function(slug, done) {
-		db.searchUserBySlug(slug, function(err, user) {
+		User.findOne({where: {slug: slug}}).done(function(err, user) {
 			if (err) {
 				console.log(err)
 				return done(null, false)
@@ -157,7 +154,7 @@ module.exports = function(passport, db) {
 				return done(null, false)
 			}
 			var userData = user.dataValues
-			currUser = new User(userData['firstname'], userData['lastname'], slug, user['dataValues']['userid'])
+			currUser = new PassportUser(userData['firstname'], userData['lastname'], slug, user['dataValues']['userid'])
 		})
 		return done(null, currUser)
 	})

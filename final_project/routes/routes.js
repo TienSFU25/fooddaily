@@ -30,8 +30,8 @@ module.exports = function(app, passport, db, fbProfile) {
 			res.render('newindex', { csrfToken: req.csrfToken(), user: req.user })
 		} else if (str == 'about') {		
 			res.render('about', { csrfToken: req.csrfToken(), user: req.user })
-		 } else if (str == 'addfood') {		
-		 	res.render('addfood', { csrfToken: req.csrfToken(), user: req.user })
+		// } else if (str == '') {		
+		// 	res.render('', { csrfToken: req.csrfToken(), user: req.user })
 		// } else if (str == '') {		
 		// 	res.render('', { csrfToken: req.csrfToken(), user: req.user })
 		// } else if (str == '') {		
