@@ -20,7 +20,7 @@ module.exports = function(app, passport, db, fbProfile) {
 			req.body.username = 'u'
 			req.body.password = 'p'
 			passport.authenticate('debug-login', {
-				successRedirect: 'success',
+				successRedirect: 'dashboard',
 				failureRedirect: 'login',
 				failureFlash: true
 			})
@@ -30,8 +30,8 @@ module.exports = function(app, passport, db, fbProfile) {
 			res.render('newindex', { csrfToken: req.csrfToken(), user: req.user })
 		} else if (str == 'about') {		
 			res.render('about', { csrfToken: req.csrfToken(), user: req.user })
-		// } else if (str == '') {		
-		// 	res.render('', { csrfToken: req.csrfToken(), user: req.user })
+		 } else if (str == 'addfood') {		
+		 	res.render('addfood', { csrfToken: req.csrfToken(), user: req.user })
 		// } else if (str == '') {		
 		// 	res.render('', { csrfToken: req.csrfToken(), user: req.user })
 		// } else if (str == '') {		
@@ -60,7 +60,7 @@ module.exports = function(app, passport, db, fbProfile) {
 			} else {
 				req.logIn(user, function(err){
 					if (err) return next(err)
-					res.redirect(user.slug)
+					res.redirect('/')
 				})
 			}
 		})
@@ -96,7 +96,7 @@ module.exports = function(app, passport, db, fbProfile) {
 
 
 	app.post('/login', passport.authenticate('local-login',
-											{successRedirect: 'success',
+											{successRedirect: 'dashboard',
 											failureRedirect: 'login',
 											failureFlash: true})
 	)
@@ -120,7 +120,7 @@ app.get('/auth/facebook/callback',
   	console.log('FACEBOOK UCMNSER')
   	console.log(req.user)
   	req.user.username = fbProfile.displayName + " (Facebook)";
-    res.redirect('/success');
+    res.redirect('/dashboard');
   });
 
 
@@ -136,8 +136,10 @@ function ensureAuthenticated(req, res, next) {
   res.redirect('/login')
 }
 
+	//signup success redirect should go to settings page or a introductory guide, 
+	//and a quick survey of settings
 	app.post('/signup', passport.authenticate('local-signup',
-										{successRedirect: 'success',
+										{successRedirect: 'dashboard',
 										failureRedirect: 'signup',
 										failureFlash: true})
 	)
