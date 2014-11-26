@@ -4,6 +4,8 @@ var express = require('express')
 var _ = require('underscore')
 foodRouter = express.Router()
 
+var Food = db.model('Food')
+
 var nutritionix = require('nutritionix')({
     appId: '065c98a7',
     appKey: 'ac97e296e021c5ea6c0e51389f966307'
@@ -35,11 +37,11 @@ foodRouter.get('/', function(req, response, next) {
 foodRouter.post('/', function(req, res, next) {
 	var id = req.body.chosenFood
 	var query = {id: id}
-	db.checkFood(id, function(count) {
+	Food.checkFood(id, function(count) {
 		if (count == 0) {
 			// query nutritionix and save the food
 			nutritionix.item(query, function(err, food) {
-				db.createFood(food, function(err, result) {
+				Food.createFood(food, function(err, result) {
 					if (err) {
 						console.log(err)
 						next()
@@ -67,7 +69,6 @@ foodRouter.post('/', function(req, res, next) {
 			})
 		}
 	})
-
 })
 
 module.exports = foodRouter

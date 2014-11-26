@@ -1,5 +1,4 @@
 module.exports = function(app, passport, db, fbProfile) {
-
 	var s = require('string')
 	// print user
 	app.use('/', function(req, res, next) {
@@ -46,8 +45,6 @@ module.exports = function(app, passport, db, fbProfile) {
 		}
 	})
 
-
-
 	app.use('/:slug', require('./userRouter'))
 
 	app.post('/login', function(req, res, next) {
@@ -91,14 +88,6 @@ module.exports = function(app, passport, db, fbProfile) {
 	app.get('/', function(req, res) {
 		res.render('index', { csrfToken: req.csrfToken() });
 	})
-
-
-	app.post('/login', passport.authenticate('local-login',
-											{successRedirect: 'success',
-											failureRedirect: 'login',
-											failureFlash: true})
-	)
-
 
 // GET /auth/facebook
 //   Use passport.authenticate() as route middleware to authenticate the

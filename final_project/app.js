@@ -53,33 +53,14 @@ app.use(function (err, req, res, next) {
 
 // configure database, authentication procedures and routing
 var database = require('./config/database')
-db = new database()
-
-var testid = "dcmm23"
-var testDict = {
-	"item_id": testid,
-	"item_name": "foodname",
-	"brand_name": "somebrand",
-	"nf_calories": 4000,
-	"nf_total_fat": 40,
-	"nf_protein": 30,
-	"nf_total_carbohydrate": 25,
-	"nf_sodium": 25,
-	"item_type": 4
-}
-
-
-// db.createUser('a', 'b', 'c', 'd', 'e', function(){})
-// db.createFood(testDict, function(){})
-// db.eatFood(1, testid, 300, function(){})
+db = new database('./models')
+// db.sync(true)
 
 // default fbProfile
 var fbProfile = {
   "id": '000000000000000',
   "displayName": 'Test User',
 }
-
-
 
 var FACEBOOK_APP_ID = '1501083956817978';
 var FACEBOOK_APP_SECRET = 'a8170539de31afad201eb9f48b904758';
