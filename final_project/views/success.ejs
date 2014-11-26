@@ -10,11 +10,11 @@
 <body>
 <p>Successfully logged in</p>
 <p>Logged in as user <%= user.first + ' ' + user.last %></p>
-<a href='<%= user.slug %>/settings'>Settings</a></br>
+<a href='/<%= user.slug %>/settings'>Settings</a></br>
 <a href='/logout'>Log out</a></br>
 <a href='/search'>Search for Recipes</a></br>
-<a href='<%= user.slug %>/foods'>See your foods here</a></br>
-<a href='<%= user.slug %>/progress'>View your daily progress here</a></br>
+<a href='/<%= user.slug %>/foods'>See your foods here</a></br>
+<a href='/<%= user.slug %>/progress'>View your daily progress here</a></br>
 
 <!-- link that opens popup -->
 <p class="popup-with-form" href="#foodForm">Open form</p>

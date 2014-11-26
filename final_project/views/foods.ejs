@@ -7,7 +7,7 @@
 </head>
 <body>
 <p>Showing food list for <%= user.first + user.last %></p>
-<a href='/success'>Back</a></br>
+<a href='/<%= user.slug %>'>Back</a></br>
 <a href='/logout'>Log out</a></br>
 
 <div class="allFoods"></div>
@@ -16,6 +16,7 @@
 <form id="foodInfo" class="pure-form">
 	<div class="pieChart"></div>
 	<input type="hidden" name="chosenFood" id="chosenFood"></input>
+	<input type="hidden" id="csrf" name="_csrf" value="<%= csrfToken %>">
 	<input type="text" name="Amount" placeholder="New amount"></input>
 </form>
 
@@ -26,6 +27,7 @@
 	var myPieChart = new GooglePie()
 	var charts = <%- JSON.stringify(chartData) %>
 	var $allFoods = $('.allFoods')
+	var csrf = $('#csrf').val()
 
 	var allTables = []
 	for (var i = 0; i < charts.length; i++) {
@@ -49,8 +51,21 @@
 		var thisTable = new GoogleTable('.'+classname, charts[i], tableHandler, foodTableOptions)
 	}
 
+	var userSlug = '<%= user.slug %>'
+
 	$('#foodInfo').on('submit', function(e){
 		e.preventDefault()
+		$.ajax({
+			type: 'PUT',
+			url: ('/' + userSlug + '/foods'),
+			data: {
+				hi: '2',
+				_csrf: csrf
+			},
+			success: function(d) {
+				console.log(d)
+			}
+		})
 	})
 </script>
 </body>

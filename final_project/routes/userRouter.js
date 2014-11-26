@@ -9,7 +9,6 @@ var nutritionix = require('nutritionix')({
 }, false).v1_1;
 
 userRouter.get('/', function(req, res){
-	console.log(req.user)
 	res.render('success', {user: req.user, csrfToken: req.csrfToken()})
 })
 

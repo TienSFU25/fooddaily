@@ -29,7 +29,7 @@ foodRouter.get('/', function(req, response, next) {
 		})
 
 		allRows.push(thisRow)
-		response.render('foods', {user:req.user, chartData: allRows})
+		response.render('foods', {user:req.user, chartData: allRows, csrfToken: req.csrfToken()})
 		return
 	})
 })
@@ -69,6 +69,11 @@ foodRouter.post('/', function(req, res, next) {
 			})
 		}
 	})
+})
+
+foodRouter.put('/', function(req, res, next){
+	console.log(req.body)
+	res.send(200)
 })
 
 module.exports = foodRouter

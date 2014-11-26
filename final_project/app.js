@@ -16,7 +16,7 @@ app.set('view engine', 'ejs')
 // initialize some middleware
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
-app.use(morgan('dev'))
+// app.use(morgan('dev'))
 app.use(session(
 	{
 		secret: "some secret",

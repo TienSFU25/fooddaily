@@ -2,11 +2,39 @@ module.exports = function(app, passport, db, fbProfile) {
 	var s = require('string')
 	// print user
 	app.use('/', function(req, res, next) {
-		console.log(req.user)
+		// console.log('logged in user is ' + req.user)
+		// console.log(req.xhr)
+		// console.log(req.path)
 		next()
 	})
 
 	// app.get(/\/user\/(\d*)\/(edit)\/(\d+)/, function(req, res) {
+
+	app.get('/test', function(req, res, next){
+		if (!req.isAuthenticated()) {
+			req.body.username = 'u'
+			req.body.password = 'p'
+			passport.authenticate('debug-login', function(err, user) {
+				if (err) {
+					console.log(err)
+					next(err)
+				} else {
+					req.logIn(user, function(err){
+						if (err) return next(err)
+						res.redirect(user.slug)
+					})
+				}
+			})
+			(req, res)
+		} else {
+			next()
+		}
+	})
+
+	// right now routing goes like this
+	// test (if not logged in) -> login/signup/logout -> if not auth: about -> if auth: check slug
+	// -> if slug equal: dashboard, else: about
+	// the last get('/') to about at the end is because the first regex doesn't capture an empty string
 
 	app.get(/(\w+)/, function(req, res, next) {
 		var str = req.params[0]
@@ -15,38 +43,30 @@ module.exports = function(app, passport, db, fbProfile) {
 			res.render('login', { csrfToken: req.csrfToken() })
 		} else if (str == 'signup') {
 			res.render('signup', { csrfToken: req.csrfToken() })
-		} else if (str == '!test') {
-			req.body.username = 'u'
-			req.body.password = 'p'
-			passport.authenticate('debug-login', {
-				successRedirect: 'success',
-				failureRedirect: 'login',
-				failureFlash: true
-			})
-			(req, res)	
 		//temporary routing for new frontend - tien please fix	
 		} else if (str == 'newindex') {		
 			res.render('newindex', { csrfToken: req.csrfToken(), user: req.user })
 		} else if (str == 'about') {		
 			res.render('about', { csrfToken: req.csrfToken(), user: req.user })
-		// } else if (str == '') {		
-		// 	res.render('', { csrfToken: req.csrfToken(), user: req.user })
-		// } else if (str == '') {		
-		// 	res.render('', { csrfToken: req.csrfToken(), user: req.user })
-		// } else if (str == '') {		
-		// 	res.render('', { csrfToken: req.csrfToken(), user: req.user })
-		// } else if (str == '') {		
-		// 	res.render('', { csrfToken: req.csrfToken(), user: req.user })
-		
+		} else if (str == 'logout') {
+			if (req.isAuthenticated) {
+				req.logout()
+			}
+			res.render('about', { csrfToken: req.csrfToken(), user: req.user })
 		} else {
-			next()
+			if (!req.isAuthenticated()) {
+				res.render('about', { csrfToken: req.csrfToken(), user: req.user })
+			} else {
+				next()
+			}
 		}
 	})
 
-	app.use('/:slug', require('./userRouter'))
-
 	app.post('/login', function(req, res, next) {
 		passport.authenticate('local-login', function(err, user, info) {
+			console.log(user)
+
+
 			if (err) {
 				console.log(err)
 				next(err)
@@ -83,13 +103,23 @@ module.exports = function(app, passport, db, fbProfile) {
 		(req, res)
 	})
 
-	app.get('/', function(req, res) {
-		if (req.user) {
-			res.render('dashboard', { csrfToken: req.csrfToken(), user: req.user })
-		} else {
-			res.render('about', { csrfToken: req.csrfToken() })
+	app.get('/:slug', function(req, res, next) {
+		if (req.isAuthenticated()) {
+			if (req.user.slug == req.params.slug) {
+				next()
+			} else {
+				console.log('Logged in with slug ' + req.user.slug + ' but param was ' + req.params.slug)
+				res.render('dashboard', { csrfToken: req.csrfToken(), user: req.user })
+			}			
 		}
 	})
+	app.use('/:slug', require('./userRouter'))
+
+	// down here means nobody is authenticated
+	app.get('/', function(req, res, next){
+		res.render('about', { csrfToken: req.csrfToken() })
+	})
+
 
 // GET /auth/facebook
 //   Use passport.authenticate() as route middleware to authenticate the
@@ -125,18 +155,6 @@ function ensureAuthenticated(req, res, next) {
   res.redirect('/login')
 }
 
-	app.post('/signup', passport.authenticate('local-signup',
-										{successRedirect: 'success',
-										failureRedirect: 'signup',
-										failureFlash: true})
-	)
-
-	app.get('/logout', function(req, res) {
-		req.logout()
-
-		res.render('index', { csrfToken: req.csrfToken() })
-	})
-
 	app.get('/settings', function(req, res) {
 		res.render('settings', { csrfToken: req.csrfToken() })
 	})
@@ -159,18 +177,5 @@ function ensureAuthenticated(req, res, next) {
 
 	app.get('/favourites', function(req, res) {
 		res.render('favrecipes', {user: req.user})
-	})
-
-	app.get('/:slug', function(req, res, next) {
-		if (req.user) {
-			if (req.user.slug == req.params.slug) {
-				next()
-			} else {
-				// TODO: implement this part
-				res.send("Unauthorized to view this source")
-			}			
-		} else {
-			res.redirect('/login')
-		}
 	})
 }
