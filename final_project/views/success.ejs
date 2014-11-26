@@ -59,13 +59,17 @@
 	var $chosenFood= $('#chosenFood')
 
 	function tableHandler(e) {
-		var rowIndex = myTable.getSelectedRow()
-		var rows = []
-		for (var i = 0; i < map.length; i++) {
-			rows[i] = [nutrition[i], parseFloat(myTable.getValue(rowIndex, map[i]))]
+		var idx = myTable.googleTable.getSelection()
+		if (!_.isEmpty(idx)) {
+			myTable.oldRow = idx[0]['row']
 		}
 
-		var id = myTable.getValue(rowIndex, fields.length - 1)
+		var rows = []
+		for (var i = 0; i < map.length; i++) {
+			rows[i] = [nutrition[i], parseFloat(myTable.getValue(myTable.oldRow, map[i]))]
+		}
+
+		var id = myTable.getValue(myTable.oldRow, fields.length - 1)
 		$('#chosenFood').val(id)
 
 		myPieChart.googlePieDraw(rows)

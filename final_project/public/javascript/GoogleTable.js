@@ -1,5 +1,4 @@
-function GoogleTable(chartSelector, initRows, handlerFunction, options) {
-
+function GoogleTable(chartSelector, initRows, handlerFunction, options, chartTitle) {
 	var values = _.values(options)
 	var display = _.pluck(values, 'display')
 	var fieldTypes = _.pluck(values, 'type')
@@ -8,6 +7,8 @@ function GoogleTable(chartSelector, initRows, handlerFunction, options) {
 		if (val)
 			hiddenFields.push(index)
 	})
+
+	this.id = Math.random()
 
 	// vcl closure
 	var myTable = this
@@ -27,8 +28,11 @@ function GoogleTable(chartSelector, initRows, handlerFunction, options) {
 
 		// set the handler
 		google.visualization.events.addListener(myTable.googleTable, 'select', handlerFunction)
+
 		// for initially loading the chart
-	 	myTable.googleChartsDraw(initRows)		
+	 	myTable.googleChartsDraw(initRows)
+	 	if (chartTitle)
+			$(chartSelector).prepend('<h2 class="googleTableTitle">'+ chartTitle + '</h2>')
 	})
 }
 
@@ -42,8 +46,4 @@ GoogleTable.prototype.googleChartsDraw = function f(rows) {
 
 GoogleTable.prototype.getValue = function f(row, col) {
 	return this.data.getValue(row, col)
-}
-
-GoogleTable.prototype.getSelectedRow = function f() {
-	return this.googleTable.getSelection()[0].row
 }

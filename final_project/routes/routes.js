@@ -110,7 +110,7 @@ module.exports = function(app, passport, db, fbProfile) {
 				next()
 			} else {
 				console.log('Logged in with slug ' + req.user.slug + ' but param was ' + req.params.slug)
-				res.render('dashboard', { csrfToken: req.csrfToken(), user: req.user })
+				res.redirect(req.user.slug)
 			}			
 		}
 	})

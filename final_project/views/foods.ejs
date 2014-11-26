@@ -26,30 +26,56 @@
 <script>
 	var myPieChart = new GooglePie()
 	var charts = <%- JSON.stringify(chartData) %>
+	var createdAtIndex = _.indexOf(_.keys(foodTableOptions), "createdAt")
+
 	var $allFoods = $('.allFoods')
 	var csrf = $('#csrf').val()
 
-	var allTables = []
+	var allTables = {}
+
+	var classNames = []
+	var domClassNames = []
+	var fullClasses = []
+
 	for (var i = 0; i < charts.length; i++) {
+		classNames[i] = 'foodChart' + i
+		domClassNames[i] = '.' + classNames[i]
+		fullClasses[i] = '<div class ="' + classNames[i] + ' googleTable">'
+	}
+
+
+	// for (var i = 0; i < charts.length; i++) {
+	_.each(charts, function(value, i) {
 		var classname = 'foodChart' + i
-		var fullClass = "<div class ='" + classname + "' 'googleTable'>"
+		var fullClass = '<div class ="' + classname + ' googleTable">'
+		var domClass = '.' + classname
+
 		$allFoods.append($(fullClass))
 		
-		function tableHandler(e) {
-			var rowIndex = thisTable.getSelectedRow()
-			var rows = []
-			for (var i = 0; i < map.length; i++) {
-				rows[i] = [nutrition[i], parseFloat(thisTable.getValue(rowIndex, map[i]))]
+		var tableHandler = function(e) {
+			var idx = thisTable.googleTable.getSelection()
+			if (!_.isEmpty(idx)) {
+				thisTable.oldRow = idx[0]['row']
 			}
 
-			var id = thisTable.getValue(rowIndex, fields.length - 1)
+			var rows = []
+			for (var k = 0; k < map.length; k++) {
+				rows[k] = [nutrition[k], parseFloat(thisTable.getValue(thisTable.oldRow, map[k]))]
+			}
+
+			var id = thisTable.getValue(thisTable.oldRow, fields.length - 1)
 			$('#chosenFood').val(id)
 
 			myPieChart.googlePieDraw(rows)
 		};
 
-		var thisTable = new GoogleTable('.'+classname, charts[i], tableHandler, foodTableOptions)
-	}
+		var chartTitle = charts[i][0][createdAtIndex]
+		var thisTable = new GoogleTable(domClass, charts[i], tableHandler, foodTableOptions, chartTitle)
+
+		// console.log(thisTable)
+		allTables[classname] = thisTable
+	})
+// }
 
 	var userSlug = '<%= user.slug %>'
 
