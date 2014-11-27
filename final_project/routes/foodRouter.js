@@ -2,6 +2,8 @@
 
 var express = require('express')
 var _ = require('underscore')
+var sprintf = require('sprintf-js').sprintf
+
 foodRouter = express.Router()
 
 var Food = db.model('Food')
@@ -51,21 +53,25 @@ foodRouter.post('/', function(req, res, next) {
 								console.log(err)
 								res.send(500)
 							}
-
-							res.json(r)
+							var dataValues = result.dataValues
+							var message = sprintf("Successfully added %s %ss of %s", req.body.amount, dataValues['servingUnit'], dataValues['foodname'])
+							res.send(message)
 						})
 					}
 				})
 			})				
 		} else {
 			// regardless, save eating food information to ChosenFoods
-			db.eatFood(req.user.id, id, req.body.amount, function(err, r) {
-				if (err) {
-					console.log(err)
-					res.send(500)
-				}
-
-				res.json(r)
+			Food.findOne({where: {id: id}}).done(function (err, food) {
+				db.eatFood(req.user.id, id, req.body.amount, function(err, r) {
+					if (err) {
+						console.log(err)
+						res.send(500)
+					}
+					var dataValues = food.dataValues
+					var message = sprintf("Successfully added %s %ss of %s", req.body.amount, dataValues['servingUnit'], dataValues['foodname'])
+					res.send(message)
+				})
 			})
 		}
 	})
@@ -73,7 +79,14 @@ foodRouter.post('/', function(req, res, next) {
 
 foodRouter.put('/', function(req, res, next){
 	console.log(req.body)
-	res.send(200)
+	var ChosenFood = db.model('ChosenFood')
+	ChosenFood.updateFood(req.user.id, req.body.chosenFoodId, req.body.amount, function(err, food){
+		if (err) {
+			res.send(err.message)
+		} else {
+			res.send(food['dataValues'])
+		}
+	})
 })
 
 module.exports = foodRouter

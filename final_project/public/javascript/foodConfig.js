@@ -78,6 +78,11 @@ var foodTableOptions = {
     type: 'number',
     hidden: false,
     display: 'Total Calories'
+  },
+  chosenFoodId: {
+    type: 'number',
+    hidden: false,
+    display: 'ChosenFoodId'
   }
 }
 

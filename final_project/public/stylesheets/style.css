@@ -49,8 +49,9 @@ input[type=text]{
   background: #FFF;
   padding: 20px;
   width: auto;
+  /*height: 40px;*/
   max-width: 500px;
-  margin: 20px auto;
+  margin: 0 auto;
 }
 
 .notification {

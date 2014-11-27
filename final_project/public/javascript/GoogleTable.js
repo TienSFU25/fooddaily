@@ -1,4 +1,4 @@
-function GoogleTable(chartSelector, initRows, handlerFunction, options, chartTitle) {
+function GoogleTable(chartSelector, initRows, handlerFunction, options, chartTitle, callback) {
 	var values = _.values(options)
 	var display = _.pluck(values, 'display')
 	var fieldTypes = _.pluck(values, 'type')
@@ -8,10 +8,10 @@ function GoogleTable(chartSelector, initRows, handlerFunction, options, chartTit
 			hiddenFields.push(index)
 	})
 
-	this.id = Math.random()
-
 	// vcl closure
 	var myTable = this
+	this.selRow = null
+
 	google.load("visualization", "1", {packages:["corechart", "table"]});
 
 	google.setOnLoadCallback(function() {
@@ -30,20 +30,47 @@ function GoogleTable(chartSelector, initRows, handlerFunction, options, chartTit
 		google.visualization.events.addListener(myTable.googleTable, 'select', handlerFunction)
 
 		// for initially loading the chart
-	 	myTable.googleChartsDraw(initRows)
+	 	myTable.draw(initRows)
 	 	if (chartTitle)
 			$(chartSelector).prepend('<h2 class="googleTableTitle">'+ chartTitle + '</h2>')
+
+		if (callback)
+			callback()
 	})
 }
 
 // rows is an ARRAY OF ARRAYS
-GoogleTable.prototype.googleChartsDraw = function f(rows) {
+GoogleTable.prototype.draw = function f(rows, options) {
 	// reset rows
 	this.data.removeRows(0, this.data.getNumberOfRows())
 	this.data.addRows(rows)
-    this.googleTable.draw(this.view, {showRowNumber: true});
+
+	if (options == undefined) {
+		options = {
+			showRowNumber: true,
+			// alternatingRowStyle: false,
+			page: 'enable', 
+			pageSize: 10,
+			cssClassNames: {
+				// tableRow: 'popup-with-form',
+				// oddTableRow: 'popup-with-form'
+			}
+		}
+	}
+
+    this.googleTable.draw(this.view, options);
 }
 
 GoogleTable.prototype.getValue = function f(row, col) {
 	return this.data.getValue(row, col)
+}
+
+// return all data in the last selected row
+GoogleTable.prototype.dataDump = function f() {
+	var cols = this.data.getNumberOfColumns()
+	var tds = []
+	for (var i = 0; i < cols; i++) {
+		tds.push(this.data.getValue(this.selRow, i))
+	}
+	return tds
 }

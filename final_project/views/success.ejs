@@ -2,10 +2,13 @@
 <link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
 <link rel="stylesheet" href="/magnificPopup/magnific-popup.css">
 <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.5.0/pure-min.css">
+<link rel="stylesheet" type="text/css" href="/stylesheets/jquery-ui.min.css">
+<link rel="stylesheet" type="text/css" href="/stylesheets/jquery-ui.theme.min.css">
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <script src="/magnificPopup/jquery.magnific-popup.js"></script> 
 <script src="https://www.google.com/jsapi"></script>
 <script src="http://underscorejs.org/underscore.js"></script>
+<script src="http://code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
 </head>
 <body>
 <p>Successfully logged in</p>
@@ -16,31 +19,26 @@
 <a href='/<%= user.slug %>/foods'>See your foods here</a></br>
 <a href='/<%= user.slug %>/progress'>View your daily progress here</a></br>
 
-<!-- link that opens popup -->
-<p class="popup-with-form" href="#foodForm">Open form</p>
-
 <!-- form itself -->
 <form id="foodForm" class="white-popup mfp-hide pure-form">
-	<h1>Form</h1>
-		<ol>
-			<li>
-				<label for="amount">Amount</label>
-				<input id="amount" name="amount" type="text" placeholder="Amount eaten" required="">
-			</li>
-		</ol>
+	<h1 id="foodName"></h1>
+	<label for="spinner">Choose an amount</label>
+	<input id="spinner" name="value">
+	<button form="foodForm" class="pure-button">Save!</button>
+	<div class="pieChart"></div>
+	<p>Other nutritional info</p>
+	<div class="formTable"></div>
 	<input type="hidden" id="chosenFood" name="chosenFood" value="">
 	<input type="hidden" id="csrf" name="_csrf" value="<%= csrfToken %>">
 	<input type="hidden" id="slug" value="<%= user.slug %>">
-	<button form="foodForm" class="pure-button">Save!</button>
-	<div class="pieChart"></div>
 </form>
 
-<p id="notification" class="notification mfp-hide pure-form">Some text goes here</p>
-
+ 
 <p>Search for a common food here!</p>
 <form id="foodSearch">
 	<span><input type="text" placeholder="Search..."></span>
 </form>
+<p id="notification" class="ui-widget-content ui-corner-all"></p>
 
 <div class="foodChart"></div>
 </br>
@@ -50,29 +48,39 @@
 <script src="/javascript/GooglePie.js"></script>
 <script src="/javascript/config.js"></script>
 <script src="/javascript/magnificPopup.js"></script>
+<script src="/javascript/formTableConfig.js"></script>
 <script>
+    var spinner = $( "#spinner" ).spinner();
 	var myPieChart = new GooglePie()
 	// don't draw anything to begin with
 	var initRows = []
 
 	var myTable = new GoogleTable('.foodChart', initRows, tableHandler, mainTableOptions)
 	var $chosenFood= $('#chosenFood')
+	var formTable = '.formTable'
+	var myFormTable = new GoogleTable(formTable, initRows, function(){}, formTableOptions)
 
 	function tableHandler(e) {
 		var idx = myTable.googleTable.getSelection()
 		if (!_.isEmpty(idx)) {
-			myTable.oldRow = idx[0]['row']
+			myTable.selRow = idx[0]['row']
 		}
 
 		var rows = []
 		for (var i = 0; i < map.length; i++) {
-			rows[i] = [nutrition[i], parseFloat(myTable.getValue(myTable.oldRow, map[i]))]
+			rows[i] = [nutrition[i], parseFloat(myTable.getValue(myTable.selRow, map[i]))]
 		}
 
-		var id = myTable.getValue(myTable.oldRow, fields.length - 1)
+		var id = myTable.getValue(myTable.selRow, fields.length - 1)
 		$('#chosenFood').val(id)
+		// data dump returns the array of the selected row
+		var rowData = myTable.dataDump()
+
+		// magic number, oh well
+		$('#foodName').text(rowData[0])
 
 		myPieChart.googlePieDraw(rows)
+		myFormTable.draw([rowData], {showRowNumber: false})
 	};
 
 	var $foodIn = $('#foodSearch')
@@ -96,7 +104,7 @@
 					d = _.map(d, function(val, index){
 						return _.values(val)
 					})
-					myTable.googleChartsDraw(d)
+					myTable.draw(d)
 
 					// stick the magnific popup class to all rows
 					$('.google-visualization-table-table tr:not(.google-visualization-table-tr-head) td')
@@ -106,8 +114,22 @@
 					})
 
 					$('.popup-with-form').magnificPopup({
-						type: 'inline',
-						focus: '#name',
+							type: 'inline',
+							preloader: true, 
+							focus: '#name',
+							removalDelay: 300,
+							gallery: {
+								enabled: true
+							},
+							  mainClass: 'mfp-fade',
+							  callbacks: {
+							    open: function() {
+							      console.log('popup opened!')
+							    },
+							    close: function() {
+							    	console.log('popup closed')
+							    }
+							}  
 					});
 				},
 			});
@@ -120,31 +142,36 @@
 	var magnificPopup = $.magnificPopup
 	var notification = $('#notification')
 
+	notification.hide()
+
 	$foodForm.on('submit', function(e){
 		e.preventDefault()
 		$.ajax({
 			type: 'POST',
-			url: userSlug+'/foods',
+			url: '/'+userSlug+'/foods',
 			data: {
 			  _csrf: csrf,
-			  amount: $('#amount').val(),
+			  amount: spinner.spinner('value'),
 			  chosenFood: $('#chosenFood').val()
 			},
 			success: function(d) {
-				notification.text("Successfully added food " + d['foodId'])
-				notification.removeClass('mfp-hide')
-				window.setInterval(function(){
-					notification.addClass('mfp-hide')
-				}, 5000)
+				console.log(d)
+				notification.text(d)
+				notification.show("fold", {}, 1000, function(){
+					setTimeout(function() {
+		        		notification.fadeOut();
+		     		}, 1000 );
+				})				
 
 			  magnificPopup.close()
 			},
 			error: function(xhr, textStatus) {
-				notification.text("Unknown error " + textStatus)
-				notification.removeClass('mfp-hide')
-				window.setInterval(function(){
-					notification.addClass('mfp-hide')
-				}, 5000)
+				notification.text(textStatus)
+				notification.show("fold", {}, 1000, function(){
+					setTimeout(function() {
+		        		notification.fadeOut();
+		     		}, 1000 );
+				})			
 
 			  magnificPopup.close()
 			}

@@ -1,25 +1,35 @@
 <head>
 <link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-<script type="text/javascript" src="https://www.google.com/jsapi"></script>
-<script src="http://underscorejs.org/underscore.js"></script>
+<link rel="stylesheet" href="/magnificPopup/magnific-popup.css">
 <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.5.0/pure-min.css">
+<link rel="stylesheet" type="text/css" href="/stylesheets/jquery-ui.min.css">
+<link rel="stylesheet" type="text/css" href="/stylesheets/jquery-ui.theme.min.css">
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="https://www.google.com/jsapi"></script>
+<script src="http://underscorejs.org/underscore.js"></script>
+<script src="/magnificPopup/jquery.magnific-popup.js"></script>
+<script src="http://code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
 </head>
 <body>
 <p>Showing food list for <%= user.first + user.last %></p>
 <a href='/<%= user.slug %>'>Back</a></br>
 <a href='/logout'>Log out</a></br>
 
+<textarea rows=5 cols=30 id="tableData"></textarea>
 <div class="allFoods"></div>
 </br>
 
-<form id="foodInfo" class="pure-form">
+<p href="#foodInfo" class="popup-with-form">CLICKY</p>
+ <form id="foodInfo" class="pure-form mfp-hide white-popup">
 	<div class="pieChart"></div>
 	<input type="hidden" name="chosenFood" id="chosenFood"></input>
 	<input type="hidden" id="csrf" name="_csrf" value="<%= csrfToken %>">
-	<input type="text" name="Amount" placeholder="New amount"></input>
-</form>
+	<label for="spinner">Choose a new amount</label>
+	<input id="spinner" name="value">
+	<input type="submit" value="Save Food!"></input>
+    </form>
 
+<script src="/javascript/magnificPopup.js"></script>
 <script src="/javascript/GoogleTable.js"></script>
 <script src="/javascript/GooglePie.js"></script>
 <script src="/javascript/foodConfig.js"></script>
@@ -33,17 +43,6 @@
 
 	var allTables = {}
 
-	var classNames = []
-	var domClassNames = []
-	var fullClasses = []
-
-	for (var i = 0; i < charts.length; i++) {
-		classNames[i] = 'foodChart' + i
-		domClassNames[i] = '.' + classNames[i]
-		fullClasses[i] = '<div class ="' + classNames[i] + ' googleTable">'
-	}
-
-
 	// for (var i = 0; i < charts.length; i++) {
 	_.each(charts, function(value, i) {
 		var classname = 'foodChart' + i
@@ -55,24 +54,24 @@
 		var tableHandler = function(e) {
 			var idx = thisTable.googleTable.getSelection()
 			if (!_.isEmpty(idx)) {
-				thisTable.oldRow = idx[0]['row']
+				thisTable.selRow = idx[0]['row']
 			}
 
 			var rows = []
 			for (var k = 0; k < map.length; k++) {
-				rows[k] = [nutrition[k], parseFloat(thisTable.getValue(thisTable.oldRow, map[k]))]
+				rows[k] = [nutrition[k], parseFloat(thisTable.getValue(thisTable.selRow, map[k]))]
 			}
 
-			var id = thisTable.getValue(thisTable.oldRow, fields.length - 1)
+			var id = thisTable.getValue(thisTable.selRow, fields.length - 1)
 			$('#chosenFood').val(id)
 
+			var allData = _.object(fields, thisTable.dataDump())
+			$('#tableData').val(JSON.stringify(allData))
 			myPieChart.googlePieDraw(rows)
 		};
 
 		var chartTitle = charts[i][0][createdAtIndex]
-		var thisTable = new GoogleTable(domClass, charts[i], tableHandler, foodTableOptions, chartTitle)
-
-		// console.log(thisTable)
+		var thisTable = new GoogleTable(domClass, charts[i], tableHandler, foodTableOptions, chartTitle, loadMagnificPopup)
 		allTables[classname] = thisTable
 	})
 // }
@@ -85,7 +84,8 @@
 			type: 'PUT',
 			url: ('/' + userSlug + '/foods'),
 			data: {
-				hi: '2',
+				chosenFoodId: $('#chosenFood').val(),
+				amount: spinner.spinner('value'),
 				_csrf: csrf
 			},
 			success: function(d) {
@@ -93,5 +93,33 @@
 			}
 		})
 	})
+
+	// load the magnific popup hidden form
+	function loadMagnificPopup() {
+		$('.google-visualization-table-table tr:not(.google-visualization-table-tr-head)')
+			.attr({
+			class: 'popup-with-form',
+			href: '#foodInfo' 
+		})
+
+		$('.popup-with-form').magnificPopup({
+				type: 'inline',
+				preloader: true, 
+				focus: '#name',
+				removalDelay: 300,
+				gallery: {
+					enabled: true
+				},
+				  mainClass: 'mfp-fade',
+				  callbacks: {
+				    open: function() {
+				      console.log('popup opened!')
+				    },
+				    close: function() {
+				    	console.log('popup closed')
+				    }
+				}  
+		});	
+	}
 </script>
 </body>
