@@ -11,10 +11,11 @@ module.exports = {
 		description: {type: Sequelize.STRING}
 	},
 	relations: {
-		hasMany: {
+		// hasMany: {
 			// ChosenFood: {foreignKey: "userId", allowNull: false}
-			User: {through: 'Friends', as: 'Friend', foreignKey: 'befrienderId'}
-		},
+			// User: {through: 'Friends', as: 'Friend', foreignKey: 'befrienderId'}
+			// Friends: {foreignKey: "userId", allowNull: false}
+		// },
 	},
 	options: {
 		tableName: "Users3",

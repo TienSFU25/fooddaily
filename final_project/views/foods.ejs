@@ -34,7 +34,7 @@
 <script src="/javascript/GooglePie.js"></script>
 <script src="/javascript/foodConfig.js"></script>
 <script>
-	var myPieChart = new GooglePie()
+	var myPieChart = new GooglePie('.pieChart')
 	var charts = <%- JSON.stringify(chartData) %>
 	var createdAtIndex = _.indexOf(_.keys(foodTableOptions), "createdAt")
 
@@ -67,7 +67,7 @@
 
 			var allData = _.object(fields, thisTable.dataDump())
 			$('#tableData').val(JSON.stringify(allData))
-			myPieChart.googlePieDraw(rows)
+			myPieChart.draw(rows)
 		};
 
 		var chartTitle = charts[i][0][createdAtIndex]

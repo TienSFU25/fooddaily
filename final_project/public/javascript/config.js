@@ -99,14 +99,20 @@ var nutrition = [
 	"nf_protein",
 ]
 
+var nutrition = {
+  nf_total_fat: "Fat",
+  nf_protein: "Protein",
+  nf_total_carbohydrate: "Carbohydrates"
+}
+
 // sloppy way to get the column indexes of items in nutrition
 // or fields[map[i]] == nutrition[i]
 var map = []
 
-for (var i = 0; i < nutrition.length; i++) {
+_.each(_.keys(nutrition), function(key, index){
   for (var j = 0; j < fields.length; j++) {
-    if (nutrition[i] == fields[j]) {
-      map[i] = j
+    if (key == fields[j]) {
+      map[index] = j
     }
   }
-}
+})

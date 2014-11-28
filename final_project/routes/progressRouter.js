@@ -6,7 +6,7 @@ progressRouter.get('/', function(req, res){
 	db.getCaloriesByDay(req.user.id, function(err, result){
 		if (err) {
 			console.log("Error in db.get Amounts")
-			next
+			next(err)
 		} else {
 			var rr = [[]]
 			if (!_.isEmpty(result)) {

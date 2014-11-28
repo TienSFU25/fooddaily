@@ -1,0 +1,89 @@
+<head>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="http://underscorejs.org/underscore.js"></script>
+</head>
+<body>
+<p>This is the config friends page for <%= user.slug %></p>
+
+<p>Here are all the users</p>
+<ul>
+<% for (var i = 0; i < allUsers.length; i++) { %>
+	<li>
+		<form action='/<%= user.slug %>/friends/' method='POST'>
+			<p>Add friend <%= allUsers[i] %></p>
+			<input type='hidden' name='slug' value=<%= allUsers[i] %>></input>
+			<input type='hidden' name='type' value='POST'></input>
+			<input type='submit'></input>
+		</form>
+	</li>
+<% } %>
+</ul>
+
+<p>Pending requests</p>
+<ul id="accept">
+<% for (var i = 0; i < otherPending.length; i++) { %>
+	<li>
+		<form action='/<%= user.slug %>/friends/' method='PUT'>
+			<p>Accept friend <%= otherPending[i] %></p>
+			<input type='hidden' name='slug' value=<%= otherPending[i] %>></input>
+			<input type='hidden' name='type' value='PUT'></input>
+			<input type='submit'></input>
+		</form>
+	</li>
+<% } %>
+</ul>
+
+
+<p>Your pending requests</p>
+<ul id="withdraw">
+<% for (var i = 0; i < selfPending.length; i++) { %>
+	<li>
+		<form action='/<%= user.slug %>/friends/' method='PUT'>
+			<p>Withdraw your request to <%= selfPending[i] %></p>
+			<input type='hidden' name='slug' value=<%= selfPending[i] %>></input>
+			<input type='hidden' name='type' value='DELETE'></input>
+			<input type='submit'></input>
+		</form>
+	</li>
+<% } %>
+</ul>
+
+
+<p>All your friends</p>
+<ul id="delete">
+<% for (var i = 0; i < allFriends.length; i++) { %>
+	<li>
+		<form action='/<%= user.slug %>/friends/' method='DELETE'>
+			<p>Delete this friend <%= allFriends[i] %></p>
+			<input type='hidden' name='slug' value=<%= allFriends[i] %>></input>
+			<input type='hidden' name='type' value='DELETE'></input>
+			<input type='submit'></input>
+		</form>
+	</li>
+<% } %>
+</ul>
+
+</body>
+<script>
+	var thisUserSlug = '<%= user.slug %>'
+	var csrf = '<%= csrfToken %>'
+	var allAcceptForms = $("form")
+	allAcceptForms.on('submit', function(e){
+		e.preventDefault()
+		var otherUserSlug = this.elements[0].value
+		var myType = this.elements[1].value
+		console.log(otherUserSlug)
+		$.ajax({
+				type: myType,
+				url: '/' + thisUserSlug + '/friends',
+				data: {
+					slug: otherUserSlug,
+					_csrf: csrf,
+					type: myType
+				},
+				success: function(d) {
+					console.log(d)
+				}
+			})
+	})
+</script>

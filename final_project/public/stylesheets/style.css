@@ -66,3 +66,13 @@ input[type=text]{
 .googleTable {
   margin-bottom: 50px
 }
+
+.bomay {
+  position: absolute;
+  right: 70px;
+  top: 250px;
+  width: 500px;
+  height: 20px;
+  background-color: steelblue;
+  padding-right: 15%;
+}

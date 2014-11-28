@@ -31,7 +31,6 @@ var Database = function singleton(path){
 			}
 		}
 	})
-
 	_.each(allModelRelationships, function(oneModelRelationships, modelName, list){
 		//one model relations looks like this
 		// {
@@ -54,6 +53,13 @@ var Database = function singleton(path){
 			models[modelName][relationshipName](models[reference], options)
 		})
 	})
+
+	// can't add this to /models, User will not know about the Model
+	var Friends = this.sequelize.define('Friends', { accepted: Sequelize.STRING })
+	var User = this.models['User']
+	User.hasMany(User, {through: Friends, as: 'Friend', foreignKey: 'befrienderId'})
+	this.models['User'] = User
+	this.models['Friends'] = Friends
 }
 
 Database.prototype.model = function(modelName) {
@@ -61,7 +67,80 @@ Database.prototype.model = function(modelName) {
 }
 
 Database.prototype.sync = function(force) {
-	return this.sequelize.sync({force: force})
+
+	// var t = this
+	// var s = this.sequelize
+	// var Friends = s.define('Friends', { accepted: Sequelize.STRING })
+
+	// var User = t.models['User']
+	// User.hasMany(User, {through: Friends, as: 'Friend', foreignKey: 'befrienderId'})
+	s.sync({force: force}).done(function(err, res){
+		// t.models['User'] = User
+		// t.models['Friends'] = Friends
+
+// var u1 = t.models['User'].build({
+// 					username: '1q',
+// 					password: 'p',
+// 					firstname: 'f',
+// 					lastname: 'l',
+// 					slug: 'p2',
+// 					description: "some desc"
+// 				})
+
+// var u2 = t.models['User'].build({
+// 					username: 'u2qq',
+// 					password: 'p',
+// 					firstname: 'f',
+// 					lastname: 'l',
+// 					slug: '1',
+// 					description: "some desc"
+// 				})
+
+// u1.save().success(function(u1){
+// 	u2.save().success(function(u2){
+// 		t.models['User'].findOne({where: {userid: 1}}).done(function(err, res){
+// 		    u1.addFriend([u2], {accepted: 'aeebdc'}).on('success', function(res){console.log(res[0])})
+// 		})
+// 	})
+// })
+		// s.query(
+		// 	'alter table friends add num int(11);',
+		// 	null,
+		// 	{raw: true})
+	})
+}
+
+Database.prototype.trySomeShit = function() {
+	var User = this.models['User']
+	// var Friends = this.sequelize.define('Friends', { accepted: Sequelize.STRING })
+	var Friends = this.models['Friends']
+
+	User.hasMany(User, {through: Friends, as: 'Friend', foreignKey: 'befrienderId'})
+	var u1 = User.build({
+						username: '1q',
+						password: 'p',
+						firstname: 'f',
+						lastname: 'l',
+						slug: 'p2',
+						description: "some desc"
+					})
+
+	var u2 = User.build({
+						username: 'u2qq',
+						password: 'p',
+						firstname: 'f',
+						lastname: 'l',
+						slug: '1',
+						description: "some desc"
+					})
+
+	u1.save().success(function(u1){
+		u2.save().success(function(u2){
+			User.findOne({where: {userid: 1}}).done(function(err, res){
+			    u1.addFriend([u2], {accepted: 'aeebdc'}).on('success', function(res){console.log(res[0])})
+			})
+		})
+	})
 }
 
 Database.prototype.eatFood = function(userid, foodid, amountEaten, callback) {
@@ -122,7 +201,7 @@ Database.prototype.getAllChosenFoods = function(userid, callback) {
 Database.prototype.getCaloriesByDay = function(userid, callback) {
 	this.sequelize
 	.query(
-		'select date(c.createdAt) as "Date", sum(c.amount*f.calories) as "Total Calories" from chosenfoods c, foods f where userid=:id and c.foodid = f.id group by date(c.createdat)',
+		'select date(c.createdAt) as "Date", sum(c.amount*f.calories) as "Total Calories" from chosenfoods c, foods f where userid=:id and c.foodid = f.id group by date(c.createdat) order by date(c.createdat) desc',
 		null,
 		{raw: true},
 		{id: userid}
