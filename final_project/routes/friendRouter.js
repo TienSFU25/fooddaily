@@ -5,7 +5,7 @@ var _ = require('underscore')
 var friendRouter = express.Router()
 var User = db.model('User')
 var Friend = db.model('Friends')
-var MyEvent = require('../custom/MyEvent')
+//var MyEvent = require('../custom/MyEvent')
 
 // this user has already been authenticated, pass in the DB model to the next middlewares
 friendRouter.use('/', function(req, res, next){

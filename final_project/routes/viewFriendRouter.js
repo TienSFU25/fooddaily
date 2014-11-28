@@ -3,7 +3,7 @@ var viewFriendRouter = express.Router()
 var _ = require('underscore')
 var User = db.model('User')
 var Friend = db.model('Friends')
-var MyEvent = require('../custom/MyEvent')
+//var MyEvent = require('../custom/MyEvent')
 
 viewFriendRouter.get('/:slug', function(req, res){
 	var thisUser = req.user.db
