@@ -18,6 +18,8 @@
 <a href='/search'>Search for Recipes</a></br>
 <a href='/<%= user.slug %>/foods'>See your foods here</a></br>
 <a href='/<%= user.slug %>/progress'>View your daily progress here</a></br>
+<a href='/<%= user.slug %>/friends/'>Configure friends here</a></br>
+<a href='/<%= user.slug %>/friends/view'>View all friends here</a></br>
 
 <!-- form itself -->
 <form id="foodForm" class="white-popup mfp-hide pure-form">
@@ -38,7 +40,9 @@
 <form id="foodSearch">
 	<span><input type="text" placeholder="Search..."></span>
 </form>
-<p id="notification" class="ui-widget-content ui-corner-all"></p>
+<p id="notification" class="ui-widget-content ui-corner-all bomay"></p>
+
+<!-- <p class="bomay">clgt</p> -->
 
 <div class="foodChart"></div>
 </br>
@@ -51,7 +55,7 @@
 <script src="/javascript/formTableConfig.js"></script>
 <script>
     var spinner = $( "#spinner" ).spinner();
-	var myPieChart = new GooglePie()
+	var myPieChart = new GooglePie('.pieChart')
 	// don't draw anything to begin with
 	var initRows = []
 
@@ -68,7 +72,7 @@
 
 		var rows = []
 		for (var i = 0; i < map.length; i++) {
-			rows[i] = [nutrition[i], parseFloat(myTable.getValue(myTable.selRow, map[i]))]
+			rows[i] = [_.values(nutrition)[i], parseFloat(myTable.getValue(myTable.selRow, map[i]))]
 		}
 
 		var id = myTable.getValue(myTable.selRow, fields.length - 1)
@@ -79,7 +83,14 @@
 		// magic number, oh well
 		$('#foodName').text(rowData[0])
 
-		myPieChart.googlePieDraw(rows)
+		myPieChart.draw(rows, {
+			id3D: true,
+			title: "Calories by macros",
+			legend: {
+				position: 'labeled',
+				alignment: 'center'
+			}
+		})
 		myFormTable.draw([rowData], {showRowNumber: false})
 	};
 
@@ -110,7 +121,7 @@
 					$('.google-visualization-table-table tr:not(.google-visualization-table-tr-head) td')
 						.attr({
 						class: 'popup-with-form',
-						href: '#foodForm' 
+						href: '#foodForm'
 					})
 
 					$('.popup-with-form').magnificPopup({
@@ -121,6 +132,15 @@
 							gallery: {
 								enabled: true
 							},
+							items: [
+							// {
+							// 	src: '<p>some html</p>',
+							// 	type: 'inline'
+							// },
+							{
+								src: '#foodForm',
+								type: 'inline'
+							}],
 							  mainClass: 'mfp-fade',
 							  callbacks: {
 							    open: function() {
@@ -128,6 +148,9 @@
 							    },
 							    close: function() {
 							    	console.log('popup closed')
+							    },
+							    change: function() {
+							    	console.log('content changed')
 							    }
 							}  
 					});
