@@ -104,6 +104,14 @@ module.exports = function(app, passport, db, fbProfile) {
 		(req, res)
 	})
 
+	app.get('/:slug/dashboard', function(req, res, next) {
+		res.render('dashboard', { csrfToken: req.csrfToken(), user: req.params.slug })
+	})	
+
+	app.get('/:slug/addfood', function(req, res, next) {
+		res.render('addfood', { csrfToken: req.csrfToken(), user: req.params.slug })
+	})	
+
 	app.get('/:slug', function(req, res, next) {
 		if (req.isAuthenticated()) {
 			if (req.user.slug == req.params.slug) {
