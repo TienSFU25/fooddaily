@@ -67,7 +67,7 @@ Database.prototype.model = function(modelName) {
 }
 
 Database.prototype.sync = function(force) {
-	s.sync({force: force}).done(function(err, res){})
+	this.sequelize.sync({force: force}).done(function(err, res){})
 }
 
 Database.prototype.eatFood = function(userid, foodid, amountEaten, callback) {

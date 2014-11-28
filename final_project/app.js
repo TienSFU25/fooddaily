@@ -54,7 +54,7 @@ app.use(function (err, req, res, next) {
 // configure database, authentication procedures and routing
 var database = require('./config/database')
 db = new database('./models')
-// db.sync(true)
+//db.sync(true)
 
 // default fbProfile
 var fbProfile = {
