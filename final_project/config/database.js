@@ -5,7 +5,7 @@ var sprintf = require('sprintf-js').sprintf
 var validator = require('validator')
 
 var Database = function singleton(path){
-	var sq = new Sequelize('groupdb', 'group', 'thisgrouprocks', {
+	var sq = new Sequelize('groupdb', 'root', ' ', {
 		host: 'localhost',
 		dialect: 'mysql',
 		language: 'en',
@@ -131,6 +131,26 @@ Database.prototype.getCaloriesByDay = function(userid, callback) {
 		{id: userid}
 	).done(callback)
 }
+
+
+
+Database.prototype.getFavs = function(userid, callback) {
+	if (!validator.isInt(userid)) {
+		callback(new Error("User id must be an integer"))
+	}
+	this.sequelize
+	.query(
+		'select * from FavRecipes where userid=:id',
+		null,
+		{raw: true},
+		{id: userid}
+	).done(callback)
+}
+
+
+
+// INSERT INTO FavRecipes (recipeName,yield,ingredientsList,URL,IMG_URL) VALUES ("French Onion Soup","6","1 Stick Butter; 4 Whole Large (or 6 Medium) Yellow Onions, Halved Root To Tip, And Sliced Thin; 1 cup (generous) Dry White Wine; 4 cups Low Sodium Chicken Broth; 4 cups Beef Broth; 2 cloves Minced Garlic; Worcestershire Sauce; Several Thick Slices Of French Bread Or Baguette; 5 ounces, weight (to 7 Ounces) Gruyere Cheese, Grated","http://thepioneerwoman.com/cooking/2009/02/french-onion-soup/","http://lh6.ggpht.com/Sn2qCFY3fG8cI71t9BdZ-Jyb9RyPh_0Dg79ii9iRNHhd97yQy5MYg0e9sun3HxY9inRax15XWkBSrQ3RCQGq0A=s360");
+
 
 // time is supposed to be in this format hh:mm:ss
 Database.prototype.updateFood = function(userid, foodid, newAmount, timestring, callback) {

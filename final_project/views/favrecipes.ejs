@@ -11,7 +11,47 @@
 
 	<ul id="favRecipes">
 
+
 	</ul>
 	
-	<script src="/javascript/getrecipes.js"></script>
+
+
+<SCRIPT LANGUAGE="JavaScript">
+
+ $( document ).ready(function() {
+ 	// User.
+ 	// we need to pass in an array of recipe objects.
+
+
+	var example = "Hot-Turkey-Salad-Sandwiches-Allrecipes";
+	var example2 = "French-Onion-Soup-The-Pioneer-Woman-Cooks-_-Ree-Drummond-41364";
+
+	// var examples = [
+	// 	"Hot-Turkey-Salad-Sandwiches-Allrecipes",
+	// 	"French-Onion-Soup-The-Pioneer-Woman-Cooks-_-Ree-Drummond-41364"
+	// ]
+
+	<% for (i = 0; i < rows.length; i++) { %>
+
+
+
+
+	$("#favRecipes").append("<li><%=rows[i].recipeName%></li>");
+	$("#favRecipes").append("<li><img src=\"<%=rows[i].IMG_URL%>\"></img></li>");
+	$("#favRecipes").append("<li>Yield: <%=rows[i].yield%></li>");
+
+
+	<% var ingredients = rows[i].ingredientsList.split(";"); %>
+	var ing = "<li> Ingredients: <ul>";
+	<% for (x = 0; x < ingredients.length; x++) { %>
+		ing += "<li><%=ingredients[x]%></li>";
+	<% } %>
+	$("#favRecipes").append(ing);
+
+
+	$("#favRecipes").append("<li><a href=\"<%=rows[i].URL%>\">URL</a></li>");
+	$("#favRecipes").append("<br><br><br>");
+	<% } %>
+  });
+	</script>
 </body>
