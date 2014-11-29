@@ -40,38 +40,47 @@ foodRouter.get('/', function(req, response, next) {
 foodRouter.post('/', function(req, res, next) {
 	var id = req.body.chosenFood
 	var query = {id: id}
+	var rtnjson = {}
 	Food.checkFood(id, function(count) {
 		if (count == 0) {
 			// query nutritionix and save the food
 			nutritionix.item(query, function(err, food) {
 				Food.createFood(food, function(err, result) {
 					if (err) {
-						console.log(err)
-						next()
+						rtnjson.success = false
+						rtnjson.message = err
+						res.json(rtnjson)
 					} else {
 						db.eatFood(req.user.id, id, req.body.amount, function(err, r) {
 							if (err) {
-								console.log(err)
-								res.send(500)
+								rtnjson.success = false
+								rtnjson.message = err
+								res.json(rtnjson)
+							} else {
+								rtnjson.success = true
+								var dataValues = result.dataValues
+								rtnjson.message = sprintf("Successfully added %s %ss of %s", req.body.amount, dataValues['servingUnit'], dataValues['foodname'])
+								res.json(rtnjson)
 							}
-							var dataValues = result.dataValues
-							var message = sprintf("Successfully added %s %ss of %s", req.body.amount, dataValues['servingUnit'], dataValues['foodname'])
-							res.send(message)
 						})
 					}
 				})
 			})				
 		} else {
 			// regardless, save eating food information to ChosenFoods
+			// looks exactly like the code above, but this has to be written twice, because the food info might have to be retrieved from nutritionix
 			Food.findOne({where: {id: id}}).done(function (err, food) {
 				db.eatFood(req.user.id, id, req.body.amount, function(err, r) {
 					if (err) {
-						console.log(err)
-						res.send(500)
+						rtnjson.success = false
+						rtnjson.message = err
+						res.json(rtnjson)
+					} else {
+						rtnjson.success = true
+						var dataValues = food.dataValues
+						rtnjson.message = sprintf("Successfully added %s %ss of %s", req.body.amount, dataValues['servingUnit'], dataValues['foodname'])
+						res.json(rtnjson)
 					}
-					var dataValues = food.dataValues
-					var message = sprintf("Successfully added %s %ss of %s", req.body.amount, dataValues['servingUnit'], dataValues['foodname'])
-					res.send(message)
 				})
 			})
 		}
@@ -79,13 +88,60 @@ foodRouter.post('/', function(req, res, next) {
 })
 
 foodRouter.put('/', function(req, res, next){
-	console.log(req.body)
-	var ChosenFood = db.model('ChosenFood')
-	ChosenFood.updateFood(req.user.id, req.body.chosenFoodId, req.body.amount, function(err, food){
+	// console.log(req.body)
+	var params = req.body
+	var rtnjson = {}
+
+	// for some reason sequelize manual update gives no callback info
+	db.updateFood(req.user.id, params.foodId, params.amount, params.time, function(err){
 		if (err) {
-			res.send(err.message)
+			rtnjson.success = false
+			rtnjson.message = err
+			res.json(rtnjson)
 		} else {
-			res.send(food['dataValues'])
+			db.model('ChosenFood').findOne({where: {id: params.foodId}}).done(function(err, food){
+				if (err) {
+					rtnjson.success = false
+					rtnjson.message = err
+					res.json(rtnjson)
+				} else {
+					rtnjson.success = true
+					rtnjson.message = food['dataValues']
+					res.json(rtnjson)
+				}
+			})
+		}
+	})
+})
+
+foodRouter.delete('/', function(req, res){
+	var foodId = req.body.foodId
+	var rtnjson = {}
+	db.model('ChosenFood').findOne({where: {id: foodId}}).done(function(err, food){
+		if(err) {
+			rtnjson.success = false
+			rtnjson.message = err
+			res.json(rtnjson)
+		} else if (food == null) {
+			rtnjson.success = false
+			rtnjson.message = "Food id " + foodId + " does not exist"
+			res.json(rtnjson)
+		} else {	
+			var actualId = food['dataValues']['foodId']
+			food.destroy().done(function(){
+				// clean it up in the food table if there are no matching items in chosen
+				db.model('ChosenFood').count({where: {foodId: actualId}}).success(function(count){
+					db.model('Food').findOne({where: {id: actualId}}).done(function(err, actualFood){
+						rtnjson.success = true
+						rtnjson.message = "Successfully deleted food item " + actualFood['dataValues']['foodname']
+
+						if (count == 0) {
+							actualFood.destroy().done(function(){})
+						}
+						res.json(rtnjson)
+					})
+				})
+			})
 		}
 	})
 })

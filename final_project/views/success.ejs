@@ -13,8 +13,11 @@
 <script src="https://www.google.com/jsapi"></script>
 <script src="http://underscorejs.org/underscore.js"></script>
 <script src="http://code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
+<script src="/stylesheets/jquery.datetimepicker.js"></script>
+<link rel="stylesheet" type="text/css" href="/stylesheets/jquery.datetimepicker.css">
 </head>
 <body>
+<input id="datetimepicker" type="text" >
 
 <p>Successfully logged in</p>
 <p>Logged in as user <%= user.first + ' ' + user.last %></p>
@@ -58,6 +61,15 @@
 <script src="/javascript/magnificPopup.js"></script>
 <script src="/javascript/formTableConfig.js"></script>
 <script>
+	$('#datetimepicker').datetimepicker({
+		format: 'Y/m/d H:i', 
+		onSelectDate: function(ct, i) {
+			console.log(ct)
+			console.log(ct.dateFormat('d/m/Y'))
+		},
+		maxDate: 0
+	})
+
     var spinner = $( "#spinner" ).spinner();
 	var myPieChart = new GooglePie('.pieChart')
 	// don't draw anything to begin with

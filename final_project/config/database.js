@@ -1,6 +1,8 @@
 var fs = require('fs')
 var _ = require('underscore')
 var Sequelize = require('sequelize')
+var sprintf = require('sprintf-js').sprintf
+var validator = require('validator')
 
 var Database = function singleton(path){
 	var sq = new Sequelize('groupdb', 'group', 'thisgrouprocks', {
@@ -71,42 +73,31 @@ Database.prototype.sync = function(force) {
 }
 
 Database.prototype.eatFood = function(userid, foodid, amountEaten, callback) {
+	if (!validator.isInt(userid)) {
+		callback(new Error("User id must be an integer"))
+	}
+
+	if (!validator.isInt(foodid)) {
+		callback(new Error("Food id must be an integer"))
+	}
+
+	if (!validator.isInt(amountEaten)) {
+		callback(new Error("Amount must be an integer"))
+	}
+
 	amountEaten = parseInt(amountEaten)
-
-	var d = new Date()
-	var month = d.getMonth() + 1
-	var day = d.getDate()
-	var year = d.getFullYear()
-	var ChosenFood = this['models']['ChosenFood']
-	var sprintf = require('sprintf-js').sprintf
-
-	// better way to do this?
-	var query = sprintf('select c.id, c.amount from chosenfoods c where c.userid = %s and c.foodid="%s" and day(c.createdat)=%s and month(c.createdat)=%s and year(c.createdat)=%s', userid, foodid, day, month, year)
-
-	this.sequelize
-	.query(
-		query,
-		null,
-		{raw: true}
-	).done(function(err, res){
+	if (amountEaten < 0) {
+		callback(new Error("Amount must be positive"))
+	}
+	var ChosenFood = this.model('ChosenFood')
+	ChosenFood.findOne({where: {userId: userid, foodId: foodid}}).done(function(err, chosenFood){
 		if (err) {
-			console.log(err)
-			return
-		}
-		if (_.isEmpty(res)) {
-			ChosenFood.build({
+			callback(err)
+		} else {
+			ChosenFood.create({
 				userId: userid,
 				foodId: foodid,
 				amount: amountEaten
-			})
-			.save()
-			.done(callback)
-		} else {
-			var oldAmount = res[0]['amount']
-			ChosenFood.findOne({where: {foodId: foodid}}).done(function(err, res) {
-				res.updateAttributes({
-					amount: oldAmount + amountEaten
-				})
 			}).done(callback)
 		}
 	})
@@ -114,18 +105,24 @@ Database.prototype.eatFood = function(userid, foodid, amountEaten, callback) {
 
 // these methods require joining tables, and still have to be here
 Database.prototype.getAllChosenFoods = function(userid, callback) {
-	var customQuery = 'select '
+	if (!validator.isInt(userid)) {
+		callback(new Error("User id must be an integer"))
+	}
+	var customQuery = 'select'
 	var dbFields = _.keys(require('./nutritionix'))
 
 	_.each(dbFields, function(value, index) {
 		customQuery += (' foods.' + value + ',')
 	})
-	customQuery += ' chosenfoods.amount, chosenfoods.createdAt, (chosenfoods.amount*foods.calories) as "Total Calories", chosenfoods.id as "ChosenFoodId" from chosenfoods, foods, user2 where chosenfoods.foodid = foods.id and user2.userid=' + userid + ' order by chosenfoods.createdAt'
+	customQuery += ' chosenfoods.amount, chosenfoods.createdAt, (chosenfoods.amount*foods.calories) as "Total Calories", chosenfoods.id as "ChosenFoodId" from chosenfoods, foods, users3 where chosenfoods.foodid=foods.id and chosenfoods.userId=users3.userid and users3.userid=' + userid + ' order by chosenfoods.createdAt'
 
 	this.sequelize.query(customQuery, null, {raw: true}).done(callback)	
 }
 
 Database.prototype.getCaloriesByDay = function(userid, callback) {
+	if (!validator.isInt(userid)) {
+		callback(new Error("User id must be an integer"))
+	}
 	this.sequelize
 	.query(
 		'select date(c.createdAt) as "Date", sum(c.amount*f.calories) as "Total Calories" from chosenfoods c, foods f where userid=:id and c.foodid = f.id group by date(c.createdat) order by date(c.createdat) desc',
@@ -135,13 +132,46 @@ Database.prototype.getCaloriesByDay = function(userid, callback) {
 	).done(callback)
 }
 
-Database.prototype.exec = function(query, callback) {
-	sequelize
-	.query(
-		query,
-		null,
-		{raw: true}
-	).done(callback)
+// time is supposed to be in this format hh:mm:ss
+Database.prototype.updateFood = function(userid, foodid, newAmount, timestring, callback) {
+	var ChosenFood = this.model('ChosenFood')
+	var sq = this.sequelize
+	var arr = timestring.split(':')
+	if (!Date.validateHour(arr[0]) || !Date.validateMinute(arr[1]) || !Date.validateSecond(arr[2])) {
+		callback(new Error("Invalid date format. Must be hh:mm:ss"))
+		return
+	}
+
+	if (!validator.isInt(newAmount)) {
+		callback(new Error("Amount is not an integer"))
+		return
+	}
+
+	newAmount = parseInt(newAmount)
+	// only this user can change the food
+	ChosenFood.findOne(
+		{where: {
+			userId: userid,
+			id: foodid	
+		}}
+	).done(function(err, food){
+		if (!food) {
+			callback(new Error(sprintf("Food id %s with userid %s does not exist", foodid, userid)))
+			return
+		} else {
+			var oldAmount = parseInt(food['dataValues']['amount'])
+			newAmount += oldAmount
+			if (newAmount < 0) {
+				callback(new Error("Cannot change amount to negative value"))
+				return
+			}
+			sq.query(
+				sprintf('update ChosenFoods set createdAt=concat(date(createdAt), " %s"), amount="%s" where id="%s"', timestring, newAmount, foodid),
+				null,
+				{raw: true}
+			).done(callback)
+		}
+	})
 }
 
 module.exports = Database

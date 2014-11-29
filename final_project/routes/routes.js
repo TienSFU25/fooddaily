@@ -1,6 +1,12 @@
 module.exports = function(app, passport, db, fbProfile) {
 
 	var s = require('string')
+	console.log(new Date())
+	// db.eatFood(17, "513fc997927da70408003f50", 400, function(){})
+	// db.changeDate(1, new Date(), function(err, res){
+	// 	console.log(err)
+	// 	console.log(res)
+	// })
 	// print user
 	app.use('/', function(req, res, next) {
 		// console.log('logged in user is ' + req.user)

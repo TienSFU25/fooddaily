@@ -61,6 +61,29 @@ GoogleTable.prototype.draw = function f(rows, options) {
     this.googleTable.draw(this.view, options);
 }
 
+GoogleTable.prototype.removeSelected = function() {
+	if (this.selRow == null) {
+		console.log("No rows have been selected for this table")
+		return
+	}
+
+	this.data.removeRow(this.selRow)
+
+	console.log(this.data.getNumberOfRows())
+	if (this.data.getNumberOfRows() == 0) {
+		this.googleTable.clearChart()
+		return
+	}
+
+	options = {
+		showRowNumber: true,
+		page: 'enable', 
+		pageSize: 10
+	}
+
+	this.googleTable.draw(this.view, options)
+}
+
 GoogleTable.prototype.getValue = function f(row, col) {
 	return this.data.getValue(row, col)
 }

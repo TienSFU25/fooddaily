@@ -9,6 +9,9 @@
 <script src="http://underscorejs.org/underscore.js"></script>
 <script src="/magnificPopup/jquery.magnific-popup.js"></script>
 <script src="http://code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
+
+<script src="/stylesheets/jquery.timepicker.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/stylesheets/jquery.timepicker.css">
 </head>
 <body>
 <p>Showing food list for <%= user.first + user.last %></p>
@@ -21,13 +24,15 @@
 
 <p href="#foodInfo" class="popup-with-form">CLICKY</p>
  <form id="foodInfo" class="pure-form mfp-hide white-popup">
+	<h2 id="foodName"></h3>
 	<div class="pieChart"></div>
-	<input type="hidden" name="chosenFood" id="chosenFood"></input>
-	<input type="hidden" id="csrf" name="_csrf" value="<%= csrfToken %>">
 	<label for="spinner">Choose a new amount</label>
 	<input id="spinner" name="value">
-	<input type="submit" value="Save Food!"></input>
-    </form>
+	<input id="timepicker" type="text">
+	<button id="deleteFood">Delete this food</button>
+	<input type="hidden" id="csrf" name="_csrf" value="<%= csrfToken %>">
+	<input type="submit" value="Save"></input>
+ </form>
 
 <script src="/javascript/magnificPopup.js"></script>
 <script src="/javascript/GoogleTable.js"></script>
@@ -35,13 +40,22 @@
 <script src="/javascript/foodConfig.js"></script>
 <script>
 	var myPieChart = new GooglePie('.pieChart')
+
+	// charts is an array of arrays of arrays. first level array is every item eaten in a single day
 	var charts = <%- JSON.stringify(chartData) %>
 	var createdAtIndex = _.indexOf(_.keys(foodTableOptions), "createdAt")
-
+	var rowData = {}
 	var $allFoods = $('.allFoods')
 	var csrf = $('#csrf').val()
 
-	var allTables = {}
+	$('#timepicker').timepicker({
+		step: 10,
+		timeFormat: 'H:i:s'
+	})
+	$('#spinner').spinner()
+
+	var allTables = []
+	var selectedTable
 
 	// for (var i = 0; i < charts.length; i++) {
 	_.each(charts, function(value, i) {
@@ -62,17 +76,21 @@
 				rows[k] = [nutrition[k], parseFloat(thisTable.getValue(thisTable.selRow, map[k]))]
 			}
 
-			var id = thisTable.getValue(thisTable.selRow, fields.length - 1)
-			$('#chosenFood').val(id)
+			rowData = _.object(fields, thisTable.dataDump())
+			$('#tableData').val(JSON.stringify(rowData))
 
-			var allData = _.object(fields, thisTable.dataDump())
-			$('#tableData').val(JSON.stringify(allData))
+			// set the h2 food name in the form
+			$('#foodName').text(rowData['foodname'])
+
+			// this is for knowing which table got clicked
+			selectedTable = thisTable.myId
 			myPieChart.draw(rows)
 		};
 
 		var chartTitle = charts[i][0][createdAtIndex]
 		var thisTable = new GoogleTable(domClass, charts[i], tableHandler, foodTableOptions, chartTitle, loadMagnificPopup)
-		allTables[classname] = thisTable
+		thisTable.myId = i
+		allTables[i] = thisTable
 	})
 // }
 
@@ -84,12 +102,29 @@
 			type: 'PUT',
 			url: ('/' + userSlug + '/foods'),
 			data: {
-				chosenFoodId: $('#chosenFood').val(),
-				amount: spinner.spinner('value'),
+				foodId: rowData['chosenFoodId'],
+				amount: $('#spinner').val(),
+				time: $('#timepicker').val(),
 				_csrf: csrf
 			},
 			success: function(d) {
 				console.log(d)
+				$.magnificPopup.close()
+			}
+		})
+	})
+
+	$('#deleteFood').on('click', function(e){
+		$.ajax({
+			type: 'DELETE',
+			url: ('/' + userSlug + '/foods'),
+			data: {
+				_csrf: csrf,
+				foodId: rowData['chosenFoodId']
+			},
+			success: function(d) {
+				$.magnificPopup.close()
+				allTables[selectedTable].removeSelected()
 			}
 		})
 	})

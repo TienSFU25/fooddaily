@@ -54,14 +54,14 @@ input[type=text]{
   margin: 0 auto;
 }
 
-/*.notification {
+.notification {
   position: fixed;
   top: 5px;
   right: 60px;
   padding: 20px;
   background-color: steelblue;
   z-index: 1
-}*/
+}
 
 .googleTable {
   margin-bottom: 50px

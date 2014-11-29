@@ -1,5 +1,6 @@
 var Sequelize = require('sequelize')
 var sprintf = require('sprintf-js').sprintf
+var validator = require('validator')
 
 module.exports = {
 	model: {
@@ -23,30 +24,6 @@ module.exports = {
 					food.updateAttributes({
 						createdAt: createdAt
 					}).done(callback)
-				})
-			},
-			updateFood: function(userid, foodid, newAmount, callback) {
-				newAmount = parseInt(newAmount)
-				this.findOne(
-					{where: {
-						userId: userid,
-						id: foodid	
-					}}
-				).done(function(err, food){
-					if (!food) {
-						callback(new Error(sprintf("Food id %s with userid %s does not exist", foodid, userid)))
-						return false
-					} else {
-						var oldAmount = parseInt(food['dataValues']['amount'])
-						newAmount += oldAmount
-						if (newAmount < 0) {
-							callback(new Error("Cannot change amount to negative value"))
-							return false
-						}
-						food.updateAttributes({
-							amount: newAmount
-						}).done(callback)
-					}
 				})
 			}
 		}	
