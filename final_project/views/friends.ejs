@@ -1,89 +1,174 @@
 <head>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <script src="http://underscorejs.org/underscore.js"></script>
+<script src="/chosen_v1.2.0/chosen.jquery.js"></script>
+<script src="http://code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
+<link rel="stylesheet" type="text/css" href="/stylesheets/jquery-ui.min.css">
+<link rel="stylesheet" type="text/css" href="/stylesheets/jquery-ui.theme.min.css">
+<link rel="stylesheet" type="text/css" href="/chosen_v1.2.0/chosen.min.css">
+<link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
 </head>
 <body>
 <p>This is the config friends page for <%= user.slug %></p>
 
-<p>Here are all the users</p>
-<ul>
-<% for (var i = 0; i < allUsers.length; i++) { %>
-	<li>
-		<form action='/<%= user.slug %>/friends/' method='POST'>
-			<p>Add friend <%= allUsers[i] %></p>
-			<input type='hidden' name='slug' value=<%= allUsers[i] %>></input>
-			<input type='hidden' name='type' value='POST'></input>
-			<input type='submit'></input>
-		</form>
-	</li>
-<% } %>
-</ul>
+<p id="notification" class="ui-widget-content ui-corner-all"></p>
+<div id="tabs">
+  <ul>
+    <li><a href="#addFriends">Add friends</a></li>
+    <li><a href="#editFriends">Friend settings</a></li>
+    <li><a href="#viewFriends">View your friends here</a></li>
+  </ul>
+  <div id="addFriends">
+	<p>Here are all the users</p>
+	<div class="ui-widget">
+	  <label for="addFriend">Find other users</label>
+	  <input id="addFriend">
+	</div>
+	<button id="submitAdd">Add Friend</button>
+  </div>
+  <div id="editFriends">
 
-<p>Pending requests</p>
-<ul id="accept">
-<% for (var i = 0; i < otherPending.length; i++) { %>
-	<li>
-		<form action='/<%= user.slug %>/friends/' method='PUT'>
-			<p>Accept friend <%= otherPending[i] %></p>
-			<input type='hidden' name='slug' value=<%= otherPending[i] %>></input>
-			<input type='hidden' name='type' value='PUT'></input>
-			<input type='submit'></input>
-		</form>
-	</li>
-<% } %>
-</ul>
+	<p>Pending requests to you</p>
+	<table id="accept" class="genCss">
+		<% for (var i = 0; i < otherPending.length; i++) { %>
+		<tr>
+			<td value=<%= selfPending[i] %> type="accept">Accept request from <%= otherPending[i] %></td>
+		</tr>
+		<% } %>
+	</table>
 
 
-<p>Your pending requests</p>
-<ul id="withdraw">
-<% for (var i = 0; i < selfPending.length; i++) { %>
-	<li>
-		<form action='/<%= user.slug %>/friends/' method='PUT'>
-			<p>Withdraw your request to <%= selfPending[i] %></p>
-			<input type='hidden' name='slug' value=<%= selfPending[i] %>></input>
-			<input type='hidden' name='type' value='DELETE'></input>
-			<input type='submit'></input>
-		</form>
-	</li>
-<% } %>
-</ul>
+	<p>Your pending requests</p>
+	<table id="withdraw" class="genCss">
+		<% for (var i = 0; i < selfPending.length; i++) { %>
+		<tr>
+			<td value=<%= selfPending[i] %> type="withdraw">Withdraw request to <%= selfPending[i] %></td>
+		</tr>
+		<% } %>
+	</table>
 
 
-<p>All your friends</p>
-<ul id="delete">
-<% for (var i = 0; i < allFriends.length; i++) { %>
-	<li>
-		<form action='/<%= user.slug %>/friends/' method='DELETE'>
-			<p>Delete this friend <%= allFriends[i] %></p>
-			<input type='hidden' name='slug' value=<%= allFriends[i] %>></input>
-			<input type='hidden' name='type' value='DELETE'></input>
-			<input type='submit'></input>
-		</form>
-	</li>
-<% } %>
-</ul>
+	<p>All your friends</p>
+	<table id="delete" class="genCss">
+		<% for (var i = 0; i < allFriends.length; i++) { %>
+		<tr>
+			<td value=<%= allFriends[i] %> type="delete">Unfriend <%= allFriends[i] %></td>
+		</tr>
+	<% } %>
+	</table>
+  </div>
+
+  <div id="viewFriends">
+	  <p>Your friends</p>
+		<ul>
+		<% for (var i = 0; i < allFriends.length; i++) { %>
+			<li>
+				<a href='/<%= user.slug %>/friends/<%= allFriends[i] %>'><%= allFriends[i] %></a>
+			</li>
+		<% } %>
+	</div>
+</div>
+
 
 </body>
 <script>
+	var autoCompleteSrc = <%- JSON.stringify(allUsers) %>
+	$('#tabs').tabs()
+	$('#addFriend').autocomplete({
+		source: autoCompleteSrc,
+		minLength: 0
+	})
+
+	var notification = $('#notification')
 	var thisUserSlug = '<%= user.slug %>'
 	var csrf = '<%= csrfToken %>'
-	var allAcceptForms = $("form")
-	allAcceptForms.on('submit', function(e){
-		e.preventDefault()
-		var otherUserSlug = this.elements[0].value
-		var myType = this.elements[1].value
-		console.log(otherUserSlug)
-		$.ajax({
-				type: myType,
-				url: '/' + thisUserSlug + '/friends',
-				data: {
-					slug: otherUserSlug,
-					_csrf: csrf,
-					type: myType
-				},
-				success: function(d) {
-					console.log(d)
+
+	$('#submitAdd').on('click', function(event){
+		var otherUserSlug = $('#addFriend').val()
+		ajax('POST', otherUserSlug, function(rtnjson){
+			changeNotification(rtnjson.message)
+			if (rtnjson.success) {
+				reloadAutocomplete(1, otherUserSlug)
+				// add this row to the withdraw requests table
+				$('#withdraw').append('<tr><td value=' + otherUserSlug + ' type="withdraw">Withdraw request to ' + otherUserSlug + '</td></tr>')
+				$('td').on('click', listener)
+			}
+		})
+	})
+
+	$('td').on('click', listener)
+	function listener(e) {
+		var otherUserSlug = this.getAttribute("value")
+		var type = this.getAttribute("type")
+
+		if (type == 'accept') {
+			ajax("PUT", otherUserSlug, function(rtnjson){
+				changeNotification(rtnjson.message)
+				if (rtnjson.success) {
+					removeTableRow(otherUserSlug, false)
 				}
 			})
-	})
+		} else if (type == 'withdraw' || type == 'delete') {
+			ajax("DELETE", otherUserSlug, function(rtnjson){
+				changeNotification(rtnjson.message)
+				if (rtnjson.success) {
+					removeTableRow(otherUserSlug, true)
+				}
+			})
+		} else {
+			console.log("Unknown button type " + type)
+		}
+	}
+
+	function ajax(type, otherUserSlug, successHandler) {
+		$.ajax({
+			type: type,
+			url: '/' + thisUserSlug + '/friends',
+			data: {
+				slug: otherUserSlug,
+				_csrf: csrf
+			},
+			success: function(d) {
+				successHandler(d)
+			}
+		})
+	}
+
+	function changeNotification(text) {
+		notification.text(text)
+		notification.show("fold", {}, 2000, function(){
+			setTimeout(function() {
+        		notification.fadeOut()
+     		}, 2000)
+		})
+	}
+
+	// PROBABLY NOT THE BEST WAY TO DO THIS
+	function removeTableRow(otherUserSlug, addBack) {
+		var selector = $("td[value='" + otherUserSlug + "']")
+		if (selector.length > 0) {
+			var parent = selector.parents("tr")
+			// why is this not working?
+			// in console prints out not jquery object, but [button, prevObject: m.fn.init[1]...]
+			parent.fadeOut(3000)
+			parent.remove()
+			if (addBack) {
+				reloadAutocomplete(0, otherUserSlug)
+			}
+		} else {
+			console.log("invalid button value selector " + otherUserSlug)
+		}
+	}
+
+	// mode 0 to add something, mode 1 to delete an existing item
+	function reloadAutocomplete(mode, text) {
+		if (mode == 0) {
+			autoCompleteSrc.push(text)
+		} else {
+			autoCompleteSrc = _.without(autoCompleteSrc, text)
+		}
+		$('#addFriend').autocomplete("option", "source", autoCompleteSrc)
+		$('#addFriend').val("")
+	}
+
 </script>

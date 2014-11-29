@@ -1,16 +1,21 @@
 <head>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+
 <link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
 <link rel="stylesheet" href="/magnificPopup/magnific-popup.css">
 <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.5.0/pure-min.css">
 <link rel="stylesheet" type="text/css" href="/stylesheets/jquery-ui.min.css">
 <link rel="stylesheet" type="text/css" href="/stylesheets/jquery-ui.theme.min.css">
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/chosen_v1.2.0/chosen.min.css">
+<script src="/chosen_v1.2.0/chosen.jquery.js"></script>
+<script src="/chosen_v1.2.0/chosen.proto.js"></script>
 <script src="/magnificPopup/jquery.magnific-popup.js"></script> 
 <script src="https://www.google.com/jsapi"></script>
 <script src="http://underscorejs.org/underscore.js"></script>
 <script src="http://code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
 </head>
 <body>
+
 <p>Successfully logged in</p>
 <p>Logged in as user <%= user.first + ' ' + user.last %></p>
 <a href='/<%= user.slug %>/settings'>Settings</a></br>
@@ -19,7 +24,6 @@
 <a href='/<%= user.slug %>/foods'>See your foods here</a></br>
 <a href='/<%= user.slug %>/progress'>View your daily progress here</a></br>
 <a href='/<%= user.slug %>/friends/'>Configure friends here</a></br>
-<a href='/<%= user.slug %>/friends/view'>View all friends here</a></br>
 
 <!-- form itself -->
 <form id="foodForm" class="white-popup mfp-hide pure-form">
@@ -178,7 +182,6 @@
 			  chosenFood: $('#chosenFood').val()
 			},
 			success: function(d) {
-				console.log(d)
 				notification.text(d)
 				notification.show("fold", {}, 1000, function(){
 					setTimeout(function() {
