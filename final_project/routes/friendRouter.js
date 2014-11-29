@@ -5,7 +5,7 @@ var _ = require('underscore')
 var friendRouter = express.Router()
 var User = db.model('User')
 var Friend = db.model('Friends')
-//var MyEvent = require('../custom/MyEvent')
+var MyEvent = require('../custom/MyEvent')
 
 // this user has already been authenticated, pass in the DB model to the next middlewares
 friendRouter.use('/', function(req, res, next){
@@ -15,7 +15,40 @@ friendRouter.use('/', function(req, res, next){
 	})
 })
 
-friendRouter.use('/view', require('./viewFriendRouter'))
+friendRouter.get('/:slug', function(req, res){
+	var thisUser = req.user.db
+	User.findOne({where: {slug: req.params.slug}}).done(function(err, otherUser){
+		if (err) {
+			res.send(err)
+		}
+		thisUser.hasFriend(otherUser).done(function(err, isFriend){
+			if (!isFriend) {
+				res.send("You have not received a friend request from " + req.params.slug)
+			} else {
+				var otherUserId = otherUser['dataValues']['userid']
+				Friend.findOne({where: {befrienderId: req.user.id, FriendUserid: otherUserId}}).done(function(err, friendRow){
+					if (err) {
+						res.send(err)
+					}
+					// there is a pending request
+					if (friendRow['dataValues']['accepted'] == "0") {
+						res.send(req.params.slug + " must approve your friend request before you can view their dashboard")
+					} else {
+						db.getCaloriesByDay(otherUserId, function(err, calories){
+							if (err) {
+								res.send(err)
+							} else if (calories.length == 0) {
+								res.render('test', {username: req.params.slug, calories: [], csrfToken: req.csrfToken()})
+							} else {
+								res.render('test', {username: req.params.slug, calories: calories[0]['Total Calories'], csrfToken: req.csrfToken()})
+							}
+						})
+					}
+				})
+			}
+		})
+	})
+})
 
 friendRouter.get('/', function(req, res){	
 	var thisUser = req.user.db
@@ -92,7 +125,7 @@ friendRouter.use('/', function(req, res, next){
 			res.send(err)
 		}
 		if (otherUser== null) {
-			res.send("User " + params.slug + " does not exist ")
+			res.send("User " + req.body.slug + " does not exist ")
 		}
 
 		req.user.db2 = otherUser
@@ -103,12 +136,23 @@ friendRouter.use('/', function(req, res, next){
 friendRouter.post('/', function(req, res){
 	var thisUser = req.user.db
 	var otherUser = req.user.db2
+	var rtnjson = {}
 	thisUser.hasFriend(otherUser).done(function(err, isFriends){
+		if(err) {
+			rtnjson.message = err
+			rtnjson.success = false
+			res.json(rtnjson)
+		}
+
 		if (isFriends) {
-			res.send("Already friends with the user " + otherUser['dataValues']['slug'])
+			rtnjson.message = "You have already sent a request to " + otherUser['dataValues']['slug']
+			rtnjson.success = false
+			res.json(rtnjson)
 		} else {
 			thisUser.addFriend([otherUser], {accepted: "0"}).done(function(err, result){
-				res.send(result[0])
+				rtnjson.message = "Successful friend request to " + otherUser['dataValues']['slug']
+				rtnjson.success = true 
+				res.json(rtnjson)
 			})
 		}
 	})
@@ -119,6 +163,8 @@ friendRouter.use('/', function(req, res, next) {
 	var thisUser = req.user.db
 	var otherUser = req.user.db2
 	var method = req.method
+	var rtnjson = {}
+
 	// this is for accepting friend requests, need to swap the users
 	if (method == 'PUT') {
 		var swap = thisUser
@@ -128,7 +174,9 @@ friendRouter.use('/', function(req, res, next) {
 
 	thisUser.hasFriend(otherUser).done(function(err, isFriends){
 		if (!isFriends) {
-			res.send("There is no existing friend request between " + otherUser['dataValues']['slug'] + " and " + thisUser['dataValues']['slug'])
+			rtnjson.success = false
+			rtnjson.message = "There is no existing friend request between " + otherUser['dataValues']['slug'] + " and " + thisUser['dataValues']['slug']
+			res.send(rtnjson)
 		} else {
 			next()
 		}
@@ -138,24 +186,32 @@ friendRouter.use('/', function(req, res, next) {
 friendRouter.put('/', function(req, res){
 	var thisUser = req.user.db
 	var otherUser = req.user.db2
+	var rtnjson = {}
 
 	var requester = otherUser['dataValues']
 	var requested = thisUser['dataValues']
 	Friend.findOne({where: {befrienderId: requester['userid'], FriendUserId: requested['userid']}}).done(function(err, result){
 		result.updateAttributes({accepted: "1"})
-		res.send("Successfully accepted friend request from " + req.body.slug)
+		rtnjson.message = 'Successfully accepted friend request from ' + req.body.slug
+		rtnjson.success = true
+		res.send(rtnjson)
 	})
 })
 
 friendRouter.delete('/', function(req, res){
 	var thisUser = req.user.db
 	var otherUser = req.user.db2
+	var rtnjson = {}
 
 	thisUser.removeFriend(otherUser).done(function(err, result){
 		if (err) {
-			res.send(err)
+			rtnjson.message = err
+			rtnjson.success = false
+			res.send(rtnjson)
 		} else {
-			res.send(result)
+			rtnjson.message = "Successfully removed friend " + req.body.slug
+			rtnjson.success = true
+			res.send(rtnjson)
 		}
 	})
 });
