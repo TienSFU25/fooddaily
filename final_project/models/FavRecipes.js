@@ -15,17 +15,17 @@ module.exports = {
 		}
 	},
 	options: {
-		tableName: "FavRecipes"
-	},
-	classMethods: {
-		getFavs: function(userid, callback) {
-			this.findAll({where: {userId: userid}})
-		},
-		createFav: function(userid, recipeName, callback) {
-			this.create({
-				userId: userid,
-				recipeName: recipeName
-			}).done(callback)
+		tableName: "FavRecipes",
+		classMethods: {
+			getFavs: function(userid, callback) {
+				this.findAll({where: {userId: userid}})
+			},
+			createFav: function(userid, recipeName, callback) {
+				this.create({
+					userId: userid,
+					recipeName: recipeName
+				}).done(callback)
+			}
 		}
 	}
 }
