@@ -18,7 +18,8 @@ foodRouter.get('/', function(req, response, next) {
 	db.getAllChosenFoods(req.user.id, function(err, allFoods) {
 		var allRows = []
 		var thisRow = []
-		var lastDate = (allFoods.length > 0) ? allFoods[0]['createdAt'].toDateString() : ' '
+		//var lastDate = (allFoods.length > 0) ? allFoods[0]['createdAt'].toDateString() : ' '
+		var lastDate = null
 		_.each(allFoods, function(foodDict, index){
 			foodDict['createdAt'] = foodDict['createdAt'].toDateString()
 			if (foodDict['createdAt'] == lastDate) {
