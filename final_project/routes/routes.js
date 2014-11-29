@@ -84,7 +84,7 @@ module.exports = function(app, passport, db, fbProfile) {
 			} else {
 				req.logIn(user, function(err){
 					if (err) return next(err)
-					res.redirect(user.slug)
+					res.redirect(user.slug + '/dashboard')
 				})
 			}
 		})
@@ -124,7 +124,11 @@ module.exports = function(app, passport, db, fbProfile) {
 
 	// down here means nobody is authenticated
 	app.get('/', function(req, res, next){
-		res.render('about', { csrfToken: req.csrfToken() })
+		if (req.user == null) {
+			res.render('about', { csrfToken: req.csrfToken() })
+		} else {
+			res.redirect(req.user.slug + '/dashboard')
+		}
 	})
 
 
