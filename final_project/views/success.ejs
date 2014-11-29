@@ -194,6 +194,8 @@
 			  chosenFood: $('#chosenFood').val()
 			},
 			success: function(d) {
+				
+				console.log(d)
 				notification.text(d)
 				notification.show("fold", {}, 1000, function(){
 					setTimeout(function() {

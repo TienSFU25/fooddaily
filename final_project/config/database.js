@@ -75,20 +75,20 @@ Database.prototype.sync = function(force) {
 Database.prototype.eatFood = function(userid, foodid, amountEaten, callback) {
 	if (!validator.isInt(userid)) {
 		callback(new Error("User id must be an integer"))
-	}
-
-	if (!validator.isInt(foodid)) {
-		callback(new Error("Food id must be an integer"))
+		return
 	}
 
 	if (!validator.isInt(amountEaten)) {
 		callback(new Error("Amount must be an integer"))
+		return
 	}
 
 	amountEaten = parseInt(amountEaten)
 	if (amountEaten < 0) {
 		callback(new Error("Amount must be positive"))
+		return
 	}
+
 	var ChosenFood = this.model('ChosenFood')
 	ChosenFood.findOne({where: {userId: userid, foodId: foodid}}).done(function(err, chosenFood){
 		if (err) {

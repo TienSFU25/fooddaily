@@ -3,6 +3,7 @@
 var express = require('express')
 var _ = require('underscore')
 var sprintf = require('sprintf-js').sprintf
+var MyEvent = require('../custom/MyEvent')
 
 foodRouter = express.Router()
 
@@ -18,8 +19,11 @@ foodRouter.get('/', function(req, response, next) {
 	db.getAllChosenFoods(req.user.id, function(err, allFoods) {
 		var allRows = []
 		var thisRow = []
-		//var lastDate = (allFoods.length > 0) ? allFoods[0]['createdAt'].toDateString() : ' '
-		var lastDate = null
+		if (allFoods == null || allFoods.length == 0) {
+			lastDate = ''
+		} else {
+			lastDate = allFoods[0]['createdAt'].toDateString()
+		}
 		_.each(allFoods, function(foodDict, index){
 			foodDict['createdAt'] = foodDict['createdAt'].toDateString()
 			if (foodDict['createdAt'] == lastDate) {
@@ -32,61 +36,69 @@ foodRouter.get('/', function(req, response, next) {
 			}
 		})
 
-		allRows.push(thisRow)
+		if (thisRow.length > 0) {
+			allRows.push(thisRow)
+		}
 		response.render('foods', {user:req.user, chartData: allRows, csrfToken: req.csrfToken()})
 		return
 	})
 })
 
 foodRouter.post('/', function(req, res, next) {
-	var id = req.body.chosenFood
-	var query = {id: id}
-	var rtnjson = {}
+	var id = req.body.chosenFood;
+	var query = {id: id};
+	var rtnjson = {};
+
 	Food.checkFood(id, function(count) {
 		if (count == 0) {
 			// query nutritionix and save the food
 			nutritionix.item(query, function(err, food) {
 				Food.createFood(food, function(err, result) {
 					if (err) {
-						rtnjson.success = false
-						rtnjson.message = err
-						res.json(rtnjson)
+						rtnjson.success = false;
+						rtnjson.message = JSON.stringify(err);
+						res.json(rtnjson);
+						return;
 					} else {
 						db.eatFood(req.user.id, id, req.body.amount, function(err, r) {
 							if (err) {
-								rtnjson.success = false
-								rtnjson.message = err
-								res.json(rtnjson)
+								rtnjson.success = false;
+								rtnjson.message = JSON.stringify(err);
+								res.json(rtnjson);
+								return;
 							} else {
-								rtnjson.success = true
-								var dataValues = result.dataValues
-								rtnjson.message = sprintf("Successfully added %s %ss of %s", req.body.amount, dataValues['servingUnit'], dataValues['foodname'])
-								res.json(rtnjson)
+								rtnjson.success = true;
+								var dataValues = result.dataValues;
+								rtnjson.message = sprintf("Successfully added %s %ss of %s", req.body.amount, dataValues['servingUnit'], dataValues['foodname']);
+								res.json(rtnjson);
+								return;
 							}
-						})
+						});
 					}
-				})
-			})				
+				});
+			});			
 		} else {
 			// regardless, save eating food information to ChosenFoods
 			// looks exactly like the code above, but this has to be written twice, because the food info might have to be retrieved from nutritionix
 			Food.findOne({where: {id: id}}).done(function (err, food) {
 				db.eatFood(req.user.id, id, req.body.amount, function(err, r) {
 					if (err) {
-						rtnjson.success = false
-						rtnjson.message = err
-						res.json(rtnjson)
+						rtnjson.success = false;
+						rtnjson.message = JSON.stringify(err);
+						res.json(rtnjson);
+						return;
 					} else {
-						rtnjson.success = true
-						var dataValues = food.dataValues
-						rtnjson.message = sprintf("Successfully added %s %ss of %s", req.body.amount, dataValues['servingUnit'], dataValues['foodname'])
-						res.json(rtnjson)
+						rtnjson.success = true;
+						var dataValues = food.dataValues;
+						rtnjson.message = sprintf("Successfully added %s %ss of %s", req.body.amount, dataValues['servingUnit'], dataValues['foodname']);
+						res.json(rtnjson);
+						return;
 					}
-				})
-			})
+				});
+			});
 		}
-	})
-})
+	});
+});
 
 foodRouter.put('/', function(req, res, next){
 	// console.log(req.body)
