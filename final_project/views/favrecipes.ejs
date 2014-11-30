@@ -339,6 +339,11 @@
 						// 	"French-Onion-Soup-The-Pioneer-Woman-Cooks-_-Ree-Drummond-41364"
 						// ]
 
+                        <% if (rows.length == 0) { %>
+                            $("#favRecipes").append("You have no favorite recipes added. Start <a href=\"/<%= user.slug %>/recipesearch\">searching</a> Yummly to add some!");
+                        <% } %>
+
+
 						<% for (i = 0; i < rows.length; i++) { %>
 
 
