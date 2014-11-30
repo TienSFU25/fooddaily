@@ -51,9 +51,9 @@ module.exports = function(app, passport, db, fbProfile) {
 		} else if (str == 'signup') {
 			res.render('signup', { csrfToken: req.csrfToken() })
 		//temporary routing for new frontend - tien please fix	
-		} else if (str == 'newindex') {		
-			res.render('newindex', { csrfToken: req.csrfToken(), user: req.user })
-		} else if (str == 'about') {		
+		} else if (str == 'addfood') {		
+			res.render('addfood', { csrfToken: req.csrfToken(), user: req.user })
+		} else if (str == 'addfood') {		
 			res.render('about', { csrfToken: req.csrfToken(), user: req.user })
 		} else if (str == 'logout') {
 			if (req.isAuthenticated) {

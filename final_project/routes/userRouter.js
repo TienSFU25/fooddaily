@@ -12,12 +12,18 @@ userRouter.get('/', function(req, res){
 	res.render('success', {user: req.user, csrfToken: req.csrfToken()})
 })
 
+userRouter.use('/dashboard', require('./dashboardRouter'))
+userRouter.use('/addfood', require('./addFoodRouter'))
+userRouter.use('/recipes', require('./recipeRouter'))
+userRouter.use('/favorites', require('./favoritesRouter'))
 userRouter.use('/foods', require('./foodRouter'))
 userRouter.use('/progress', require('./progressRouter'))
-userRouter.use('/dashboard', require('./dashboardRouter'))
+userRouter.use('/settings', require('./settingsRouter'))
+
 userRouter.use('/friends', require('./friendRouter'))
-userRouter.use('/favorites', require('./favoritesRouter'))
-userRouter.use('/recipes', require('./recipeRouter'))
+
+
+
 
 
 module.exports = userRouter

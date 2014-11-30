@@ -8,20 +8,6 @@ ul{
   overflow-y:scroll;
 }*/
 
-body {
-  background-color: #BDB76B;
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
-}
-
-a {
-  color: #8B4513;
-}
-
-p {
-  color: red;
-}
-
 .chart div {
   font: 10px sans-serif;
   background-color: steelblue;
