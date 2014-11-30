@@ -39,7 +39,8 @@ foodRouter.get('/', function(req, response, next) {
 		if (thisRow.length > 0) {
 			allRows.push(thisRow)
 		}
-		response.render('foods', {user:req.user, chartData: allRows, csrfToken: req.csrfToken()})
+		console.log(allFoods)
+		response.render('foods', {username: req.user.slug, user:req.user, chartData: allRows, csrfToken: req.csrfToken()})
 		return
 	})
 })
