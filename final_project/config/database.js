@@ -10,7 +10,7 @@ var Database = function singleton(path){
 		dialect: 'mysql',
 		language: 'en',
 		timezone: '-08:00',
-		// logging: false
+		logging: false
 	})
 
 	var models = {}
@@ -132,8 +132,6 @@ Database.prototype.getCaloriesByDay = function(userid, callback) {
 	).done(callback)
 }
 
-
-
 Database.prototype.getFavs = function(userid, callback) {
 	if (!validator.isInt(userid)) {
 		callback(new Error("User id must be an integer"))
@@ -151,23 +149,64 @@ Database.prototype.getFavs = function(userid, callback) {
 
 // INSERT INTO FavRecipes (recipeName,yield,ingredientsList,URL,IMG_URL) VALUES ("French Onion Soup","6","1 Stick Butter; 4 Whole Large (or 6 Medium) Yellow Onions, Halved Root To Tip, And Sliced Thin; 1 cup (generous) Dry White Wine; 4 cups Low Sodium Chicken Broth; 4 cups Beef Broth; 2 cloves Minced Garlic; Worcestershire Sauce; Several Thick Slices Of French Bread Or Baguette; 5 ounces, weight (to 7 Ounces) Gruyere Cheese, Grated","http://thepioneerwoman.com/cooking/2009/02/french-onion-soup/","http://lh6.ggpht.com/Sn2qCFY3fG8cI71t9BdZ-Jyb9RyPh_0Dg79ii9iRNHhd97yQy5MYg0e9sun3HxY9inRax15XWkBSrQ3RCQGq0A=s360");
 
-
 // time is supposed to be in this format hh:mm:ss
-Database.prototype.updateFood = function(userid, foodid, newAmount, timestring, callback) {
+Database.prototype.updateFood = function(userid, foodid, newAmount, timestring, paramdate, callback) {
+	var datestring = ""
+	// this "workaround" is here because I didn't know Jdatepicker gave this format
+	if (paramdate != "") {
+		var myDate = paramdate.split('/')
+		if (myDate.length != 3) {
+			callback(new Error("Invalid date format. Must be in format yyyy/mm/dd "))
+			return
+		}
+
+		var datestring = myDate[2]+'-'+myDate[0]+'-'+myDate[1]
+	}
+
 	var ChosenFood = this.model('ChosenFood')
 	var sq = this.sequelize
-	var arr = timestring.split(':')
-	if (!Date.validateHour(arr[0]) || !Date.validateMinute(arr[1]) || !Date.validateSecond(arr[2])) {
-		callback(new Error("Invalid date format. Must be hh:mm:ss"))
-		return
+	var timeArr = timestring.split(':')
+	var dateArr = datestring.split('-')
+	var yyyy = parseInt(dateArr[0])
+	var mm = parseInt(dateArr[1])
+	var dd = parseInt(dateArr[2])
+
+	// validate date, time and amount, if they are not empty
+	if (timestring != "") {
+		if (!Date.validateHour(timeArr[0]) || !Date.validateMinute(timeArr[1]) || !Date.validateSecond(timeArr[2])) {
+			callback(new Error("Invalid time format. Must be hh:mm:ss"))
+			return
+		}
 	}
 
-	if (!validator.isInt(newAmount)) {
-		callback(new Error("Amount is not an integer"))
-		return
+	// yyyy-mm-dd
+	// validate day requires dd-yyyy-mm
+	if (datestring != "") {
+		if (!Date.validateDay(dd, yyyy, mm)) {
+			callback(new Error("Invalid date format. Must be yyyy/mm/dd"))
+			return
+		}
+		
+		try {
+			var d = new Date(yyyy, mm - 1, dd, 0, 0, 0, 0)
+			console.log(d)
+			if (Date.compare(d, new Date()) == 1) {
+				callback(new Error("Cannot set a date later than today"))
+				return
+			}
+		} catch(err) {
+			callback(new Error("Cannot parse date. Must be yyyy/mm/dd"))
+			return
+		}
 	}
 
-	newAmount = parseInt(newAmount)
+	if (newAmount != "") {
+		if (!validator.isInt(newAmount)) {
+			callback(new Error("Amount must be an integer"))
+			return
+		}
+	}
+
 	// only this user can change the food
 	ChosenFood.findOne(
 		{where: {
@@ -179,14 +218,45 @@ Database.prototype.updateFood = function(userid, foodid, newAmount, timestring, 
 			callback(new Error(sprintf("Food id %s with userid %s does not exist", foodid, userid)))
 			return
 		} else {
-			var oldAmount = parseInt(food['dataValues']['amount'])
-			newAmount += oldAmount
-			if (newAmount < 0) {
-				callback(new Error("Cannot change amount to negative value"))
+
+			var myquery = "update ChosenFoods set "
+
+			// if all 3 are empty
+			if (newAmount == "" && timestring == "" && datestring == "") {
+				callback(new Error("All fields were left empty"))
 				return
+			} else if (timestring == "" && datestring == "") {
+			// if both time and date are empty
+				myquery += ", "
+			} else if (timestring == "") {
+				// if time is empty
+				myquery += sprintf('createdAt="%s", ', datestring)
+			} else if (datestring == "") {
+				// if date is empty then have to do some mysql magic to keep the old date
+				myquery += sprintf('createdAt=concat(date(createdAt), " %s"), ', timestring)
+			} else if (timestring != "" && datestring != "") {
+				myquery += sprintf('createdAt="%s %s", ', datestring, timestring)
 			}
+
+			if (newAmount != "") {
+				newAmount = parseInt(newAmount)
+				var oldAmount = parseInt(food['dataValues']['amount'])
+				newAmount += oldAmount
+				if (newAmount < 0) {
+					callback(new Error("Cannot change amount to negative value"))
+					return
+				}
+				myquery += sprintf('amount="%s" ', newAmount)
+			} else {
+				// delete the comma and space if time was the only thing changed
+				myquery = myquery.substring(0, myquery.length -2)
+			}
+
+			myquery += sprintf(' where id="%s"', foodid)
+			console.log(myquery)
 			sq.query(
-				sprintf('update ChosenFoods set createdAt=concat(date(createdAt), " %s"), amount="%s" where id="%s"', timestring, newAmount, foodid),
+				myquery,
+				// sprintf('update ChosenFoods set createdAt=concat(date(createdAt), " %s"), amount="%s" where id="%s"', timestring, newAmount, foodid),
 				null,
 				{raw: true}
 			).done(callback)

@@ -105,7 +105,7 @@ foodRouter.put('/', function(req, res, next){
 	var rtnjson = {}
 
 	// for some reason sequelize manual update gives no callback info
-	db.updateFood(req.user.id, params.foodId, params.amount, params.time, function(err){
+	db.updateFood(req.user.id, params.foodId, params.amount, params.time, params.date, function(err){
 		if (err) {
 			rtnjson.success = false
 			rtnjson.message = err.message
