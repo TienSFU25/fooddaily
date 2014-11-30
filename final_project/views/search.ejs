@@ -2,29 +2,38 @@
 
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 	<script src="https://www.google.com/jsapi"></script>
+	<!--<script src="http://underscorejs.org/underscore.js"></script>-->
 	<script>
+
 		var APP_ID = "1aeab161";
 		var APP_KEY = "30949c53cf846dfc493a20eebfbbd422";
+		var rows = [];
+		var table;
+		var data;
 
 		function queryYummly(foodSearch) {
 			var call = "http://api.yummly.com/v1/api/recipes?_";
-			// var params = foodName.split(" ");
+			// "api.yummly.com/v1/api/recipes?_app_id=1aeab161&_app_key=30949c53cf846dfc493a20eebfbbd422&+onion+soup";
 
-			// call += "app_id=" + APP_ID + "&_app_key=" + APP_KEY + "&";
+			var params = foodSearch.split(" ");
 
-			// for (var i = 0; i < params.length; i++) {
-			// 	call += "+" + params[i];
-			// };
+			call += "app_id=" + APP_ID + "&_app_key=" + APP_KEY + "&q=";
 
-			call += "app_id=" + APP_ID + "&_app_key=" + APP_KEY + "&" + foodSearch;
+			for (var i = 0; i < params.length; i++) {
+				// alert(params[i]);
+				call += "+" + params[i];
+			};
+
+			// call += "app_id=" + APP_ID + "&_app_key=" + APP_KEY + "&q=";
 			
-			alert(call);
-			
+			// alert(call);
+			// $("#q").val(call);
+
 			var jqhxr = $.ajax({
 				type: "GET",
 				url: call,
 				success: function(data) {
-					alert("success search");
+					// alert("success search");
 					updateTableResults(data);
 				}, 
 				error: function() {
@@ -38,17 +47,17 @@
 			call += foodId + "?_";
 			call += "app_id=" + APP_ID + "&_app_key=" + APP_KEY;
 
-			alert(call);
+			// alert(call);
 			
 			var jqhxr = $.ajax({
 				type: "GET",
 				url: call,
 				success: function(data) {
-					alert("success get by id");
+					alert("success get by id: " + call);
 					// updateResults(data);
 				}, 
 				error: function() {
-					alert("no results found");
+					alert("no results found (by id)");
 				}
 			})
 		}
@@ -77,23 +86,24 @@
 		}
 
 		function updateTableResults(data) {
-			var items = [];
+			rows = new Array();
 			// var i = 0;
 			// var len = data.matches.length;
 			for(var i = 0; i < data.matches.length; i++) {
 				var name = data.matches[i].recipeName;
 				var brand = data.matches[i].sourceDisplayName;
-				var ingredients = data.matches[i].ingredients;
-				// var jsonIngredients = data.matches[i].ingredients;
-				// var j;
-				// for(j = 0; j < jsonIngredients.length; j++) {
-				// 	ingredients[j] = 
-				// }
+
+				var jsonIngredients = data.matches[i].ingredients;
+				var ingredients = jsonIngredients[0];// = data.matches[i].ingredients;
+				for(var index = 1; index < jsonIngredients.length; index++) {
+					ingredients += ", " + jsonIngredients[index];
+				}
+
 				var prepTime = data.matches[i].totalTimeInSeconds;	
 				var rating = data.matches[i].rating;
 				var id = data.matches[i].id;
 
-				var item = [
+				var row = [
 					name,
 					brand,
 					ingredients,
@@ -102,30 +112,13 @@
 					id
 				];
 
-				items[i] = item;
+				rows.push(row);
 			}
-			// myTable.googleChartsDraw(jsonToArrayArrays(items, fields));
-			myTable.googleChartsDraw(items);
+			
+			drawTable(rows);
 		}
 
 		$(document).ready(function() {
-			var initRows = [];
-			var fields = [
-			    "recipeName",
-			    "sourceDisplayName",
-			    "ingredients",
-			    "totalTime",
-			    "rating",
-			    "id"
-			];
-			var hidden = [fields.length - 1];
-
-			var myTable = new GoogleTable('.foodChart', initRows, tableHandler, fields, hidden);
-			function tableHandler(e) {
-				var rowIndex = myTable.getSelectedRow();
-				alert(rowIndex);
-				//TODO Add listener to serach by ID
-			};
 
 			// event listener
 			$('#recipeSearch').keypress(function(e){
@@ -133,7 +126,7 @@
 					// disable form submission
 					e.preventDefault();
 					var query = $('#q').val(); //"Hot-Turkey-Salad-Sandwiches-Allrecipes";
-					alert(query);
+					// alert(query);
 					queryYummly(query);
 				}
 			});
@@ -153,11 +146,56 @@
 
 	<p>Results</p>
 	<br/>
-	<div class="foodChart"></div>
+	<div class="recipeTable"></div>
 	<br/>
 
 	<!--<script src="http://cmpt470.csil.sfu.ca/~mmilosev/GoogleTable.js"></script>-->
-	<script src="/javascript/GoogleTable.js"></script>
+	<!--<script src="/javascript/GoogleTable.js"></script>-->
 	<!--<script src="/javascript/getrecipes.js"></script>-->
-	
+	<script "text/javascript">
+
+		google.load("visualization", "1", {packages:["table"]});
+		google.setOnLoadCallback(drawTable);
+
+		function drawTable() {
+		table = new google.visualization.Table($('.recipeTable').get(0));
+
+		data = new google.visualization.DataTable();
+
+		var fields = [
+			"recipeName",
+			"sourceDisplayName",
+			"ingredients",
+			"totalTime (seconds)",
+			"rating (out of 5)",
+			"id"
+		];
+
+		data.addColumn('string', fields[0]);
+		data.addColumn('string', fields[1]);
+		data.addColumn('string', fields[2]);
+		data.addColumn('number', fields[3]);
+		data.addColumn('number', fields[4]);
+		data.addColumn('string', fields[5]);
+
+		data.addRows(rows);
+
+
+		// table.view = new google.visualization.DataView(data);
+	 // 	table.view.hideColumns(fields[5]);
+
+		google.visualization.events.addListener(data, 'select', selectTableListener);
+
+		table.draw(data, {showRowNumber: false});
+	}
+
+	function selectTableListener() {
+		var idx = table.getSelection();
+		var selectedRow = idx[0]['row'];
+
+		var recipeId = data.getValue(selectedRow, 5);
+		yummlyGetById(recipeId);
+	}
+
+	</script>
 </body>
