@@ -5,12 +5,12 @@ var sprintf = require('sprintf-js').sprintf
 var validator = require('validator')
 
 var Database = function singleton(path){
-	var sq = new Sequelize('groupdb', 'root', ' ', {
+	var sq = new Sequelize('groupdb', 'group', 'thisgrouprocks', {
 		host: 'localhost',
 		dialect: 'mysql',
 		language: 'en',
 		timezone: '-08:00',
-		logging: false
+		logging: true
 	})
 
 	var models = {}
@@ -112,9 +112,9 @@ Database.prototype.getAllChosenFoods = function(userid, callback) {
 	var dbFields = _.keys(require('./nutritionix'))
 
 	_.each(dbFields, function(value, index) {
-		customQuery += (' foods.' + value + ',')
+		customQuery += (' Foods.' + value + ',')
 	})
-	customQuery += ' chosenfoods.amount, chosenfoods.createdAt, (chosenfoods.amount*foods.calories) as "Total Calories", chosenfoods.id as "ChosenFoodId" from chosenfoods, foods, users3 where chosenfoods.foodid=foods.id and chosenfoods.userId=users3.userid and users3.userid=' + userid + ' order by chosenfoods.createdAt'
+	customQuery += ' ChosenFoods.amount, ChosenFoods.createdAt, (ChosenFoods.amount*Foods.calories) as "Total Calories", ChosenFoods.id as "ChosenFoodId" from ChosenFoods, Foods, Users3 where ChosenFoods.foodid=Foods.id and ChosenFoods.userId=Users3.userid and Users3.userid=' + userid + ' order by ChosenFoods.createdAt'
 
 	this.sequelize.query(customQuery, null, {raw: true}).done(callback)	
 }
@@ -125,7 +125,7 @@ Database.prototype.getCaloriesByDay = function(userid, callback) {
 	}
 	this.sequelize
 	.query(
-		'select date(c.createdAt) as "Date", sum(c.amount*f.calories) as "Total Calories" from chosenfoods c, foods f where userid=:id and c.foodid = f.id group by date(c.createdat) order by date(c.createdat) desc',
+		'select date(c.createdAt) as "Date", sum(c.amount*f.calories) as "Total Calories" from ChosenFoods c, Foods f where userid=:id and c.foodid = f.id group by date(c.createdat) order by date(c.createdat) desc',
 		null,
 		{raw: true},
 		{id: userid}
