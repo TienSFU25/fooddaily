@@ -320,7 +320,7 @@
 
 <form action="/settings" method="post">
     <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-    <p>Calorie Intake</p><input type="text" name="caloriesIn"></br>
+    <p>Calorie Intake</p><input type="text" name="caloriesIn"></br><br>
     <p>Daily current calories</p><input type="text" name="caloriesOut"></br>
 
 
@@ -343,12 +343,33 @@
       <option value="ovo_vegetarian">Ovo vegetarian</option> <!-- yes eggs, no dairy -->
       <option value="pescetarian">Pescetarian</option> <!-- yes fish -->
       <option value="pescetarian_lacto">Pescetarian-lacto</option> <!--  yes fish, yes dairy, no eggs -->
-      <option value="pescetarian_ovo">Pescetarian-lacto</option> <!-- yes fish, no dairy, no eggs   &allowedDiet[]=390^Pescetarian&allowedDiet[]=388^Lacto vegetarian -->
+      <option value="pescetarian_ovo">Pescetarian-ovo</option> <!-- yes fish, no dairy, no eggs   &allowedDiet[]=390^Pescetarian&allowedDiet[]=388^Lacto vegetarian -->
       <option value="paleo">Paleo</option>
     </select></br>
     <br>
-    <br>
 
+
+
+
+
+<!-- set_metadata('allergy', [{"id":"396","shortDescription":"Dairy-Free","longDescription":"Dairy-Free","searchValue":"396^Dairy-Free","type":"allergy","localesAvailableIn":["en-US"]},{"id":"397","shortDescription":"Egg-Free","longDescription":"Egg-Free","searchValue":"397^Egg-Free","type":"allergy","localesAvailableIn":["en-US"]},{"id":"393","shortDescription":"Gluten-Free","longDescription":"Gluten-Free","searchValue":"393^Gluten-Free","type":"allergy","localesAvailableIn":["en-US"]},{"id":"394","shortDescription":"Peanut-Free","longDescription":"Peanut-Free","searchValue":"394^Peanut-Free","type":"allergy","localesAvailableIn":["en-US"]},{"id":"398","shortDescription":"Seafood-Free","longDescription":"Seafood-Free","searchValue":"398^Seafood-Free","type":"allergy","localesAvailableIn":["en-US"]},{"id":"399","shortDescription":"Sesame-Free","longDescription":"Sesame-Free","searchValue":"399^Sesame-Free","type":"allergy","localesAvailableIn":["en-US"]},{"id":"400","shortDescription":"Soy-Free","longDescription":"Soy-Free","searchValue":"400^Soy-Free","type":"allergy","localesAvailableIn":["en-US"]},{"id":"401","shortDescription":"Sulfite-Free","longDescription":"Sulfite-Free","searchValue":"401^Sulfite-Free","type":"allergy","localesAvailableIn":["en-US"]},{"id":"395","shortDescription":"Tree Nut-Free","longDescription":"Tree Nut-Free","searchValue":"395^Tree Nut-Free","type":"allergy","localesAvailableIn":["en-US"]},{"id":"392","shortDescription":"Wheat-Free","longDescription":"Wheat-Free","searchValue":"392^Wheat-Free","type":"allergy","localesAvailableIn":["en-US"]}]); -->
+
+
+<p>Additional restrictions</p>
+<input type="checkbox" name="restriction" value="Dairy">Dairy-Free<br>
+<input type="checkbox" name="restriction" value="Egg">Egg-Free<br>
+<input type="checkbox" name="restriction" value="Gluten">Gluten-Free<br>
+<input type="checkbox" name="restriction" value="Peanut">Peanut-Free<br>
+<input type="checkbox" name="restriction" value="Seafood">Seafood-Free<br>
+<input type="checkbox" name="restriction" value="Sesame">Sesame-Free<br>
+<input type="checkbox" name="restriction" value="Soy">Soy-Free<br>
+<input type="checkbox" name="restriction" value="Sulfite">Sulfite-Free<br>
+<input type="checkbox" name="restriction" value="Tree">Tree Nut-Free<br>
+<input type="checkbox" name="restriction" value="Wheat">Wheat-Free<br>
+
+
+
+    <br>
     <input type="submit" value="Save">
 </form>
 
