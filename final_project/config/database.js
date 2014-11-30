@@ -114,7 +114,7 @@ Database.prototype.getAllChosenFoods = function(userid, callback) {
 	_.each(dbFields, function(value, index) {
 		customQuery += (' Foods.' + value + ',')
 	})
-	customQuery += ' ChosenFoods.amount, ChosenFoods.createdAt, (ChosenFoods.amount*Foods.calories) as "Total Calories", ChosenFoods.id as "ChosenFoodId", Time(ChosenFoods.createdAt) as "Time" from ChosenFoods, Foods, Users3 where ChosenFoods.foodId=Foods.id and ChosenFoods.userId=Users3.userid and Users3.userid=' + userid + ' order by ChosenFoods.createdAt'
+	customQuery += ' ChosenFoods.amount, ChosenFoods.createdAt, (ChosenFoods.amount*Foods.calories) as "Total Calories", ChosenFoods.id as "ChosenFoodId" from ChosenFoods, Foods, Users3 where ChosenFoods.foodid=Foods.id and ChosenFoods.userId=Users3.userid and Users3.userid=' + userid + ' order by ChosenFoods.createdAt'
 
 	this.sequelize.query(customQuery, null, {raw: true}).done(callback)	
 }
@@ -125,7 +125,7 @@ Database.prototype.getCaloriesByDay = function(userid, callback) {
 	}
 	this.sequelize
 	.query(
-		'select date(c.createdAt) as "Date", sum(c.amount*f.calories) as "Total Calories" from ChosenFoods c, Foods f where userid=:id and c.foodId = f.id group by date(c.createdAt) order by date(c.createdAt) desc',
+		'select date(c.createdAt) as "Date", sum(c.amount*f.calories) as "Total Calories" from ChosenFoods c, Foods f where userid=:id and c.foodid = f.id group by date(c.createdat) order by date(c.createdat) desc',
 		null,
 		{raw: true},
 		{id: userid}
@@ -142,19 +142,6 @@ Database.prototype.getFavs = function(userid, callback) {
 		null,
 		{raw: true},
 		{id: userid}
-	).done(callback)
-}
-
-
-Database.prototype.createFav = function(userid, recipeName, yield, ingredientsList, URL, IMG_URL, callback) {
-	if (!validator.isInt(userid)) {
-		callback(new Error("User id must be an integer"))
-	}
-	this.sequelize
-	.query(
-		sprintf('INSERT INTO FavRecipes (userID,recipeName,yield,ingredientsList,URL,IMG_URL) VALUES (%d,"%s","%s","%s","%s","%s");', userid, recipeName, yield, ingredientsList, URL, IMG_URL),
-		null,
-		{raw: true}
 	).done(callback)
 }
 

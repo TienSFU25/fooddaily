@@ -14,7 +14,7 @@ userRouter.get('/', function(req, res){
 
 userRouter.use('/dashboard', require('./dashboardRouter'))
 userRouter.use('/addfood', require('./addFoodRouter'))
-userRouter.use('/recipes', require('./recipeRouter'))
+userRouter.use('/recipesearch', require('./recipeRouter'))
 userRouter.use('/favorites', require('./favoritesRouter'))
 userRouter.use('/foods', require('./foodRouter'))
 userRouter.use('/progress', require('./progressRouter'))

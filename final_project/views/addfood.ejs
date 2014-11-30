@@ -289,35 +289,35 @@
                                 <input type="text" class="form-control" placeholder="Search...">
                                 <span class="input-group-btn">
                                     <button class="btn btn-default" type="button">
-                                        <i class="fa fa-search"></i>
+                                        <i class="fa fa-plus"></i>
                                     </button>
                                 </span>
                             </div>
                             <!-- /input-group -->
                         </li>
                         <li>
-                            <a href="/dashboard"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
+                            <a href="/<%= user.slug %>/dashboard"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
                         </li>
                         <li>
-                            <a href="/addfood"><i class="fa fa-table fa-fw"></i> Add Food</a>
+                            <a href="/<%= user.slug %>/addfood"><i class="fa fa-table fa-fw"></i> Add Food</a>
+                        </li>
+                        <li>
+                            <a href="/<%= user.slug %>/progress"><i class="fa fa-bar-chart-o fa-fw"></i> Your Progress</a>
                         </li>
                         <li>
                             <a href="#"><i class="fa fa-edit fa-fw"></i> Recipes<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
                                 <li>
-                                    <a href="/recipesearch">Search</a>
+                                    <a href="/<%= user.slug %>/recipesearch">Search</a>
                                 </li>
                                 <li>
-                                    <a href="/favorites">Favorites</a>
+                                    <a href="/<%= user.slug %>/favorites">Favorites</a>
                                 </li>
                             </ul>
                             <!-- /.nav-second-level -->
                         </li>
                         <li>
-                            <a href="/progress"><i class="fa fa-bar-chart-o fa-fw"></i> Your Progress</a>
-                        </li>
-                        <li>
-                            <a href="#"><i class="fa fa-wrench fa-fw"></i> Settings<span class="fa arrow"></span></a>
+                            <a href="/<%= user.slug %>/settings"><i class="fa fa-wrench fa-fw"></i> Settings<span class="fa arrow"></span></a>
                         </li>
                     </ul>
                 </div>
