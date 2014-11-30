@@ -1,4 +1,4 @@
-function GoogleTable(chartSelector, initRows, handlerFunction, options, chartTitle, callback) {
+function GoogleTable(chartSelector, initRows, handlers, options, chartTitle, callback) {
 	var values = _.values(options)
 	var display = _.pluck(values, 'display')
 	var fieldTypes = _.pluck(values, 'type')
@@ -26,8 +26,10 @@ function GoogleTable(chartSelector, initRows, handlerFunction, options, chartTit
 	 	myTable.view = new google.visualization.DataView(myTable.data)
 	 	myTable.view.hideColumns(hiddenFields)
 
-		// set the handler
-		google.visualization.events.addListener(myTable.googleTable, 'select', handlerFunction)
+		// set the handlers
+		_.each(handlers, function(value, key){
+			google.visualization.events.addListener(myTable.googleTable, key, value)
+		})
 
 		// for initially loading the chart
 	 	myTable.draw(initRows)
@@ -68,8 +70,6 @@ GoogleTable.prototype.removeSelected = function() {
 	}
 
 	this.data.removeRow(this.selRow)
-
-	console.log(this.data.getNumberOfRows())
 	if (this.data.getNumberOfRows() == 0) {
 		this.googleTable.clearChart()
 		return
@@ -96,4 +96,20 @@ GoogleTable.prototype.dataDump = function f() {
 		tds.push(this.data.getValue(this.selRow, i))
 	}
 	return tds
+}
+
+GoogleTable.prototype.inc = function() {
+	if (this.selRow == this.data.getNumberOfRows() - 1) {
+		this.selRow = 0
+	} else {
+		this.selRow++
+	}
+}
+
+GoogleTable.prototype.dec = function() {
+	if (this.selRow == 0) {
+		this.selRow = this.data.getNumberOfRows() - 1
+	} else {
+		this.selRow--
+	}
 }

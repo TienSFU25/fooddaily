@@ -39,6 +39,7 @@ foodRouter.get('/', function(req, response, next) {
 		if (thisRow.length > 0) {
 			allRows.push(thisRow)
 		}
+
 		response.render('foods', {user:req.user, chartData: allRows, csrfToken: req.csrfToken()})
 		return
 	})
@@ -56,22 +57,21 @@ foodRouter.post('/', function(req, res, next) {
 				Food.createFood(food, function(err, result) {
 					if (err) {
 						rtnjson.success = false;
-						rtnjson.message = JSON.stringify(err);
+						rtnjson.message = "Error in creating food " + id
+						rtnjson.err = JSON.stringify(err);
 						res.json(rtnjson);
-						return;
 					} else {
 						db.eatFood(req.user.id, id, req.body.amount, function(err, r) {
 							if (err) {
 								rtnjson.success = false;
-								rtnjson.message = JSON.stringify(err);
+								rtnjson.message = "Error in setting amount for food " + id
+								rtnjson.err = JSON.stringify(err)
 								res.json(rtnjson);
-								return;
 							} else {
 								rtnjson.success = true;
 								var dataValues = result.dataValues;
 								rtnjson.message = sprintf("Successfully added %s %ss of %s", req.body.amount, dataValues['servingUnit'], dataValues['foodname']);
 								res.json(rtnjson);
-								return;
 							}
 						});
 					}
@@ -84,15 +84,14 @@ foodRouter.post('/', function(req, res, next) {
 				db.eatFood(req.user.id, id, req.body.amount, function(err, r) {
 					if (err) {
 						rtnjson.success = false;
+						rtnjson.message = "Error in setting amount for food " + id
 						rtnjson.message = JSON.stringify(err);
 						res.json(rtnjson);
-						return;
 					} else {
 						rtnjson.success = true;
 						var dataValues = food.dataValues;
 						rtnjson.message = sprintf("Successfully added %s %ss of %s", req.body.amount, dataValues['servingUnit'], dataValues['foodname']);
 						res.json(rtnjson);
-						return;
 					}
 				});
 			});
@@ -109,19 +108,24 @@ foodRouter.put('/', function(req, res, next){
 	db.updateFood(req.user.id, params.foodId, params.amount, params.time, function(err){
 		if (err) {
 			rtnjson.success = false
-			rtnjson.message = err
+			rtnjson.message = err.message
+			rtnjson.err = err
 			res.json(rtnjson)
 		} else {
-			db.model('ChosenFood').findOne({where: {id: params.foodId}}).done(function(err, food){
-				if (err) {
-					rtnjson.success = false
-					rtnjson.message = err
-					res.json(rtnjson)
-				} else {
-					rtnjson.success = true
-					rtnjson.message = food['dataValues']
-					res.json(rtnjson)
-				}
+			db.model('ChosenFood').findOne({where: {id: params.foodId}}).done(function(err, chosenFood){
+				db.model('Food').findOne({where: {id: chosenFood['dataValues']['foodId']}}).done(function(err, food){
+					if (err) {
+						rtnjson.success = false
+						rtnjson.message = "Error in loading foor information for food " + params.foodId
+						res.json(rtnjson)
+					} else {
+						rtnjson.success = true
+						rtnjson.message = "Successfully edited food information for food " + params.foodId
+						rtnjson.updatedAmount = chosenFood['dataValues']['amount']
+						rtnjson.updatedTime = chosenFood['dataValues']['createdAt'].getTime()
+						res.json(rtnjson)
+					}
+				})
 			})
 		}
 	})

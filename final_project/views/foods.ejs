@@ -18,33 +18,47 @@
 <a href='/<%= user.slug %>'>Back</a></br>
 <a href='/logout'>Log out</a></br>
 
-<textarea rows=5 cols=30 id="tableData"></textarea>
 <div class="allFoods"></div>
 </br>
 
-<p href="#foodInfo" class="popup-with-form">CLICKY</p>
- <form id="foodInfo" class="pure-form mfp-hide white-popup">
-	<h2 id="foodName"></h3>
-	<div class="pieChart"></div>
-	<label for="spinner">Choose a new amount</label>
-	<input id="spinner" name="value">
-	<input id="timepicker" type="text">
-	<button id="deleteFood">Delete this food</button>
-	<input type="hidden" id="csrf" name="_csrf" value="<%= csrfToken %>">
-	<input type="submit" value="Save"></input>
- </form>
+<div id="tabs" class="mfp-hide white-popup">
+  <ul>
+    <li><a href="#foodInfo">View food information</a></li>
+    <li><a href="#foodEdit">Edit this item</a></li>
+  </ul>
 
+	<form id="foodInfo" class="pure-form white-popup">
+		<h2 id="foodName"></h3>
+		<div class="pieChart"></div>
+		<div id="nutritionTable"></div>
+		<input type="hidden" id="csrf" name="_csrf" value="<%= csrfToken %>">
+	</form>
+
+	<form id="foodEdit" class="pure-form white-popup">
+		<h2 class="foodName"></h2>
+		<label for="spinner">Choose a new amount</label>
+		<input id="spinner" name="value"></br>
+		<label for="timepicker">Edit the time</label>
+		<input id="timepicker" type="text"></br>
+		<label for="deleteFood">Delete this food</label>
+		<img src="/images/trashcan.png" id="deleteFood" width="40" height="50"></img></br>
+		<button class="pure-button" id="submitFood">Save your options</button>
+	</form>
+</div>
+
+<div id="confirmDelete" title="Delete confirmation"></div>
 <script src="/javascript/magnificPopup.js"></script>
 <script src="/javascript/GoogleTable.js"></script>
 <script src="/javascript/GooglePie.js"></script>
 <script src="/javascript/foodConfig.js"></script>
 <script>
+	$('#tabs').tabs()
 	var myPieChart = new GooglePie('.pieChart')
+	var nutritionTable = new GoogleTable('#nutritionTable', [], function(){}, formTableOptions)
 
 	// charts is an array of arrays of arrays. first level array is every item eaten in a single day
 	var charts = <%- JSON.stringify(chartData) %>
 	var createdAtIndex = _.indexOf(_.keys(foodTableOptions), "createdAt")
-	var rowData = {}
 	var $allFoods = $('.allFoods')
 	var csrf = $('#csrf').val()
 
@@ -57,7 +71,6 @@
 	var allTables = []
 	var selectedTable
 
-	// for (var i = 0; i < charts.length; i++) {
 	_.each(charts, function(value, i) {
 		var classname = 'foodChart' + i
 		var fullClass = '<div class ="' + classname + ' googleTable">'
@@ -71,32 +84,54 @@
 				thisTable.selRow = idx[0]['row']
 			}
 
-			var rows = []
-			for (var k = 0; k < map.length; k++) {
-				rows[k] = [nutrition[k], parseFloat(thisTable.getValue(thisTable.selRow, map[k]))]
-			}
+			// get info from the table
+			var rowData = thisTable.dataDump()
+			var rowJson = _.object(fields, rowData)
 
-			rowData = _.object(fields, thisTable.dataDump())
-			$('#tableData').val(JSON.stringify(rowData))
+			// update the pie chart
+			var rows = []
+			_.each(nutrition, function(value, key){
+				rows.push([value, rowJson[key]])
+			})
+
+			myPieChart.draw(rows, {
+				id3D: true,
+				title: "Calories by macros",
+				legend: {
+					position: 'labeled',
+					alignment: 'center'
+				}
+			})
 
 			// set the h2 food name in the form
-			$('#foodName').text(rowData['foodname'])
+			$('#foodName').text(rowJson['foodname'])
 
 			// this is for knowing which table got clicked
 			selectedTable = thisTable.myId
-			myPieChart.draw(rows)
+
+			// dump the json into nutrition table and let it display its own fields
+			// NOTE: keys of the dictionaries need to match
+			drawNutritionTable(rowJson)
 		};
 
 		var chartTitle = charts[i][0][createdAtIndex]
-		var thisTable = new GoogleTable(domClass, charts[i], tableHandler, foodTableOptions, chartTitle, loadMagnificPopup)
+		var thisTable = new GoogleTable(domClass, charts[i], {'select': tableHandler}, foodTableOptions, chartTitle, loadMagnificPopup)
 		thisTable.myId = i
 		allTables[i] = thisTable
 	})
-// }
+	
+	function drawNutritionTable(rowJson) {
+		var row = []
+		_.each(formTableOptions, function(value, key){
+			row.push(rowJson[key])
+		})
+		nutritionTable.draw([row])
+	}
+
 
 	var userSlug = '<%= user.slug %>'
 
-	$('#foodInfo').on('submit', function(e){
+	$('#submitFood').on('click', function(e){
 		e.preventDefault()
 		$.ajax({
 			type: 'PUT',
@@ -109,24 +144,28 @@
 			},
 			success: function(d) {
 				console.log(d)
+				console.log(d['updatedTime'])
+				console.log(typeof d['updatedTime'])
+				console.log(new Date(parseInt(d['updatedTime'])))
 				$.magnificPopup.close()
 			}
 		})
 	})
 
 	$('#deleteFood').on('click', function(e){
-		$.ajax({
-			type: 'DELETE',
-			url: ('/' + userSlug + '/foods'),
-			data: {
-				_csrf: csrf,
-				foodId: rowData['chosenFoodId']
-			},
-			success: function(d) {
-				$.magnificPopup.close()
-				allTables[selectedTable].removeSelected()
-			}
-		})
+		$('#confirmDelete').dialog()
+		// $.ajax({
+		// 	type: 'DELETE',
+		// 	url: ('/' + userSlug + '/foods'),
+		// 	data: {
+		// 		_csrf: csrf,
+		// 		foodId: rowData['chosenFoodId']
+		// 	},
+		// 	success: function(d) {
+		// 		$.magnificPopup.close()
+		// 		allTables[selectedTable].removeSelected()
+		// 	}
+		// })
 	})
 
 	// load the magnific popup hidden form
@@ -134,26 +173,27 @@
 		$('.google-visualization-table-table tr:not(.google-visualization-table-tr-head)')
 			.attr({
 			class: 'popup-with-form',
-			href: '#foodInfo' 
 		})
 
 		$('.popup-with-form').magnificPopup({
 				type: 'inline',
 				preloader: true, 
-				focus: '#name',
 				removalDelay: 300,
-				gallery: {
-					enabled: true
-				},
-				  mainClass: 'mfp-fade',
-				  callbacks: {
+				mainClass: 'mfp-fade',
+				callbacks: {
 				    open: function() {
 				      console.log('popup opened!')
 				    },
 				    close: function() {
 				    	console.log('popup closed')
 				    }
-				}  
+				},
+				items: [
+				{
+					src: '#tabs',
+					type: 'inline'
+				}
+				]  
 		});	
 	}
 </script>

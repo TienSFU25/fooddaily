@@ -52,6 +52,13 @@ input[type=text]{
   /*height: 40px;*/
   max-width: 500px;
   margin: 0 auto;
+  z-index: 1
+}
+
+#confirmDelete {
+  background-color: green;
+  position: relative;
+  z-index: 1044;
 }
 
 .notification {

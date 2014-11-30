@@ -75,29 +75,45 @@
 	// don't draw anything to begin with
 	var initRows = []
 
-	var myTable = new GoogleTable('.foodChart', initRows, tableHandler, mainTableOptions)
-	var $chosenFood= $('#chosenFood')
-	var formTable = '.formTable'
-	var myFormTable = new GoogleTable(formTable, initRows, function(){}, formTableOptions)
+	var handlers = {
+		select: tableHandler,
+		sort: loadMagnificPopup,
+		page: loadMagnificPopup
+	}
+	var myTable = new GoogleTable('.foodChart', initRows, handlers, mainTableOptions)
+	var myFormTable = new GoogleTable('.formTable', initRows, function(){}, formTableOptions)
+	var rowData = []
+	var rowJson = {}
 
 	function tableHandler(e) {
+		// data dump returns the array of the selected row
 		var idx = myTable.googleTable.getSelection()
 		if (!_.isEmpty(idx)) {
 			myTable.selRow = idx[0]['row']
 		}
+		updateTable()
+		updateForm()
+	};
+
+	function updateTable() {
+		rowData = myTable.dataDump()
+		rowJson = _.object(fields, rowData)
+	}
+
+	var txt = $('#foodName')
+	var chosenId = $('#chosenFood')
+
+	function updateForm() {
+		// update the h2 text in the form
+		txt.text(rowJson['item_name'])
+
+		// for POST data later
+		chosenId.val(rowJson['item_id'])
 
 		var rows = []
-		for (var i = 0; i < map.length; i++) {
-			rows[i] = [_.values(nutrition)[i], parseFloat(myTable.getValue(myTable.selRow, map[i]))]
-		}
-
-		var id = myTable.getValue(myTable.selRow, fields.length - 1)
-		$('#chosenFood').val(id)
-		// data dump returns the array of the selected row
-		var rowData = myTable.dataDump()
-
-		// magic number, oh well
-		$('#foodName').text(rowData[0])
+		_.each(nutrition, function(value, key){
+			rows.push([value, rowJson[key]])
+		})
 
 		myPieChart.draw(rows, {
 			id3D: true,
@@ -107,8 +123,9 @@
 				alignment: 'center'
 			}
 		})
+
 		myFormTable.draw([rowData], {showRowNumber: false})
-	};
+	}
 
 	var $foodIn = $('#foodSearch')
 	var $foodForm = $('#foodForm')
@@ -134,46 +151,75 @@
 					myTable.draw(d)
 
 					// stick the magnific popup class to all rows
-					$('.google-visualization-table-table tr:not(.google-visualization-table-tr-head) td')
-						.attr({
-						class: 'popup-with-form',
-						href: '#foodForm'
-					})
-
-					$('.popup-with-form').magnificPopup({
-							type: 'inline',
-							preloader: true, 
-							focus: '#name',
-							removalDelay: 300,
-							gallery: {
-								enabled: true
-							},
-							items: [
-							// {
-							// 	src: '<p>some html</p>',
-							// 	type: 'inline'
-							// },
-							{
-								src: '#foodForm',
-								type: 'inline'
-							}],
-							  mainClass: 'mfp-fade',
-							  callbacks: {
-							    open: function() {
-							      console.log('popup opened!')
-							    },
-							    close: function() {
-							    	console.log('popup closed')
-							    },
-							    change: function() {
-							    	console.log('content changed')
-							    }
-							}  
-					});
+					loadMagnificPopup()
 				},
 			});
 		}
 	})
+
+	function loadMagnificPopup(){
+		$('.google-visualization-table-table tr:not(.google-visualization-table-tr-head) td')
+			.attr({
+			class: 'popup-with-form',
+			href: '#foodForm'
+		})
+
+		var last = 0
+		$('.popup-with-form').magnificPopup({
+				type: 'inline',
+				preloader: true, 
+				focus: '#name',
+				removalDelay: 300,
+				gallery: {
+					enabled: true
+				},
+				items: [
+				{
+					src: '#foodForm',
+					type: 'inline'
+				},
+				{
+					src: '#foodForm',
+					type: 'inline'
+				},
+				{
+					src: '#foodForm',
+					type: 'inline'
+				}],
+				  mainClass: 'mfp-fade',
+				  callbacks: {
+				    change: function() {
+				    	var curr = this.index
+				    	var inc = true
+
+				    	if (curr == last) {
+				    		return
+				    	}
+
+				    	if (curr < last) {
+				    		inc = false
+				    	}
+
+				    	// wrao arounds
+				    	if (curr == 0 && last == 2) {
+				    		inc = true
+				    	} else if (curr == 2 && last == 0) {
+				    		inc = false
+				    	}
+
+				    	if (inc) {
+				    		myTable.inc()
+				    	} else {
+				    		myTable.dec()
+				    	}
+			    		updateTable()
+			    		updateForm()
+
+				    	last = curr
+				    }
+				}  
+		});
+	}
 
 	// popup form
 	var userSlug = $('#slug').val()
@@ -194,7 +240,7 @@
 			  chosenFood: $('#chosenFood').val()
 			},
 			success: function(d) {
-				
+
 				console.log(d)
 				notification.text(d)
 				notification.show("fold", {}, 1000, function(){

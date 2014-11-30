@@ -21,37 +21,37 @@ var foodTableOptions = {
   },   
   totalFat: {
     type: 'number',
-    hidden: false,
+    hidden: true,
     display: 'Fats(g)'
   }, 
   satFat: {
     type: 'number',
-    hidden: false,
+    hidden: true,
     display: 'Saturated Fats(g)'
   }, 
   totalCarb: {
     type: 'number',
-    hidden: false,
+    hidden: true,
     display: 'Carbohydrates(g)'
   }, 
   sugar: {
     type: 'number',
-    hidden: false,
+    hidden: true,
     display: 'Sugar(g)'
   }, 
   totalProtein: {
     type: 'number',
-    hidden: false,
+    hidden: true,
     display: 'Protein(g)'
   },
   fiber: {
     type: 'number',
-    hidden: false,
+    hidden: true,
     display: 'Fiber'
   }, 
   sodium: {
     type: 'number',
-    hidden: false,
+    hidden: true,
     display: 'Sodium(ml)'
   }, 
   servingQuantity: {
@@ -81,25 +81,53 @@ var foodTableOptions = {
   },
   chosenFoodId: {
     type: 'number',
-    hidden: false,
+    hidden: true,
     display: 'ChosenFoodId'
+  },
+  timeCreated: {
+    type: 'string',
+    hidden: false,
+    display: 'Time entered'
   }
 }
 
 var fields = _.keys(foodTableOptions)
 
-var nutrition = [
-  "totalFat",
-  "totalCarb",
-  "totalProtein",
-]
+var nutrition = {
+  totalFat: "Fats",
+  totalCarb: "Carbohydrates",
+  totalProtein: "Proteins"
+}
 
-var map = []
-
-for (var i = 0; i < nutrition.length; i++) {
-  for (var j = 0; j < fields.length; j++) {
-    if (nutrition[i] == fields[j]) {
-      map[i] = j
-    }
+var formTableOptions = {
+  foodname: {
+    type: 'string',
+    hidden: false,
+    display: 'Item'
+  },
+  brandName: {
+    type: 'string',
+    hidden: false,
+    display: 'Brand'
+  }, 
+  satFat: {
+    type: 'number',
+    hidden: false,
+    display: 'Saturated Fats(g)'
+  }, 
+  sugar: {
+    type: 'number',
+    hidden: false,
+    display: 'Sugar(g)'
+  }, 
+  fiber: {
+    type: 'number',
+    hidden: false,
+    display: 'Fiber'
+  }, 
+  sodium: {
+    type: 'number',
+    hidden: false,
+    display: 'Sodium(ml)'
   }
 }
