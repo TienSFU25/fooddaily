@@ -84,7 +84,7 @@ Database.prototype.eatFood = function(userid, foodid, amountEaten, callback) {
 	}
 
 	amountEaten = parseInt(amountEaten)
-	if (amountEaten < 0) {
+	if (amountEaten <= 0) {
 		callback(new Error("Amount must be positive"))
 		return
 	}
@@ -182,18 +182,21 @@ Database.prototype.updateFood = function(userid, foodid, newAmount, timestring, 
 	// validate day requires dd-yyyy-mm
 	if (datestring != "") {
 		if (!Date.validateDay(dd, yyyy, mm-1)) {
-			callback(new Error("Invalid date format. Must be yyyy/mm/dd"))
+			callback(new Error("Invalid date format. Must be mm-dd-yyyy"))
 			return
 		}
 		
 		try {
 			var d = new Date(yyyy, mm - 1, dd, 0, 0, 0, 0)
+			var oneMonthAgo = new Date().remove({months: 1})
 			if (Date.compare(d, new Date()) == 1) {
 				callback(new Error("Cannot set a date later than today"))
 				return
+			} else if (d.isBefore(oneMonthAgo)) {
+				callback(new Error("Cannot set a date later than one month ago"))
 			}
 		} catch(err) {
-			callback(new Error("Cannot parse date. Must be yyyy/mm/dd"))
+			callback(new Error("Cannot parse date. Must be mm-dd-yyyy"))
 			return
 		}
 	}
@@ -240,7 +243,7 @@ Database.prototype.updateFood = function(userid, foodid, newAmount, timestring, 
 				newAmount = parseInt(newAmount)
 				var oldAmount = parseInt(food['dataValues']['amount'])
 				newAmount += oldAmount
-				if (newAmount < 0) {
+				if (newAmount <= 0) {
 					callback(new Error("Cannot change amount to negative value"))
 					return
 				}
