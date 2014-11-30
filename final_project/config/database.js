@@ -112,9 +112,9 @@ Database.prototype.getAllChosenFoods = function(userid, callback) {
 	var dbFields = _.keys(require('./nutritionix'))
 
 	_.each(dbFields, function(value, index) {
-		customQuery += (' foods.' + value + ',')
+		customQuery += (' Foods.' + value + ',')
 	})
-	customQuery += ' chosenfoods.amount, chosenfoods.createdAt, (chosenfoods.amount*foods.calories) as "Total Calories", chosenfoods.id as "ChosenFoodId", time(chosenfoods.createdAt) from chosenfoods, foods, users3 where chosenfoods.foodid=foods.id and chosenfoods.userId=users3.userid and users3.userid=' + userid + ' order by chosenfoods.createdAt'
+	customQuery += ' ChosenFoods.amount, ChosenFoods.createdAt, (ChosenFoods.amount*Foods.calories) as "Total Calories", ChosenFoods.id as "ChosenFoodId" from ChosenFoods, Foods, Users3 where ChosenFoods.foodid=Foods.id and ChosenFoods.userId=Users3.userid and Users3.userid=' + userid + ' order by ChosenFoods.createdAt'
 
 	this.sequelize.query(customQuery, null, {raw: true}).done(callback)	
 }
@@ -125,12 +125,32 @@ Database.prototype.getCaloriesByDay = function(userid, callback) {
 	}
 	this.sequelize
 	.query(
-		'select date(c.createdAt) as "Date", sum(c.amount*f.calories) as "Total Calories" from chosenfoods c, foods f where userid=:id and c.foodid = f.id group by date(c.createdat) order by date(c.createdat) desc',
+		'select date(c.createdAt) as "Date", sum(c.amount*f.calories) as "Total Calories" from ChosenFoods c, Foods f where userid=:id and c.foodid = f.id group by date(c.createdat) order by date(c.createdat) desc',
 		null,
 		{raw: true},
 		{id: userid}
 	).done(callback)
 }
+
+
+
+Database.prototype.getFavs = function(userid, callback) {
+	if (!validator.isInt(userid)) {
+		callback(new Error("User id must be an integer"))
+	}
+	this.sequelize
+	.query(
+		'select * from FavRecipes where userid=:id',
+		null,
+		{raw: true},
+		{id: userid}
+	).done(callback)
+}
+
+
+
+// INSERT INTO FavRecipes (recipeName,yield,ingredientsList,URL,IMG_URL) VALUES ("French Onion Soup","6","1 Stick Butter; 4 Whole Large (or 6 Medium) Yellow Onions, Halved Root To Tip, And Sliced Thin; 1 cup (generous) Dry White Wine; 4 cups Low Sodium Chicken Broth; 4 cups Beef Broth; 2 cloves Minced Garlic; Worcestershire Sauce; Several Thick Slices Of French Bread Or Baguette; 5 ounces, weight (to 7 Ounces) Gruyere Cheese, Grated","http://thepioneerwoman.com/cooking/2009/02/french-onion-soup/","http://lh6.ggpht.com/Sn2qCFY3fG8cI71t9BdZ-Jyb9RyPh_0Dg79ii9iRNHhd97yQy5MYg0e9sun3HxY9inRax15XWkBSrQ3RCQGq0A=s360");
+
 
 // time is supposed to be in this format hh:mm:ss
 Database.prototype.updateFood = function(userid, foodid, newAmount, timestring, callback) {
