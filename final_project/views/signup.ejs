@@ -23,26 +23,8 @@
     <!-- Custom Fonts -->
     <link href="font-awesome-4.1.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
-
-    <script>
-		function check() {
-			password = document.getElementsByName('password')[0].value
-			passwordRe = document.getElementsByName('passwordre')[0].value
-
-			if (password != passwordRe) {
-				alert("Please make sure your password is retyped correctly")
-				return false
-			}
-			return true
-		}
-	</script>
-
+    <!-- jQuery -->
+    <script src="js/jquery.js"></script>
 </head>
 
 <body>
@@ -55,7 +37,7 @@
                         <h3 class="panel-title">Sign up!</h3>
                     </div>
                     <div class="panel-body">
-                        <form action='/signup' name="input" method="post" onsubmit="return check();" role="form">
+                        <form name="input" role="form">
                             <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                             <fieldset>
                                 <div class="form-group">
@@ -84,10 +66,42 @@
             </div>
         </div>
     </div>
+    <!-- Send login request with XHR -->
+    <script src="/stylesheets/notify.min.js"></script>
+    <script src="/javascript/notify.js"></script>
+    <script>
+        $('form[name="input"]').on('submit', function(e){
+            e.preventDefault()
+            var csrf = "<%= csrfToken %>"
 
-    <!-- jQuery -->
-    <script src="js/jquery.js"></script>
-
+            $.ajax({
+                type: 'POST',
+                url: '/signup',
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader ("Authorization", "From Signup");
+                },
+                data: {
+                    username: $('input[name="username"]').val(),
+                    password: $('input[name="password').val(),
+                    firstname: $('input[name="firstname').val(),
+                    lastname: $('input[name="lastname').val(),
+                    _csrf: csrf
+                },
+                success: function(rtnjson) {
+                    if (!rtnjson.success) {
+                        $.notify(rtnjson.message, {
+                            style: 'bootstrap'
+                        })
+                    } else {
+                        $.notify(rtnjson.message, {
+                            style: 'myStyle'
+                        })
+                        window.location = rtnjson.url
+                    }
+                }
+            })
+        })
+    </script>
     <!-- Bootstrap Core JavaScript -->
     <script src="js/bootstrap.min.js"></script>
 

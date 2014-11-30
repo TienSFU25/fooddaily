@@ -2,14 +2,6 @@ module.exports = function(app, passport, db, fbProfile) {
 
 	var s = require('string')
 
-	// print user
-	app.use('/', function(req, res, next) {
-		// console.log('logged in user is ' + req.user)
-		// console.log(req.xhr)
-		// console.log(req.path)
-		next()
-	})
-
 	// app.get(/\/user\/(\d*)\/(edit)\/(\d+)/, function(req, res) {
 
 	app.get('/test', function(req, res, next){
@@ -66,21 +58,30 @@ module.exports = function(app, passport, db, fbProfile) {
 
 	app.post('/login', function(req, res, next) {
 		passport.authenticate('local-login', function(err, user, info) {
-			console.log(user)
-
+			var rtnjson = {}
 			if (err) {
-				console.log(err)
-				next(err)
-			}
-
-			if (!user) {
-				res.redirect('/login')
+				rtnjson.err = err
+				rtnjson.success = false
+				rtnjson.message = info.message
+				res.json(rtnjson)
+			} else if (!user) {
+				rtnjson.success = false
+				rtnjson.message = info.message
+				res.json(rtnjson)
 			} else {
+				// no error, user is returned (is authenticated)
 				req.logIn(user, function(err){
 					if (err) {
-						next(err)
-					} 
-					res.redirect(user.slug + '/dashboard')
+						rtnjson.err = err
+						rtnjson.success = false
+						rtnjson.message = "Unknown error in passport login"
+						res.json(rtnjson)
+					} else {
+						rtnjson.success = true
+						rtnjson.message = "Successful login!"
+						rtnjson.url = user.slug + '/dashboard'
+						res.json(rtnjson)
+					}
 				})
 			}
 		})
@@ -88,18 +89,32 @@ module.exports = function(app, passport, db, fbProfile) {
 	})
 
 	app.post('/signup', function(req, res, next) {
+		res.redirect("/login")
 		passport.authenticate('local-signup', function(err, user, info) {
+			var rtnjson = {}
 			if (err) {
-				console.log(err)
-				next(err)
-			}
-
-			if (!user) {
-				res.redirect('/signup')
+				rtnjson.err = err
+				rtnjson.success = false
+				rtnjson.message = info.message
+				res.json(rtnjson)
+			} else if (!user) {
+				rtnjson.success = false
+				rtnjson.message = info.message
+				res.json(rtnjson)
 			} else {
+				// no error, user is returned (is authenticated)
 				req.logIn(user, function(err){
-					if (err) return next(err)
-					res.redirect(user.slug + '/dashboard')
+					if (err) {
+						rtnjson.err = err
+						rtnjson.success = false
+						rtnjson.message = "Unknown error in passport login"
+						res.json(rtnjson)
+					} else {
+						rtnjson.success = true
+						rtnjson.message = "Successful login!"
+						rtnjson.url = user.slug + '/dashboard'
+						res.json(rtnjson)
+					}
 				})
 			}
 		})

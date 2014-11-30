@@ -285,6 +285,7 @@
                   mainClass: 'mfp-fade',
                   callbacks: {
                     change: function() {
+                        // implementing the "next" feature of the magnific popup gallery
                         var curr = this.index
                         var inc = true
 
@@ -321,9 +322,6 @@
     var userSlug = $('#slug').val()
     var csrf = $('#csrf').val()
     var magnificPopup = $.magnificPopup
-    var notification = $('#notification')
-
-    notification.hide()
 
     $foodForm.on('submit', function(e){
         e.preventDefault()
