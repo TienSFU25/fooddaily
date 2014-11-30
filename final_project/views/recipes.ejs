@@ -127,8 +127,9 @@
 
 		function updateTableResults(data) {
 			rows = new Array();
-			// var i = 0;
-			// var len = data.matches.length;
+			
+			$('.yummlyAttribution').prepend(data.attribution.html);
+
 			for(var i = 0; i < data.matches.length; i++) {
 				var imageLink = data.matches[i].imageUrlsBySize[90];
 				var image = "<img id='img" + i +"' src='" + imageLink + "' />";
@@ -189,8 +190,6 @@
 	  	<!--<button type="submit" value="Submit" id="searchButton">Search</button>-->
 	</form>
 
-	<p>Results</p>
-	<br/>
 	<div class="yummlyAttribution"></div>
 	<div class="recipeTable"></div>
 	<br/>
