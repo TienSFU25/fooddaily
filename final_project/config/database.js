@@ -154,7 +154,7 @@ Database.prototype.createFav = function(userid, recipeName, yield, ingredientsLi
 	.query(
 		sprintf('INSERT INTO FavRecipes (userID,recipeName,yield,ingredientsList,URL,IMG_URL) VALUES (%d,"%s","%s","%s","%s","%s");', userid, recipeName, yield, ingredientsList, URL, IMG_URL),
 		null,
-		{raw: true},
+		{raw: true}
 	).done(callback)
 }
 
