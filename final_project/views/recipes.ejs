@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Foodaily</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- MetisMenu CSS -->
+    <link href="/css/plugins/metisMenu/metisMenu.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="/css/sb-admin-2.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="/font-awesome-4.1.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
+    <link rel="stylesheet" href="/magnificPopup/magnific-popup.css">
+    <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.5.0/pure-min.css">
+    <link rel="stylesheet" type="text/css" href="/stylesheets/jquery-ui.min.css">
+    <link rel="stylesheet" type="text/css" href="/stylesheets/jquery-ui.theme.min.css">
+    <link rel="stylesheet" type="text/css" href="/chosen_v1.2.0/chosen.min.css">
+    <script src="/chosen_v1.2.0/chosen.jquery.js"></script>
+    <script src="/chosen_v1.2.0/chosen.proto.js"></script>
+    <script src="/magnificPopup/jquery.magnific-popup.js"></script> 
+    <script src="https://www.google.com/jsapi"></script>
+    <script src="http://underscorejs.org/underscore.js"></script>
+    <script src="http://code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
+    <script src="/stylesheets/jquery.datetimepicker.js"></script>
+    <link rel="stylesheet" type="text/css" href="/stylesheets/jquery.datetimepicker.css">
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+<body>
+
+    <div id="wrapper">
+
+        <!-- Navigation -->
+        <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="index.html">Foodaily</a>
+            </div>
+            <!-- /.navbar-header -->
+
+            <!-- 
+            <ul class="nav navbar-top-links navbar-right">
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                        <i class="fa fa-envelope fa-fw"></i>  <i class="fa fa-caret-down"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-messages">
+                        <li>
+                            <a href="#">
+                                <div>
+                                    <strong>John Smith</strong>
+                                    <span class="pull-right text-muted">
+                                        <em>Yesterday</em>
+                                    </span>
+                                </div>
+                                <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque eleifend...</div>
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a href="#">
+                                <div>
+                                    <strong>John Smith</strong>
+                                    <span class="pull-right text-muted">
+                                        <em>Yesterday</em>
+                                    </span>
+                                </div>
+                                <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque eleifend...</div>
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a href="#">
+                                <div>
+                                    <strong>John Smith</strong>
+                                    <span class="pull-right text-muted">
+                                        <em>Yesterday</em>
+                                    </span>
+                                </div>
+                                <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque eleifend...</div>
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a class="text-center" href="#">
+                                <strong>Read All Messages</strong>
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        </li>
+                    </ul>
+                    <!-- /.dropdown-messages -->
+                <!-- </li> -->
+                <!-- /.dropdown -->
+                <!-- 
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                        <i class="fa fa-tasks fa-fw"></i>  <i class="fa fa-caret-down"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-tasks">
+                        <li>
+                            <a href="#">
+                                <div>
+                                    <p>
+                                        <strong>Task 1</strong>
+                                        <span class="pull-right text-muted">40% Complete</span>
+                                    </p>
+                                    <div class="progress progress-striped active">
+                                        <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 40%">
+                                            <span class="sr-only">40% Complete (success)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a href="#">
+                                <div>
+                                    <p>
+                                        <strong>Task 2</strong>
+                                        <span class="pull-right text-muted">20% Complete</span>
+                                    </p>
+                                    <div class="progress progress-striped active">
+                                        <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100" style="width: 20%">
+                                            <span class="sr-only">20% Complete</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a href="#">
+                                <div>
+                                    <p>
+                                        <strong>Task 3</strong>
+                                        <span class="pull-right text-muted">60% Complete</span>
+                                    </p>
+                                    <div class="progress progress-striped active">
+                                        <div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%">
+                                            <span class="sr-only">60% Complete (warning)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a href="#">
+                                <div>
+                                    <p>
+                                        <strong>Task 4</strong>
+                                        <span class="pull-right text-muted">80% Complete</span>
+                                    </p>
+                                    <div class="progress progress-striped active">
+                                        <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100" style="width: 80%">
+                                            <span class="sr-only">80% Complete (danger)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a class="text-center" href="#">
+                                <strong>See All Tasks</strong>
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        </li>
+                    </ul> -->
+                    <!-- /.dropdown-tasks -->
+              <!--   </li> -->
+                <!-- /.dropdown -->
+                <!-- 
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                        <i class="fa fa-bell fa-fw"></i>  <i class="fa fa-caret-down"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-alerts">
+                        <li>
+                            <a href="#">
+                                <div>
+                                    <i class="fa fa-comment fa-fw"></i> New Comment
+                                    <span class="pull-right text-muted small">4 minutes ago</span>
+                                </div>
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a href="#">
+                                <div>
+                                    <i class="fa fa-twitter fa-fw"></i> 3 New Followers
+                                    <span class="pull-right text-muted small">12 minutes ago</span>
+                                </div>
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a href="#">
+                                <div>
+                                    <i class="fa fa-envelope fa-fw"></i> Message Sent
+                                    <span class="pull-right text-muted small">4 minutes ago</span>
+                                </div>
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a href="#">
+                                <div>
+                                    <i class="fa fa-tasks fa-fw"></i> New Task
+                                    <span class="pull-right text-muted small">4 minutes ago</span>
+                                </div>
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a href="#">
+                                <div>
+                                    <i class="fa fa-upload fa-fw"></i> Server Rebooted
+                                    <span class="pull-right text-muted small">4 minutes ago</span>
+                                </div>
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a class="text-center" href="#">
+                                <strong>See All Alerts</strong>
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        </li>
+                    </ul> -->
+                    <!-- /.dropdown-alerts -->
+                <!-- </li> -->
+                <!-- /.dropdown -->
+                <!-- <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                        <i class="fa fa-user fa-fw"></i>  <i class="fa fa-caret-down"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-user">
+                        <li><a href="#"><i class="fa fa-user fa-fw"></i> User Profile</a>
+                        </li>
+                        <li><a href="#"><i class="fa fa-gear fa-fw"></i> Settings</a>
+                        </li>
+                        <li class="divider"></li>
+                        <li><a href="login.html"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
+                        </li>
+                    </ul> -->
+                    <!-- /.dropdown-user -->
+                <!-- </li> -->
+                <!-- /.dropdown -->
+           <!--  </ul> -->
+            <!-- /.navbar-top-links -->
+
+            <div class="navbar-default sidebar" role="navigation">
+                <div class="sidebar-nav navbar-collapse">
+                    <ul class="nav" id="side-menu">
+                        <li class="sidebar-search">
+                            <div class="input-group custom-search-form">
+                                <input type="text" class="form-control" placeholder="Search...">
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default" type="button">
+                                        <i class="fa fa-plus"></i>
+                                    </button>
+                                </span>
+                            </div>
+                            <!-- /input-group -->
+                        </li>
+                        <li>
+                            <a href="/<%= user.slug %>/dashboard"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
+                        </li>
+                        <li>
+                            <a href="/<%= user.slug %>/addfood"><i class="fa fa-table fa-fw"></i> Add Food</a>
+                        </li>
+                        <li>
+                            <a href="/<%= user.slug %>/progress"><i class="fa fa-bar-chart-o fa-fw"></i> Your Progress</a>
+                        </li>
+                        <li>
+                            <a href="#"><i class="fa fa-edit fa-fw"></i> Recipes<span class="fa arrow"></span></a>
+                            <ul class="nav nav-second-level">
+                                <li>
+                                    <a href="/<%= user.slug %>/recipesearch">Search</a>
+                                </li>
+                                <li>
+                                    <a href="/<%= user.slug %>/favorites">Favorites</a>
+                                </li>
+                            </ul>
+                            <!-- /.nav-second-level -->
+                        </li>
+                        <li>
+                            <a href="/<%= user.slug %>/settings"><i class="fa fa-wrench fa-fw"></i> Settings<span class="fa arrow"></span></a>
+                        </li>
+                    </ul>
+                </div>
+                <!-- /.sidebar-collapse -->
+            </div>
+            <!-- /.navbar-static-side -->
+        </nav>
+
+        <!-- Page Content -->
+        <div id="page-wrapper">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h1 class="page-header">Recipe Search</h1>
+                    </div>
+                    <!-- /.col-lg-12 -->
+
+                    <!-- ============================================= -->
+                    <!-- ======= MAIN PAGE CONTENT BEGINS HERE ======= -->
+                    <!-- ============================================= -->
+
+					<form id="recipeSearch"> <!-- action="/recipes" method="post" onsubmit="return reqYummlyAPI();">-->
+						<input type="hidden" name="_csrf" value="<%= csrfToken %>">
+						<input type="hidden" id="chosenId" name="chosenId" value="" method="post">
+						<input type="hidden" id="slug" value="<%= user.slug %>">
+						<input id="q" name="q" placeholder="Search for a recipe" type="text" value=""/>
+					  	<!--<button type="submit" value="Submit" id="searchButton">Search</button>-->
+					</form>
+
+					<div class="yummlyAttribution"></div>
+					<div class="recipeTable"></div>
+					<br/>
+
+					<!--<script src="http://cmpt470.csil.sfu.ca/~mmilosev/GoogleTable.js"></script>-->
+					<!--<script src="/javascript/GoogleTable.js"></script>-->
+					<!--<script src="/javascript/getrecipes.js"></script>-->
+					<script "text/javascript">
+
+						google.load("visualization", "1", {packages:["table"]});
+						google.setOnLoadCallback(drawTable);
+
+						function drawTable() {
+						table = new google.visualization.Table($('.recipeTable').get(0));
+
+						data = new google.visualization.DataTable();
+
+						var fields = [
+							"Image",
+							"Name",
+							"Source",
+							"Ingredients",
+							"Preparation (secs)",
+							"Rating",
+							"Id"
+						];
+
+						data.addColumn('string', fields[0]);
+						data.addColumn('string', fields[1]);
+						data.addColumn('string', fields[2]);
+						data.addColumn('string', fields[3]);
+						data.addColumn('number', fields[4]);
+						data.addColumn('number', fields[5]);
+						data.addColumn('string', fields[6]);
+
+						data.addRows(rows);
+
+
+						// table.view = new google.visualization.DataView(data);
+					 // 	table.view.hideColumns(fields[5]);
+
+						google.visualization.events.addListener(table, 'select', selectTableListener);
+
+						table.draw(data, {showRowNumber: false, allowHtml: true});
+					}
+
+					function selectTableListener() {
+						var idx = table.getSelection();
+						var selectedRow = idx[0]['row'];
+
+						var recipeId = data.getValue(selectedRow, 6);
+						$("#chosenId").val(recipeId);
+						// alert(recipeId);
+
+						if(confirm("Are you sure you want to add " + recipeId + "to your favourites?")) {
+							getAndPostToFavourites(recipeId);
+						}
+					}
+					</script>
+               
+
+                    </div>
+                <!-- /.row -->
+            </div>
+            <!-- /.container-fluid -->
+        </div>
+        <!-- /#page-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+
+    <!-- jQuery -->
+    <!--<script src="../js/jquery.js"></script> -->
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="../js/bootstrap.min.js"></script>
+
+    <!-- Metis Menu Plugin JavaScript -->
+    <script src="../js/plugins/metisMenu/metisMenu.min.js"></script>
+
+    <!-- Custom Theme JavaScript -->
+    <script src="../js/sb-admin-2.js"></script>
+
+</body>
+
+</html>
+
+
+
+<head>
+
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+	<script src="https://www.google.com/jsapi"></script>
+	<!--<script src="http://underscorejs.org/underscore.js"></script>-->
+	<script>
+
+		var APP_ID = "1aeab161";
+		var APP_KEY = "30949c53cf846dfc493a20eebfbbd422";
+		var rows = [];
+		var table;
+		var data;
+
+		function queryYummly(foodSearch) {
+			var call = "http://api.yummly.com/v1/api/recipes?_";
+			// "api.yummly.com/v1/api/recipes?_app_id=1aeab161&_app_key=30949c53cf846dfc493a20eebfbbd422&+onion+soup";
+
+			var params = foodSearch.split(" ");
+
+			call += "app_id=" + APP_ID + "&_app_key=" + APP_KEY + "&q=";
+
+			for (var i = 0; i < params.length; i++) {
+				// alert(params[i]);
+				call += "+" + params[i];
+			};
+
+
+			// example dietary restrictions
+			// var diet = "&allowedDiet[]=390^Pescetarian&allowedDiet[]=388^Lacto vegetarian";
+			// var allergies = "&allowedAllergy[]=396^Dairy-Free&allowedAllergy[]=393^Gluten-Free";
+			// call += diet;
+			// call += allergies;
+
+			
+
+
+
+			// call += "app_id=" + APP_ID + "&_app_key=" + APP_KEY + "&q=";
+			
+			// alert(call);
+			// $("#q").val(call);
+
+			var jqhxr = $.ajax({
+				type: "GET",
+				url: call,
+				success: function(data) {
+					// alert("success search");
+					updateTableResults(data);
+				}, 
+				error: function() {
+					alert("no results found");
+				}
+			});
+		}
+
+		function getAndPostToFavourites(foodId) {
+			var call = "http://api.yummly.com/v1/api/recipe/";
+			call += foodId + "?_";
+			call += "app_id=" + APP_ID + "&_app_key=" + APP_KEY;
+
+			var jqhxr = $.ajax({
+				type: "GET",
+				url: call,
+				success: function(data) {
+					// alert("success get by id: " + call);
+					postRecipe(data);
+				}, 
+				error: function() {
+					alert("no results found (by id)");
+				}
+			});
+		}
+
+		function postRecipe(data) {
+			$.ajax({
+				type: 'POST',
+				url: '/'+'d'+'/favorites',//userSlug+'/favorites',
+				data: {
+					name: data.name,
+					chosenId: $('#chosenId').val(),
+					yield: data.yield,
+					ingredientsList: data.ingredientLines,
+					source: data.source.sourceRecipeUrl,
+					image: data.images.hostedSmallUrl,
+					nutrition: data.nutritionEstimates,
+				},
+				success: function(d) {
+					alert("added recipe to favs");
+				},
+				error: function(xhr, textStatus) {
+					alert("error adding recipe to favs");
+				}
+			});
+		}
+
+		// function yummlyGetById(foodId) {
+		// 	var call = "http://api.yummly.com/v1/api/recipe/";
+		// 	call += foodId + "?_";
+		// 	call += "app_id=" + APP_ID + "&_app_key=" + APP_KEY;
+
+		// 	// alert(call);
+			
+		// 	var jqhxr = $.ajax({
+		// 		type: "GET",
+		// 		url: call,
+		// 		success: function(data) {
+		// 			alert("success get by id: " + call);
+		// 			// updateResults(data);
+		// 		}, 
+		// 		error: function() {
+		// 			alert("no results found (by id)");
+		// 		}
+		// 	});
+		// }
+
+		// function updateResults(data) {
+		// 	var info = "<li>" + data.name + "</li>";
+		//   	info += "<ul>";
+		//   	info += "<li> img goes here </li>"; // eg 	  	info += "<li><img src=\"http://lh6.ggpht.com/Sn2qCFY3fG8cI71t9BdZ-Jyb9RyPh_0Dg79ii9iRNHhd97yQy5MYg0e9sun3HxY9inRax15XWkBSrQ3RCQGq0A=s360\"></img></li>";
+		// 	info += "<li>Yield: " + data.yield + "</li>";
+
+
+		// 	info += "<li>Ingredients: ";
+		// 	info += "<ul>"
+		// 	for (i = 0; i < data.ingredientLines.length; i++){
+		// 		info += "<li>" + data.ingredientLines[i] + "</li>";
+		// 	}
+		// 	info += "</ul></li>"
+
+		// 	info += "<li><a href=\"" + data.source.sourceRecipeUrl + "\">URL</a></li>";
+		// 	info += "</ul><br>"
+		// 	// info += "<li><img src=\"" + data.images.hostedLargeUrl + "\"></img></li>";
+		// 	// info += data.images.hostedLargeUrl; // <img src="http://i2.yummly.com/Hot-Turkey-Salad-Sandwiches-Allrecipes.l.png"></img>
+		// 	// info +="<li><img src=\"http://i2.yummly.com/Hot-Turkey-Salad-Sandwiches-Allrecipes.l.png\"></img></li>";
+				
+		// 	$("searchResults").append(info);
+		// }
+
+		function updateTableResults(data) {
+			rows = new Array();
+			
+			$('.yummlyAttribution').prepend(data.attribution.html);
+
+			for(var i = 0; i < data.matches.length; i++) {
+				var imageLink = data.matches[i].imageUrlsBySize[90];
+				var image = "<img id='img" + i +"' src='" + imageLink + "' />";
+				var name = data.matches[i].recipeName;
+				var brand = data.matches[i].sourceDisplayName;
+
+				var jsonIngredients = data.matches[i].ingredients;
+				var ingredients = jsonIngredients[0];// = data.matches[i].ingredients;
+				for(var index = 1; index < jsonIngredients.length; index++) {
+					ingredients += ", " + jsonIngredients[index];
+				}
+
+				var prepTime = data.matches[i].totalTimeInSeconds;	
+				var rating = data.matches[i].rating;
+				var id = data.matches[i].id;
+
+				var row = [
+					image,
+					name,
+					brand,
+					ingredients,
+					prepTime,
+					rating,
+					id
+				];
+
+				rows.push(row);
+			}
+			
+			drawTable(rows);
+		}
+
+		$(document).ready(function() {
+
+			// event listener
+			$('#recipeSearch').keypress(function(e){
+				if(e.keyCode == 13) {
+					// disable form submission
+					e.preventDefault();
+					var query = $('#q').val(); //"Hot-Turkey-Salad-Sandwiches-Allrecipes";
+					// alert(query);
+					queryYummly(query);
+				}
+			});
+		});
+	</script>
+</head>

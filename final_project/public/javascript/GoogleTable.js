@@ -1,5 +1,4 @@
-function GoogleTable(chartSelector, initRows, handlerFunction, options) {
-
+function GoogleTable(chartSelector, initRows, handlers, options, callback) {
 	var values = _.values(options)
 	var display = _.pluck(values, 'display')
 	var fieldTypes = _.pluck(values, 'type')
@@ -9,8 +8,21 @@ function GoogleTable(chartSelector, initRows, handlerFunction, options) {
 			hiddenFields.push(index)
 	})
 
+	this.options = {
+						showRowNumber: true,
+						// alternatingRowStyle: false,
+						page: 'enable', 
+						pageSize: 10,
+						cssClassNames: {
+							// tableRow: 'popup-with-form',
+							// oddTableRow: 'popup-with-form'
+						}
+					}
+
 	// vcl closure
 	var myTable = this
+	this.selRow = null
+
 	google.load("visualization", "1", {packages:["corechart", "table"]});
 
 	google.setOnLoadCallback(function() {
@@ -25,25 +37,84 @@ function GoogleTable(chartSelector, initRows, handlerFunction, options) {
 	 	myTable.view = new google.visualization.DataView(myTable.data)
 	 	myTable.view.hideColumns(hiddenFields)
 
-		// set the handler
-		google.visualization.events.addListener(myTable.googleTable, 'select', handlerFunction)
+		// set the handlers
+		_.each(handlers, function(value, key){
+			google.visualization.events.addListener(myTable.googleTable, key, value)
+		})
+
 		// for initially loading the chart
-	 	myTable.googleChartsDraw(initRows)		
+	 	myTable.draw(initRows)
+	 	
+		if (callback)
+			callback()
 	})
 }
 
 // rows is an ARRAY OF ARRAYS
-GoogleTable.prototype.googleChartsDraw = function f(rows) {
+GoogleTable.prototype.draw = function f(rows, options) {
 	// reset rows
 	this.data.removeRows(0, this.data.getNumberOfRows())
 	this.data.addRows(rows)
-    this.googleTable.draw(this.view, {showRowNumber: true});
+
+	if (options == undefined) {
+		options = this.options
+	}
+
+    this.googleTable.draw(this.view, options);
+}
+
+GoogleTable.prototype.setColSelected = function(colIndex, newValue) {
+	this.data.setCell(this.selRow, colIndex, newValue)
+    this.googleTable.draw(this.view, this.options);
+}
+
+GoogleTable.prototype.removeSelected = function() {
+	if (this.selRow == null) {
+		console.log("No rows have been selected for this table")
+		return
+	}
+
+	this.data.removeRow(this.selRow)
+	if (this.data.getNumberOfRows() == 0) {
+		this.googleTable.clearChart()
+		return
+	}
+
+	options = {
+		showRowNumber: true,
+		page: 'enable', 
+		pageSize: 10
+	}
+
+	this.googleTable.draw(this.view, options)
 }
 
 GoogleTable.prototype.getValue = function f(row, col) {
 	return this.data.getValue(row, col)
 }
 
-GoogleTable.prototype.getSelectedRow = function f() {
-	return this.googleTable.getSelection()[0].row
+// return all data in the last selected row
+GoogleTable.prototype.dataDump = function () {
+	var cols = this.data.getNumberOfColumns()
+	var tds = []
+	for (var i = 0; i < cols; i++) {
+		tds.push(this.data.getValue(this.selRow, i))
+	}
+	return tds
+}
+
+GoogleTable.prototype.inc = function() {
+	if (this.selRow == this.data.getNumberOfRows() - 1) {
+		this.selRow = 0
+	} else {
+		this.selRow++
+	}
+}
+
+GoogleTable.prototype.dec = function() {
+	if (this.selRow == 0) {
+		this.selRow = this.data.getNumberOfRows() - 1
+	} else {
+		this.selRow--
+	}
 }

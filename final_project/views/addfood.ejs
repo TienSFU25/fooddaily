@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Foodaily</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- MetisMenu CSS -->
+    <link href="/css/plugins/metisMenu/metisMenu.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="/css/sb-admin-2.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="/font-awesome-4.1.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
+    <link rel="stylesheet" href="/magnificPopup/magnific-popup.css">
+    <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.5.0/pure-min.css">
+    <link rel="stylesheet" type="text/css" href="/stylesheets/jquery-ui.min.css">
+    <link rel="stylesheet" type="text/css" href="/stylesheets/jquery-ui.theme.min.css">
+    <link rel="stylesheet" type="text/css" href="/chosen_v1.2.0/chosen.min.css">
+    <script src="/chosen_v1.2.0/chosen.jquery.js"></script>
+    <script src="/chosen_v1.2.0/chosen.proto.js"></script>
+    <script src="/magnificPopup/jquery.magnific-popup.js"></script> 
+    <script src="https://www.google.com/jsapi"></script>
+    <script src="http://underscorejs.org/underscore.js"></script>
+    <script src="http://code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
+    <script src="/stylesheets/notify.min.js"></script>
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+<body>
+
+    <div id="wrapper">
+
+        <!-- Navigation -->
+        <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="index.html">Foodaily</a>
+            </div>
+
+            <div class="navbar-default sidebar" role="navigation">
+                <div class="sidebar-nav navbar-collapse">
+                    <ul class="nav" id="side-menu">
+                        <li class="sidebar-search">
+                            <div class="input-group custom-search-form">
+                                <input type="text" class="form-control" placeholder="Search...">
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default" type="button">
+                                        <i class="fa fa-plus"></i>
+                                    </button>
+                                </span>
+                            </div>
+                            <!-- /input-group -->
+                        </li>
+                        <li>
+                            <a href="/<%= user.slug %>/dashboard"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
+                        </li>
+                        <li>
+                            <a href="/<%= user.slug %>/addfood"><i class="fa fa-table fa-fw"></i> Add Food</a>
+                        </li>
+                        <li>
+                            <a href="/<%= user.slug %>/progress"><i class="fa fa-bar-chart-o fa-fw"></i> Your Progress</a>
+                        </li>
+                        <li>
+                            <a href="#"><i class="fa fa-edit fa-fw"></i> Recipes<span class="fa arrow"></span></a>
+                            <ul class="nav nav-second-level">
+                                <li>
+                                    <a href="/<%= user.slug %>/recipesearch">Search</a>
+                                </li>
+                                <li>
+                                    <a href="/<%= user.slug %>/favorites">Favorites</a>
+                                </li>
+                            </ul>
+                            <!-- /.nav-second-level -->
+                        </li>
+                        <li>
+                            <a href="/<%= user.slug %>/settings"><i class="fa fa-wrench fa-fw"></i> Settings<span class="fa arrow"></span></a>
+                        </li>
+                    </ul>
+                </div>
+                <!-- /.sidebar-collapse -->
+            </div>
+            <!-- /.navbar-static-side -->
+        </nav>
+
+        <!-- Page Content -->
+        <div id="page-wrapper">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h1 class="page-header">Add Food</h1>
+                    </div>
+                    <!-- /.col-lg-12 -->
+
+                    <!-- ============================================= -->
+                    <!-- ======= MAIN PAGE CONTENT BEGINS HERE ======= -->
+                    <!-- ============================================= -->
+                    <div>
+                        <!-- link that opens popup -->
+
+
+<!-- form itself -->
+<div id="notify"></div>
+<form id="foodForm" class="white-popup mfp-hide pure-form">
+    <h1 id="foodName"></h1>
+    <label for="spinner">Choose an amount</label>
+    <input id="spinner" name="value">
+    <button form="foodForm" class="pure-button">Save!</button>
+    <div class="pieChart"></div>
+    <p>Other nutritional info</p>
+    <div class="formTable"></div>
+    <input type="hidden" id="chosenFood" name="chosenFood" value="">
+    <input type="hidden" id="csrf" name="_csrf" value="<%= csrfToken %>">
+    <input type="hidden" id="slug" value="<%= user.slug %>">
+</form>
+
+ 
+<p>Search for a common food here!</p>
+<form id="foodSearch">
+    <span><input type="text" placeholder="Search..."></span>
+</form>
+
+<div class="foodChart"></div>
+</br>
+
+<!-- custom scripts go down here -->
+<script src="/javascript/GoogleTable.js"></script>
+<script src="/javascript/GooglePie.js"></script>
+<script src="/javascript/config.js"></script>
+<script src="/javascript/magnificPopup.js"></script>
+<script src="/javascript/formTableConfig.js"></script>
+<script src="/javascript/notify.js"></script>
+<script>
+    
+    $('#datepicker').datepicker({
+        dateformat: "yyyy-mm-dd",
+        maxDate: 0,
+        minDate: -60
+    })
+
+    var spinner = $( "#spinner" ).spinner();
+    var myPieChart = new GooglePie('.pieChart')
+    // don't draw anything to begin with
+    var initRows = []
+
+    var handlers = {
+        select: tableHandler,
+        sort: loadMagnificPopup,
+        page: loadMagnificPopup
+    }
+    var myTable = new GoogleTable('.foodChart', initRows, handlers, mainTableOptions)
+    var myFormTable = new GoogleTable('.formTable', initRows, function(){}, formTableOptions)
+    var rowData = []
+    var rowJson = {}
+
+    function tableHandler(e) {
+        // data dump returns the array of the selected row
+        var idx = myTable.googleTable.getSelection()
+        if (!_.isEmpty(idx)) {
+            myTable.selRow = idx[0]['row']
+        }
+        updateTable()
+        updateForm()
+    };
+
+    function updateTable() {
+        rowData = myTable.dataDump()
+        rowJson = _.object(fields, rowData)
+    }
+
+    var txt = $('#foodName')
+    var chosenId = $('#chosenFood')
+
+    function updateForm() {
+        // update the h2 text in the form
+        txt.text(rowJson['item_name'])
+
+        // for POST data later
+        chosenId.val(rowJson['item_id'])
+
+        var rows = []
+        _.each(nutrition, function(value, key){
+            rows.push([value, rowJson[key]])
+        })
+
+        myPieChart.draw(rows, {
+            id3D: true,
+            title: "Calories by macros",
+            legend: {
+                position: 'labeled',
+                alignment: 'center'
+            }
+        })
+
+        myFormTable.draw([rowData], {showRowNumber: false})
+    }
+
+    var $foodIn = $('#foodSearch')
+    var $foodForm = $('#foodForm')
+
+    // event listener for search box
+    $foodIn.keypress(function(e){
+        if(e.keyCode == 13) {
+            // disable form submission
+            e.preventDefault()
+
+            // requests nutritionix, parse json and update google table
+            queryDict["query"] = $('#foodSearch input').val();
+
+            $.ajax({
+                type: "POST",
+                url: "https://api.nutritionix.com/v1_1/search",
+                data: queryDict,
+                success: function(d) {
+                    d = _.pluck(d['hits'], 'fields')
+                    d = _.map(d, function(val, index){
+                        return _.values(val)
+                    })
+                    myTable.draw(d)
+
+                    // stick the magnific popup class to all rows
+                    loadMagnificPopup()
+                },
+            });
+        }
+    })
+
+    function loadMagnificPopup(){
+        $('.google-visualization-table-table tr:not(.google-visualization-table-tr-head) td')
+            .attr({
+            class: 'popup-with-form',
+            href: '#foodForm'
+        })
+
+        var last = 0
+        $('.popup-with-form').magnificPopup({
+                type: 'inline',
+                preloader: true, 
+                focus: '#name',
+                removalDelay: 300,
+                gallery: {
+                    enabled: true
+                },
+                items: [
+                {
+                    src: '#foodForm',
+                    type: 'inline'
+                },
+                {
+                    src: '#foodForm',
+                    type: 'inline'
+                },
+                {
+                    src: '#foodForm',
+                    type: 'inline'
+                }],
+                  mainClass: 'mfp-fade',
+                  callbacks: {
+                    change: function() {
+                        var curr = this.index
+                        var inc = true
+
+                        if (curr == last) {
+                            return
+                        }
+
+                        if (curr < last) {
+                            inc = false
+                        }
+
+                        // wrap arounds
+                        if (curr == 0 && last == 2) {
+                            inc = true
+                        } else if (curr == 2 && last == 0) {
+                            inc = false
+                        }
+
+                        if (inc) {
+                            myTable.inc()
+                        } else {
+                            myTable.dec()
+                        }
+                        updateTable()
+                        updateForm()
+
+                        last = curr
+                    }
+                }  
+        });
+    }
+
+    // popup form
+    var userSlug = $('#slug').val()
+    var csrf = $('#csrf').val()
+    var magnificPopup = $.magnificPopup
+    var notification = $('#notification')
+
+    notification.hide()
+
+    $foodForm.on('submit', function(e){
+        e.preventDefault()
+        $.ajax({
+            type: 'POST',
+            url: '/'+userSlug+'/foods',
+            data: {
+              _csrf: csrf,
+              amount: spinner.spinner('value'),
+              chosenFood: $('#chosenFood').val()
+            },
+            success: function(rtnjson) {
+                if (rtnjson.success) {
+                    $.notify(rtnjson['message'], {
+                        style: 'myStyle'
+                    })
+                    magnificPopup.close()
+                } else {
+                    $.notify(rtnjson['message'], {
+                        style: 'bootstrap'
+                    })
+                }
+            },
+            error: function(xhr, textStatus) {
+              $.notify(textStatus, {
+                style: 'bootstrap'
+              })
+            }
+        })
+    })
+</script>
+                
+
+                    </div>
+                <!-- /.row -->
+            </div>
+            <!-- /.container-fluid -->
+        </div>
+        <!-- /#page-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+
+    <!-- jQuery -->
+    <!--<script src="../js/jquery.js"></script> -->
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="../js/bootstrap.min.js"></script>
+
+    <!-- Metis Menu Plugin JavaScript -->
+    <script src="../js/plugins/metisMenu/metisMenu.min.js"></script>
+
+    <!-- Custom Theme JavaScript -->
+    <script src="../js/sb-admin-2.js"></script>
+
+</body>
+
+</html>

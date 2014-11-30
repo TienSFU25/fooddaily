@@ -39,7 +39,7 @@ var mainTableOptions = {
   },
   nf_sugars: {
     type: 'number',
-    hidden: false,
+    hidden: true,
     display: 'Sugar(g)'
   },
   nf_dietary_fiber: {
@@ -49,7 +49,7 @@ var mainTableOptions = {
   },
   nf_sodium: {
     type: 'number',
-    hidden: false,
+    hidden: true,
     display: 'Sodium(mg)'
   }, 
   nf_serving_size_qty: {
@@ -93,20 +93,8 @@ var queryDict = {
   }
 }
 
-var nutrition = [
-	"nf_total_fat",
-	"nf_total_carbohydrate",
-	"nf_protein",
-]
-
-// sloppy way to get the column indexes of items in nutrition
-// or fields[map[i]] == nutrition[i]
-var map = []
-
-for (var i = 0; i < nutrition.length; i++) {
-  for (var j = 0; j < fields.length; j++) {
-    if (nutrition[i] == fields[j]) {
-      map[i] = j
-    }
-  }
+var nutrition = {
+  nf_total_fat: "Fat",
+  nf_protein: "Protein",
+  nf_total_carbohydrate: "Carbohydrates"
 }

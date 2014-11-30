@@ -9,11 +9,21 @@ var nutritionix = require('nutritionix')({
 }, false).v1_1;
 
 userRouter.get('/', function(req, res){
-	console.log(req.user)
 	res.render('success', {user: req.user, csrfToken: req.csrfToken()})
 })
 
+userRouter.use('/dashboard', require('./dashboardRouter'))
+userRouter.use('/addfood', require('./addFoodRouter'))
+userRouter.use('/recipesearch', require('./recipeRouter'))
+userRouter.use('/favorites', require('./favoritesRouter'))
 userRouter.use('/foods', require('./foodRouter'))
 userRouter.use('/progress', require('./progressRouter'))
+userRouter.use('/settings', require('./settingsRouter'))
+
+userRouter.use('/friends', require('./friendRouter'))
+
+
+
+
 
 module.exports = userRouter

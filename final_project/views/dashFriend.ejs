@@ -1,0 +1,32 @@
+<head>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="http://underscorejs.org/underscore.js"></script>
+</head>
+
+<body>
+    <h3>You are viewing the dashboard for <%= otherUser %></h3>
+    <a href="/<%= user.slug %>/friends">Back</a>
+    <div class="lineChart"></div>
+
+<script src="https://www.google.com/jsapi"></script>
+<script src="/javascript/GoogleLine.js"></script>
+<script>
+    var i = <%- JSON.stringify(chartData) %>
+    var fields = ['Date', 'Calories Eaten']
+    if (i[0].length > 0) {
+        $('.caloriesEaten').text(i[0]['Total Calories'])
+        var lineChart = new GoogleLine('.lineChart', i, function(){}, fields)
+    } else {
+        $('.caloriesEaten').text("User <%= user.slug %> has not logged any food. Log your food today to track your calories like in this graph!")
+        var fakeData = [
+        ['Mon Nov 24 2014', 1987],
+        ['Tue Nov 25 2014', 1849],
+        ['Wed Nov 26 2014', 2012],
+        ['Thur Nov 27 2014', 2409],
+        ['Fri Nov 28 2014', 1803],
+        ]
+        var lineChart = new GoogleLine('.lineChart', fakeData, function(){}, fields)
+    }
+
+</script>
+</body>
