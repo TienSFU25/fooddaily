@@ -15,8 +15,12 @@ var nutritionix = require('nutritionix')({
     appKey: 'ac97e296e021c5ea6c0e51389f966307'
 }, false).v1_1;
 
-foodRouter.get('/', function(req, response, next) {
+function loadAllFoods(req, callback) {
 	db.getAllChosenFoods(req.user.id, function(err, allFoods) {
+		if (err) {
+			callback(new Error(err))
+		}
+
 		var allRows = []
 		var thisRow = []
 		if (allFoods == null || allFoods.length == 0) {
@@ -40,8 +44,17 @@ foodRouter.get('/', function(req, response, next) {
 			allRows.push(thisRow)
 		}
 
+		callback(null, allRows)
+	})	
+}
+
+foodRouter.get('/', function(req, response, next) {
+	loadAllFoods(req, function(err, allRows){
+		if (err) {
+			res.json({success: false, message: "Unknown error in getting food list"})
+		}
+
 		response.render('foods', {user:req.user, chartData: allRows, csrfToken: req.csrfToken()})
-		return
 	})
 })
 
@@ -63,9 +76,8 @@ foodRouter.post('/', function(req, res, next) {
 					} else {
 						db.eatFood(req.user.id, id, req.body.amount, function(err, r) {
 							if (err) {
-								rtnjson.success = false;
-								rtnjson.message = "Error in setting amount for food " + id
-								rtnjson.err = JSON.stringify(err)
+								rtnjson.success = false
+								rtnjson.message = err.message
 								res.json(rtnjson);
 							} else {
 								rtnjson.success = true;
@@ -83,9 +95,8 @@ foodRouter.post('/', function(req, res, next) {
 			Food.findOne({where: {id: id}}).done(function (err, food) {
 				db.eatFood(req.user.id, id, req.body.amount, function(err, r) {
 					if (err) {
-						rtnjson.success = false;
-						rtnjson.message = "Error in setting amount for food " + id
-						rtnjson.message = JSON.stringify(err);
+						rtnjson.success = false
+						rtnjson.message = err.message
 						res.json(rtnjson);
 					} else {
 						rtnjson.success = true;
@@ -120,9 +131,10 @@ foodRouter.put('/', function(req, res, next){
 						res.json(rtnjson)
 					} else {
 						rtnjson.success = true
-						rtnjson.message = "Successfully edited food information for food " + params.foodId
+						rtnjson.message = "Successfully edited food information for food " + food['dataValues']['foodname']
 						rtnjson.updatedAmount = chosenFood['dataValues']['amount']
-						rtnjson.updatedTime = chosenFood['dataValues']['createdAt'].getTime()
+						// thanks to date utils
+						rtnjson.updatedTime = chosenFood['dataValues']['createdAt'].toFormat("HH24:MI:SS")
 						res.json(rtnjson)
 					}
 				})

@@ -26,11 +26,9 @@ module.exports = function(passport, db) {
 		// first, try to search for this user. retrieve the hashed password
 		User.findOne({where: {username: username}}).done(function(err, user) {
 			if (err) {
-				console.log(err)
 				return done(null, false)
 			}
 			if (!user) {
-				req.flash('loginMessage', 'User does not exist')
 				return done(null, false)
 			} 
 
@@ -42,7 +40,6 @@ module.exports = function(passport, db) {
 					if (err)
 						return done(err)
 					if (!match) {
-						req.flash('loginMessage', 'Wrong password')
 						return done(null, false)
 					}
 					else {

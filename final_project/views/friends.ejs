@@ -7,11 +7,13 @@
 <link rel="stylesheet" type="text/css" href="/stylesheets/jquery-ui.theme.min.css">
 <link rel="stylesheet" type="text/css" href="/chosen_v1.2.0/chosen.min.css">
 <link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
+
+<script src="/stylesheets/notify.min.js"></script>
+<script src="/javascript/notify.js"></script>
 </head>
 <body>
 <p>This is the config friends page for <%= user.slug %></p>
 
-<p id="notification" class="ui-widget-content ui-corner-all"></p>
 <div id="tabs">
   <ul>
     <li><a href="#addFriends">Add friends</a></li>
@@ -32,7 +34,7 @@
 	<table id="accept" class="genCss">
 		<% for (var i = 0; i < otherPending.length; i++) { %>
 		<tr>
-			<td value=<%= selfPending[i] %> type="accept">Accept request from <%= otherPending[i] %></td>
+			<td value=<%= otherPending[i] %> type="accept">Accept request from <%= otherPending[i] %></td>
 		</tr>
 		<% } %>
 	</table>
@@ -135,12 +137,7 @@
 	}
 
 	function changeNotification(text) {
-		notification.text(text)
-		notification.show("fold", {}, 2000, function(){
-			setTimeout(function() {
-        		notification.fadeOut()
-     		}, 2000)
-		})
+		$.notify(text)
 	}
 
 	// PROBABLY NOT THE BEST WAY TO DO THIS

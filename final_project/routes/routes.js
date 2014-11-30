@@ -1,12 +1,7 @@
 module.exports = function(app, passport, db, fbProfile) {
 
 	var s = require('string')
-	console.log(new Date())
-	// db.eatFood(17, "513fc997927da70408003f50", 400, function(){})
-	// db.changeDate(1, new Date(), function(err, res){
-	// 	console.log(err)
-	// 	console.log(res)
-	// })
+
 	// print user
 	app.use('/', function(req, res, next) {
 		// console.log('logged in user is ' + req.user)
@@ -28,7 +23,7 @@ module.exports = function(app, passport, db, fbProfile) {
 				} else {
 					req.logIn(user, function(err){
 						if (err) return next(err)
-						res.redirect(user.slug)
+						res.redirect(user.slug + '/dashboard')
 					})
 				}
 			})
@@ -73,7 +68,6 @@ module.exports = function(app, passport, db, fbProfile) {
 		passport.authenticate('local-login', function(err, user, info) {
 			console.log(user)
 
-
 			if (err) {
 				console.log(err)
 				next(err)
@@ -83,7 +77,9 @@ module.exports = function(app, passport, db, fbProfile) {
 				res.redirect('/login')
 			} else {
 				req.logIn(user, function(err){
-					if (err) return next(err)
+					if (err) {
+						next(err)
+					} 
 					res.redirect(user.slug + '/dashboard')
 				})
 			}
@@ -103,7 +99,7 @@ module.exports = function(app, passport, db, fbProfile) {
 			} else {
 				req.logIn(user, function(err){
 					if (err) return next(err)
-					res.redirect(user.slug)
+					res.redirect(user.slug + '/dashboard')
 				})
 			}
 		})
@@ -115,7 +111,6 @@ module.exports = function(app, passport, db, fbProfile) {
 			if (req.user.slug == req.params.slug) {
 				next()
 			} else {
-				console.log('Logged in with slug ' + req.user.slug + ' but param was ' + req.params.slug)
 				res.redirect(req.user.slug)
 			}			
 		}
@@ -165,28 +160,4 @@ function ensureAuthenticated(req, res, next) {
     console.log("req.id is : " + req.id);
   res.redirect('/login')
 }
-
-	app.get('/settings', function(req, res) {
-		res.render('settings', { csrfToken: req.csrfToken() })
-	})
-
-	app.post('/settings', function(req, res) {
-		res.redirect('/settings')
-	})
-
-	app.get('/jsontest', function(req, res) {
-		res.send("This function is currently being built")
-	})
-
-	app.get('/search', function(req, res) {
-		res.render('search',  { csrfToken: req.csrfToken() })
-	})
-
-	app.post('/search', function(req, res) {
-		res.redirect('/jsontest')
-	})
-
-	app.get('/favourites', function(req, res) {
-		res.render('favrecipes', {user: req.user})
-	})
 }

@@ -1,4 +1,4 @@
-function GoogleTable(chartSelector, initRows, handlers, options, chartTitle, callback) {
+function GoogleTable(chartSelector, initRows, handlers, options, callback) {
 	var values = _.values(options)
 	var display = _.pluck(values, 'display')
 	var fieldTypes = _.pluck(values, 'type')
@@ -7,6 +7,17 @@ function GoogleTable(chartSelector, initRows, handlers, options, chartTitle, cal
 		if (val)
 			hiddenFields.push(index)
 	})
+
+	this.options = {
+						showRowNumber: true,
+						// alternatingRowStyle: false,
+						page: 'enable', 
+						pageSize: 10,
+						cssClassNames: {
+							// tableRow: 'popup-with-form',
+							// oddTableRow: 'popup-with-form'
+						}
+					}
 
 	// vcl closure
 	var myTable = this
@@ -33,9 +44,7 @@ function GoogleTable(chartSelector, initRows, handlers, options, chartTitle, cal
 
 		// for initially loading the chart
 	 	myTable.draw(initRows)
-	 	if (chartTitle)
-			$(chartSelector).prepend('<h2 class="googleTableTitle">'+ chartTitle + '</h2>')
-
+	 	
 		if (callback)
 			callback()
 	})
@@ -48,19 +57,15 @@ GoogleTable.prototype.draw = function f(rows, options) {
 	this.data.addRows(rows)
 
 	if (options == undefined) {
-		options = {
-			showRowNumber: true,
-			// alternatingRowStyle: false,
-			page: 'enable', 
-			pageSize: 10,
-			cssClassNames: {
-				// tableRow: 'popup-with-form',
-				// oddTableRow: 'popup-with-form'
-			}
-		}
+		options = this.options
 	}
 
     this.googleTable.draw(this.view, options);
+}
+
+GoogleTable.prototype.setColSelected = function(colIndex, newValue) {
+	this.data.setCell(this.selRow, colIndex, newValue)
+    this.googleTable.draw(this.view, this.options);
 }
 
 GoogleTable.prototype.removeSelected = function() {
@@ -89,7 +94,7 @@ GoogleTable.prototype.getValue = function f(row, col) {
 }
 
 // return all data in the last selected row
-GoogleTable.prototype.dataDump = function f() {
+GoogleTable.prototype.dataDump = function () {
 	var cols = this.data.getNumberOfColumns()
 	var tds = []
 	for (var i = 0; i < cols; i++) {

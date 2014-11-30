@@ -114,8 +114,7 @@ Database.prototype.getAllChosenFoods = function(userid, callback) {
 	_.each(dbFields, function(value, index) {
 		customQuery += (' Foods.' + value + ',')
 	})
-	customQuery += ' ChosenFoods.amount, ChosenFoods.createdAt, (ChosenFoods.amount*Foods.calories) as "Total Calories", ChosenFoods.id as "ChosenFoodId" from ChosenFoods, Foods, Users3 where ChosenFoods.foodid=Foods.id and ChosenFoods.userId=Users3.userid and Users3.userid=' + userid + ' order by ChosenFoods.createdAt'
-
+	customQuery += ' chosenfoods.amount, chosenfoods.createdAt, (chosenfoods.amount*foods.calories) as "Total Calories", chosenfoods.id as "ChosenFoodId", time(chosenfoods.createdAt) from chosenfoods, foods, users3 where chosenfoods.foodid=foods.id and chosenfoods.userId=users3.userid and users3.userid=' + userid + ' order by chosenfoods.createdAt'
 	this.sequelize.query(customQuery, null, {raw: true}).done(callback)	
 }
 
@@ -189,7 +188,6 @@ Database.prototype.updateFood = function(userid, foodid, newAmount, timestring, 
 		
 		try {
 			var d = new Date(yyyy, mm - 1, dd, 0, 0, 0, 0)
-			console.log(d)
 			if (Date.compare(d, new Date()) == 1) {
 				callback(new Error("Cannot set a date later than today"))
 				return
@@ -253,7 +251,7 @@ Database.prototype.updateFood = function(userid, foodid, newAmount, timestring, 
 			}
 
 			myquery += sprintf(' where id="%s"', foodid)
-			console.log(myquery)
+			// console.log(myquery)
 			sq.query(
 				myquery,
 				// sprintf('update hCosenFoods set createdAt=concat(date(createdAt), " %s"), amount="%s" where id="%s"', timestring, newAmount, foodid),

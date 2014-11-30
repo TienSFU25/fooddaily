@@ -34,13 +34,21 @@ friendRouter.get('/:slug', function(req, res){
 					if (friendRow['dataValues']['accepted'] == "0") {
 						res.send(req.params.slug + " must approve your friend request before you can view their dashboard")
 					} else {
-						db.getCaloriesByDay(otherUserId, function(err, calories){
+						db.getCaloriesByDay(otherUserId, function(err, result){
 							if (err) {
-								res.send(err)
-							} else if (calories.length == 0) {
-								res.render('test', {username: req.params.slug, calories: [], csrfToken: req.csrfToken()})
+								res.json(err)
 							} else {
-								res.render('test', {username: req.params.slug, calories: calories[0]['Total Calories'], csrfToken: req.csrfToken()})
+								var rr = [[]]
+								if (!_.isEmpty(result)) {
+									var keys = _.keys(result[0])
+									var createds = _.pluck(result, keys[0])
+									createds = _.map(createds, function(val, index){
+										return val.toDateString()
+									})
+									var amounts = _.pluck(result, keys[1])
+									rr = _.zip(createds, amounts)
+								}
+								res.render('dashFriend', {user: req.user, chartData: rr, otherUser: otherUser['dataValues']['slug']})
 							}
 						})
 					}
@@ -105,7 +113,6 @@ friendRouter.get('/', function(req, res){
 		var friendOfEvent = new MyEvent(friendRows.length, function(){allEvents.inc()}, "load friends to this user event")
 		_.each(friendRows, function(friendRow, index){
 			User.findOne({where: {userid: friendRow['dataValues']['befrienderId']}}).done(function(err, friend){
-				console.log(friend['dataValues']['slug'])
 				if (friendRow['dataValues']['accepted'] == "0") {
 					otherPending.push(friend['dataValues']['slug'])	
 				}
