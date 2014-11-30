@@ -138,7 +138,7 @@
 	<a href='/logout'>Log out</a></br>
 
 	<p>Search Yummly API for Recipes</p>
-	<form id="recipeSearch"> <!-- action="/search" method="post" onsubmit="return reqYummlyAPI();">-->
+	<form id="recipeSearch"> <!-- action="/recipes" method="post" onsubmit="return reqYummlyAPI();">-->
 		<input type="hidden" name="_csrf" value="<%= csrfToken %>">
 		<input id="q" name="q" placeholder="Search for a recipe" type="text" value=""/>
 	  	<!--<button type="submit" value="Submit" id="searchButton">Search</button>-->
