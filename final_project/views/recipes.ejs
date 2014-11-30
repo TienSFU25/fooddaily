@@ -42,54 +42,96 @@
 			});
 		}
 
-		function yummlyGetById(foodId) {
+		function getAndPostToFavourites(foodId) {
 			var call = "http://api.yummly.com/v1/api/recipe/";
 			call += foodId + "?_";
 			call += "app_id=" + APP_ID + "&_app_key=" + APP_KEY;
 
-			// alert(call);
-			
 			var jqhxr = $.ajax({
 				type: "GET",
 				url: call,
 				success: function(data) {
-					alert("success get by id: " + call);
-					// updateResults(data);
+					// alert("success get by id: " + call);
+					postRecipe(data);
 				}, 
 				error: function() {
 					alert("no results found (by id)");
 				}
-			})
+			});
 		}
 
-		function updateResults(data) {
-			var info = "<li>" + data.name + "</li>";
-		  	info += "<ul>";
-		  	info += "<li> img goes here </li>"; // eg 	  	info += "<li><img src=\"http://lh6.ggpht.com/Sn2qCFY3fG8cI71t9BdZ-Jyb9RyPh_0Dg79ii9iRNHhd97yQy5MYg0e9sun3HxY9inRax15XWkBSrQ3RCQGq0A=s360\"></img></li>";
-			info += "<li>Yield: " + data.yield + "</li>";
+		function postRecipe(data) {
+			$.ajax({
+				type: 'POST',
+				url: '/'+'d'+'/favorites',//userSlug+'/favorites',
+				data: {
+					name: data.name,
+					chosenId: $('#chosenId').val(),
+					yield: data.yield,
+					ingredientsList: data.ingredientLines,
+					source: data.source.sourceRecipeUrl,
+					image: data.images.hostedSmallUrl,
+					nutrition: data.nutritionEstimates,
+				},
+				success: function(d) {
+					alert("added recipe to favs");
+				},
+				error: function(xhr, textStatus) {
+					alert("error adding recipe to favs");
+				}
+			});
+		}
+
+		// function yummlyGetById(foodId) {
+		// 	var call = "http://api.yummly.com/v1/api/recipe/";
+		// 	call += foodId + "?_";
+		// 	call += "app_id=" + APP_ID + "&_app_key=" + APP_KEY;
+
+		// 	// alert(call);
+			
+		// 	var jqhxr = $.ajax({
+		// 		type: "GET",
+		// 		url: call,
+		// 		success: function(data) {
+		// 			alert("success get by id: " + call);
+		// 			// updateResults(data);
+		// 		}, 
+		// 		error: function() {
+		// 			alert("no results found (by id)");
+		// 		}
+		// 	});
+		// }
+
+		// function updateResults(data) {
+		// 	var info = "<li>" + data.name + "</li>";
+		//   	info += "<ul>";
+		//   	info += "<li> img goes here </li>"; // eg 	  	info += "<li><img src=\"http://lh6.ggpht.com/Sn2qCFY3fG8cI71t9BdZ-Jyb9RyPh_0Dg79ii9iRNHhd97yQy5MYg0e9sun3HxY9inRax15XWkBSrQ3RCQGq0A=s360\"></img></li>";
+		// 	info += "<li>Yield: " + data.yield + "</li>";
 
 
-			info += "<li>Ingredients: ";
-			info += "<ul>"
-			for (i = 0; i < data.ingredientLines.length; i++){
-				info += "<li>" + data.ingredientLines[i] + "</li>";
-			}
-			info += "</ul></li>"
+		// 	info += "<li>Ingredients: ";
+		// 	info += "<ul>"
+		// 	for (i = 0; i < data.ingredientLines.length; i++){
+		// 		info += "<li>" + data.ingredientLines[i] + "</li>";
+		// 	}
+		// 	info += "</ul></li>"
 
-			info += "<li><a href=\"" + data.source.sourceRecipeUrl + "\">URL</a></li>";
-			info += "</ul><br>"
-			// info += "<li><img src=\"" + data.images.hostedLargeUrl + "\"></img></li>";
-			// info += data.images.hostedLargeUrl; // <img src="http://i2.yummly.com/Hot-Turkey-Salad-Sandwiches-Allrecipes.l.png"></img>
-			// info +="<li><img src=\"http://i2.yummly.com/Hot-Turkey-Salad-Sandwiches-Allrecipes.l.png\"></img></li>";
+		// 	info += "<li><a href=\"" + data.source.sourceRecipeUrl + "\">URL</a></li>";
+		// 	info += "</ul><br>"
+		// 	// info += "<li><img src=\"" + data.images.hostedLargeUrl + "\"></img></li>";
+		// 	// info += data.images.hostedLargeUrl; // <img src="http://i2.yummly.com/Hot-Turkey-Salad-Sandwiches-Allrecipes.l.png"></img>
+		// 	// info +="<li><img src=\"http://i2.yummly.com/Hot-Turkey-Salad-Sandwiches-Allrecipes.l.png\"></img></li>";
 				
-			$("searchResults").append(info);
-		}
+		// 	$("searchResults").append(info);
+		// }
 
 		function updateTableResults(data) {
 			rows = new Array();
 			// var i = 0;
 			// var len = data.matches.length;
 			for(var i = 0; i < data.matches.length; i++) {
+				var imageLink = data.matches[i].imageUrlsBySize[90];
+				var image = "<img id='img" + i +"' src='" + imageLink + "' />";
 				var name = data.matches[i].recipeName;
 				var brand = data.matches[i].sourceDisplayName;
 
@@ -104,6 +146,7 @@
 				var id = data.matches[i].id;
 
 				var row = [
+					image,
 					name,
 					brand,
 					ingredients,
@@ -140,12 +183,15 @@
 	<p>Search Yummly API for Recipes</p>
 	<form id="recipeSearch"> <!-- action="/recipes" method="post" onsubmit="return reqYummlyAPI();">-->
 		<input type="hidden" name="_csrf" value="<%= csrfToken %>">
+		<input type="hidden" id="chosenId" name="chosenId" value="" method="post">
+		<input type="hidden" id="slug" value="<%= user.slug %>">
 		<input id="q" name="q" placeholder="Search for a recipe" type="text" value=""/>
 	  	<!--<button type="submit" value="Submit" id="searchButton">Search</button>-->
 	</form>
 
 	<p>Results</p>
 	<br/>
+	<div class="yummlyAttribution"></div>
 	<div class="recipeTable"></div>
 	<br/>
 
@@ -163,20 +209,22 @@
 		data = new google.visualization.DataTable();
 
 		var fields = [
-			"recipeName",
-			"sourceDisplayName",
-			"ingredients",
-			"totalTime (seconds)",
-			"rating (out of 5)",
-			"id"
+			"Image",
+			"Name",
+			"Source",
+			"Ingredients",
+			"Preparation (secs)",
+			"Rating",
+			"Id"
 		];
 
 		data.addColumn('string', fields[0]);
 		data.addColumn('string', fields[1]);
 		data.addColumn('string', fields[2]);
-		data.addColumn('number', fields[3]);
+		data.addColumn('string', fields[3]);
 		data.addColumn('number', fields[4]);
-		data.addColumn('string', fields[5]);
+		data.addColumn('number', fields[5]);
+		data.addColumn('string', fields[6]);
 
 		data.addRows(rows);
 
@@ -184,18 +232,22 @@
 		// table.view = new google.visualization.DataView(data);
 	 // 	table.view.hideColumns(fields[5]);
 
-		google.visualization.events.addListener(data, 'select', selectTableListener);
+		google.visualization.events.addListener(table, 'select', selectTableListener);
 
-		table.draw(data, {showRowNumber: false});
+		table.draw(data, {showRowNumber: false, allowHtml: true});
 	}
 
 	function selectTableListener() {
 		var idx = table.getSelection();
 		var selectedRow = idx[0]['row'];
 
-		var recipeId = data.getValue(selectedRow, 5);
-		yummlyGetById(recipeId);
-	}
+		var recipeId = data.getValue(selectedRow, 6);
+		$("#chosenId").val(recipeId);
+		// alert(recipeId);
 
+		if(confirm("Are you sure you want to add " + recipeId + "to your favourites?")) {
+			getAndPostToFavourites(recipeId);
+		}
+	}
 	</script>
 </body>
