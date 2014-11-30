@@ -195,7 +195,7 @@ Database.prototype.updateFood = function(userid, foodid, newAmount, timestring, 
 	// yyyy-mm-dd
 	// validate day requires dd-yyyy-mm
 	if (datestring != "") {
-		if (!Date.validateDay(dd, yyyy, mm)) {
+		if (!Date.validateDay(dd, yyyy, mm-1)) {
 			callback(new Error("Invalid date format. Must be yyyy/mm/dd"))
 			return
 		}
@@ -240,7 +240,7 @@ Database.prototype.updateFood = function(userid, foodid, newAmount, timestring, 
 				return
 			} else if (timestring == "" && datestring == "") {
 			// if both time and date are empty
-				myquery += ", "
+				// myquery += ", "
 			} else if (timestring == "") {
 				// if time is empty
 				myquery += sprintf('createdAt="%s", ', datestring)
@@ -269,7 +269,7 @@ Database.prototype.updateFood = function(userid, foodid, newAmount, timestring, 
 			console.log(myquery)
 			sq.query(
 				myquery,
-				// sprintf('update ChosenFoods set createdAt=concat(date(createdAt), " %s"), amount="%s" where id="%s"', timestring, newAmount, foodid),
+				// sprintf('update hCosenFoods set createdAt=concat(date(createdAt), " %s"), amount="%s" where id="%s"', timestring, newAmount, foodid),
 				null,
 				{raw: true}
 			).done(callback)
