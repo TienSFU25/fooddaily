@@ -18,7 +18,7 @@ var nutritionix = require('nutritionix')({
 foodRouter.get('/', function(req, response, next) {
 	db.getAllChosenFoods(req.user.id, function(err, allFoods) {
 		if (err) {
-			callback(new Error(err))
+			res.json({err: new Error(err), message: "Error in database query to get all foods"})
 		}
 
 		var allRows = []

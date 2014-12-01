@@ -49,7 +49,7 @@ app.use(function (err, req, res, next) {
 
   // handle CSRF token errors here
   res.status(403)
-  res.send('malformed csrf')
+  res.json({message: 'Malformed csrf'})
 })
 
 // configure database, authentication procedures and routing

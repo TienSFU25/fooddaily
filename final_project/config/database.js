@@ -114,7 +114,7 @@ Database.prototype.getAllChosenFoods = function(userid, callback) {
 	_.each(dbFields, function(value, index) {
 		customQuery += (' Foods.' + value + ',')
 	})
-	customQuery += ' chosenfoods.amount, chosenfoods.createdAt, (chosenfoods.amount*foods.calories) as "Total Calories", chosenfoods.id as "ChosenFoodId", time(chosenfoods.createdAt) from chosenfoods, foods, users3 where chosenfoods.foodid=foods.id and chosenfoods.userId=users3.userid and users3.userid=' + userid + ' order by chosenfoods.createdAt'
+	customQuery += ' ChosenFoods.amount, ChosenFoods.createdAt, (ChosenFoods.amount*Foods.calories) as "Total Calories", ChosenFoods.id as "ChosenFoodId", time(Chosenfoods.createdAt) from ChosenFoods, Foods, Users3 where ChosenFoods.foodid=Foods.id and ChosenFoods.userId=Users3.userid and Users3.userid=' + userid + ' order by ChosenFoods.createdAt'
 	this.sequelize.query(customQuery, null, {raw: true}).done(callback)	
 }
 
