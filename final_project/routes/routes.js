@@ -114,7 +114,7 @@ app.get('/auth/facebook/callback',
 		var p = req.body
 		var rtnjson = {}
 
-		if (!p.username || !p.password || !p.firstname || !p.lastname) {
+		if (!p.username || !p.password || !p.screenname) {
 			rtnjson.success = false
 			rtnjson.message = "All fields are required"
 			res.json(rtnjson)

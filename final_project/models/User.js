@@ -5,8 +5,6 @@ module.exports = {
 		userid: {type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true},
 		username: {type: Sequelize.STRING, allowNull: false, unique: true},
 		password: {type: Sequelize.STRING, allowNull: false},
-		firstname: {type: Sequelize.STRING, allowNull: false},
-		lastname: {type: Sequelize.STRING, allowNull: false},
 		slug: {type: Sequelize.STRING, allowNull: false, unique: true},
 		description: {type: Sequelize.STRING}
 	},
@@ -20,12 +18,10 @@ module.exports = {
 	options: {
 		tableName: "Users3",
 		classMethods: {
-			createUser: function(username, password, firstname, lastname, slug, callback) {
+			createUser: function(username, password, slug, callback) {
 				this.build({
 					username: username,
 					password: password,
-					firstname: firstname,
-					lastname: lastname,
 					slug: slug,
 					description: "some desc"
 				})

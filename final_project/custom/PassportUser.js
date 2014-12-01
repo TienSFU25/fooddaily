@@ -1,6 +1,4 @@
-var PassportUser = function (first, last, slug, id) {
-	this.first = first
-	this.last = last
+var PassportUser = function (slug, id) {
 	this.slug = slug
 	this.id = id
 }
