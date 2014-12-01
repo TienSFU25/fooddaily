@@ -48,8 +48,7 @@
                                     <input class="form-control" type="password" placeholder="Re-type Password" name="passwordre">
                                 </div>
 								<div class="form-group">
-	                                <input class="form-control" type="text" name="firstname" placeholder="First Name">
-									<input class="form-control" type="text" name="lastname" placeholder="Last Name">
+	                                <input class="form-control" type="text" name="screenname" placeholder="Screen Name">
 								</div>
 
                                 <!-- Change this to a button or input when using this as a form -->
@@ -83,8 +82,7 @@
                 data: {
                     username: $('input[name="username"]').val(),
                     password: $('input[name="password').val(),
-                    firstname: $('input[name="firstname').val(),
-                    lastname: $('input[name="lastname').val(),
+                    screenname: $('input[name="screenname').val(),
                     _csrf: csrf
                 },
                 success: function(rtnjson) {

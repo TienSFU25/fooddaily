@@ -51,53 +51,58 @@ foodRouter.get('/', function(req, response, next) {
 foodRouter.post('/', function(req, res, next) {
 	var id = req.body.chosenFood;
 	var query = {id: id};
-	var rtnjson = {};
 
-	Food.checkFood(id, function(count) {
-		if (count == 0) {
-			// query nutritionix and save the food
-			nutritionix.item(query, function(err, food) {
-				Food.createFood(food, function(err, result) {
-					if (err) {
-						rtnjson.success = false;
-						rtnjson.message = "Error in creating food " + id
-						rtnjson.err = JSON.stringify(err);
-						res.json(rtnjson);
-					} else {
-						db.eatFood(req.user.id, id, req.body.amount, function(err, r) {
-							if (err) {
-								rtnjson.success = false
-								rtnjson.message = err.message
-								res.json(rtnjson);
-							} else {
-								rtnjson.success = true;
-								var dataValues = result.dataValues;
-								rtnjson.message = sprintf("Successfully added %s %ss of %s", req.body.amount, dataValues['servingUnit'], dataValues['foodname']);
-								res.json(rtnjson);
-							}
-						});
-					}
+	if (!req.body.chosenFood || !req.body.amount) {
+		res.json({success: false, message: "Chosen food id and amount cannot be empty in this POST request"})
+	} else {
+		var rtnjson = {};
+
+		Food.checkFood(id, function(count) {
+			if (count == 0) {
+				// query nutritionix and save the food
+				nutritionix.item(query, function(err, food) {
+					Food.createFood(food, function(err, result) {
+						if (err) {
+							rtnjson.success = false;
+							rtnjson.message = "Error in creating food " + id
+							rtnjson.err = JSON.stringify(err);
+							res.json(rtnjson);
+						} else {
+							db.eatFood(req.user.id, id, req.body.amount, function(err, r) {
+								if (err) {
+									rtnjson.success = false
+									rtnjson.message = err.message
+									res.json(rtnjson);
+								} else {
+									rtnjson.success = true;
+									var dataValues = result.dataValues;
+									rtnjson.message = sprintf("Successfully added %s %ss of %s", req.body.amount, dataValues['servingUnit'], dataValues['foodname']);
+									res.json(rtnjson);
+								}
+							});
+						}
+					});
+				});			
+			} else {
+				// regardless, save eating food information to ChosenFoods
+				// looks exactly like the code above, but this has to be written twice, because the food info might have to be retrieved from nutritionix
+				Food.findOne({where: {id: id}}).done(function (err, food) {
+					db.eatFood(req.user.id, id, req.body.amount, function(err, r) {
+						if (err) {
+							rtnjson.success = false
+							rtnjson.message = err.message
+							res.json(rtnjson);
+						} else {
+							rtnjson.success = true;
+							var dataValues = food.dataValues;
+							rtnjson.message = sprintf("Successfully added %s %ss of %s", req.body.amount, dataValues['servingUnit'], dataValues['foodname']);
+							res.json(rtnjson);
+						}
+					});
 				});
-			});			
-		} else {
-			// regardless, save eating food information to ChosenFoods
-			// looks exactly like the code above, but this has to be written twice, because the food info might have to be retrieved from nutritionix
-			Food.findOne({where: {id: id}}).done(function (err, food) {
-				db.eatFood(req.user.id, id, req.body.amount, function(err, r) {
-					if (err) {
-						rtnjson.success = false
-						rtnjson.message = err.message
-						res.json(rtnjson);
-					} else {
-						rtnjson.success = true;
-						var dataValues = food.dataValues;
-						rtnjson.message = sprintf("Successfully added %s %ss of %s", req.body.amount, dataValues['servingUnit'], dataValues['foodname']);
-						res.json(rtnjson);
-					}
-				});
-			});
-		}
-	});
+			}
+		});
+	}
 });
 
 foodRouter.put('/', function(req, res, next){

@@ -6,14 +6,14 @@ function MyEvent(count, finished, message) {
 
 	events.EventEmitter.call(this)
 	if (count == 0) {
-		console.log(this.message + " is complete!")
+		// console.log(this.message + " is complete!")
 		finished()
 	}
 
 	this.on('inc', function(args){
 		this.count--
 		if (this.count == 0) {
-			console.log(this.message + " is complete!")
+			// console.log(this.message + " is complete!")
 			finished(args)
 		} else {
 			// console.log(this.message + " has " + this.count + " left")

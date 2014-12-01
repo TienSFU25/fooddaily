@@ -9,15 +9,15 @@ function GoogleTable(chartSelector, initRows, handlers, options, callback) {
 	})
 
 	this.options = {
-						showRowNumber: true,
-						// alternatingRowStyle: false,
-						page: 'enable', 
-						pageSize: 10,
-						cssClassNames: {
-							// tableRow: 'popup-with-form',
-							// oddTableRow: 'popup-with-form'
-						}
-					}
+		showRowNumber: true,
+		// alternatingRowStyle: false,
+		page: 'enable', 
+		pageSize: 10,
+		cssClassNames: {
+			// tableRow: 'popup-with-form',
+			// oddTableRow: 'popup-with-form'
+		}
+	}
 
 	// vcl closure
 	var myTable = this

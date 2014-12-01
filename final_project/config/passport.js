@@ -39,7 +39,7 @@ module.exports = function(passport, db) {
 						return done(null, false, {message: "Incorrect password"})
 					}
 					else {
-						currUser = new PassportUser(userData['firstname'], userData['lastname'], userData['slug'], userData['userid'])
+						currUser = new PassportUser(userData['slug'], userData['userid'])
 						return done(null, currUser)
 					}
 				})
@@ -63,7 +63,8 @@ module.exports = function(passport, db) {
 							allSlugs[res[i]['dataValues']['slug']] = true
 						}
 
-						var slug = s(req.body.firstname + ' ' + req.body.lastname).slugify().s
+						var slug = s(req.body.screenname).slugify().s
+						
 						// attempt to make a unique slug by adding 1, 2...to slug if it exists
 						if (allSlugs[slug]) {
 							var j = 1
@@ -84,11 +85,11 @@ module.exports = function(passport, db) {
 								return done(err, false, {message: "BCrypt error in hashing the string " + password})
 							}
 
-							User.createUser(username, hash, req.body.firstname, req.body.lastname, slug, function(err, res) {
+							User.createUser(username, hash, slug, function(err, res) {
 								if (err) {
 									return done(err, false, {message: "Sequelize error in creating username " + username + " with slug " + slug})
 								} else {
-									currUser = new PassportUser(req.body.firstname, req.body.lastname, slug, res['dataValues']['userid'])
+									currUser = new PassportUser(slug, res['dataValues']['userid'])
 									return done(null, currUser)
 								}
 							})
@@ -109,7 +110,7 @@ module.exports = function(passport, db) {
 					userData = res.dataValues
 					hash = userData['password']
 					userid = userData['userid']
-					currUser = new PassportUser('b', 'c', 'd', res['dataValues']['userid'])
+					currUser = new PassportUser('d', res['dataValues']['userid'])
 					return done(null, currUser)
 				})
 			}
@@ -117,7 +118,7 @@ module.exports = function(passport, db) {
 			userData = user.dataValues
 			hash = userData['password']
 			userid = userData['userid']
-			currUser = new PassportUser('b', 'c', 'd', user['dataValues']['userid'])
+			currUser = new PassportUser('d', user['dataValues']['userid'])
 			return done(null, currUser)
 		})
 	})
@@ -144,7 +145,7 @@ module.exports = function(passport, db) {
 				return done(null, false)
 			}
 			var userData = user.dataValues
-			currUser = new PassportUser(userData['firstname'], userData['lastname'], slug, user['dataValues']['userid'])
+			currUser = new PassportUser(slug, user['dataValues']['userid'])
 		})
 		return done(null, currUser)
 	})
