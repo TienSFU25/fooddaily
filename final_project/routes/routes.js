@@ -29,8 +29,6 @@ app.get('/auth/facebook/callback',
 			res.redirect("/" + req.user.slug + '/dashboard')
   });
 
-
-
 	app.get('/test', function(req, res, next){
 		if (!req.isAuthenticated()) {
 			req.body.username = 'u'
@@ -115,9 +113,9 @@ app.get('/auth/facebook/callback',
 		var rtnjson = {}
 
 		if (!p.username || !p.password || !p.screenname) {
-			rtnjson.success = false
-			rtnjson.message = "All fields are required"
-			res.json(rtnjson)
+			res.json({success: false, message: "All fields are required"})
+		} else if (p.password != p.passwordre) {
+			res.json({success: false, message: "Passwords do not match"})
 		} else {
 			passport.authenticate('local-signup', function(err, user, info) {
 				if (err) {
