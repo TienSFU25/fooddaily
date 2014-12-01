@@ -1,4 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+
 <head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Foodaily</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- MetisMenu CSS -->
+    <link href="/css/plugins/metisMenu/metisMenu.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="/css/sb-admin-2.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="/font-awesome-4.1.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="http://underscorejs.org/underscore.js"></script>
+
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <script src="http://underscorejs.org/underscore.js"></script>
 <script src="/chosen_v1.2.0/chosen.jquery.js"></script>
@@ -10,70 +36,153 @@
 
 <script src="/stylesheets/notify.min.js"></script>
 <script src="/javascript/notify.js"></script>
+
 </head>
+
 <body>
-<p>This is the config friends page for <%= user.slug %></p>
 
-<div id="tabs">
-  <ul>
-    <li><a href="#addFriends">Add friends</a></li>
-    <li><a href="#editFriends">Friend settings</a></li>
-    <li><a href="#viewFriends">View your friends here</a></li>
-  </ul>
-  <div id="addFriends">
-	<p>Here are all the users</p>
-	<div class="ui-widget">
-	  <label for="addFriend">Find other users</label>
-	  <input id="addFriend">
-	</div>
-	<button id="submitAdd">Add Friend</button>
-  </div>
-  <div id="editFriends">
+    <div id="wrapper">
 
-	<p>Pending requests to you</p>
-	<table id="accept" class="genCss">
-		<% for (var i = 0; i < otherPending.length; i++) { %>
-		<tr>
-			<td value=<%= otherPending[i] %> type="accept">Accept request from <%= otherPending[i] %></td>
-		</tr>
-		<% } %>
-	</table>
+        <!-- Navigation -->
+        <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="index.html">Foodaily</a>
+            </div>
+            <div class="navbar-default sidebar" role="navigation">
+                <div class="sidebar-nav navbar-collapse">
+                    <ul class="nav" id="side-menu">
+                        <li class="sidebar-search">
+                            <div class="input-group custom-search-form">
+                                <input type="text" class="form-control" placeholder="Search...">
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default" type="button">
+                                        <i class="fa fa-plus"></i>
+                                    </button>
+                                </span>
+                            </div>
+                            <!-- /input-group -->
+                        </li>
+                        <li>
+                            <a href="/<%= user.slug %>/dashboard"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
+                        </li>
+                        <li>
+                            <a href="/<%= user.slug %>/addfood"><i class="fa fa-table fa-fw"></i> Add Food</a>
+                        </li>
+                        <li>
+                            <a href="/<%= user.slug %>/foods"><i class="fa fa-bar-chart-o fa-fw"></i> Food History</a>
+                        </li>
+                        <li>
+                            <a href="#"><i class="fa fa-edit fa-fw"></i> Recipes<span class="fa arrow"></span></a>
+                            <ul class="nav nav-second-level">
+                                <li>
+                                    <a href="/<%= user.slug %>/recipesearch">Search</a>
+                                </li>
+                                <li>
+                                    <a href="/<%= user.slug %>/favorites">Favorites</a>
+                                </li>
+                            </ul>
+                            <!-- /.nav-second-level -->
+                        </li>
+                        <li>
+                            <a href="/<%= user.slug %>/settings"><i class="fa fa-wrench fa-fw"></i> Settings<span class="fa arrow"></span></a>
+                        </li>
+                    </ul>
+                </div>
+                <!-- /.sidebar-collapse -->
+            </div>
+            <!-- /.navbar-static-side -->
+        </nav>
+
+        <!-- Page Content -->
+        <div id="page-wrapper">
+            <div class="container-fluid">
+
+				<div id="tabs">
+				  <ul>
+				    <li><a href="#addFriends">Add friends</a></li>
+				    <li><a href="#editFriends">Friend settings</a></li>
+				    <li><a href="#viewFriends">View your friends here</a></li>
+				  </ul>
+				  <div id="addFriends">
+					<p>Here are all the users</p>
+					<div class="ui-widget">
+					  <label for="addFriend">Find other users</label>
+					  <input id="addFriend">
+					</div>
+					<button id="submitAdd">Add Friend</button>
+				  </div>
+				  <div id="editFriends">
+
+					<p>Pending requests to you</p>
+					<table id="accept" class="genCss">
+						<% for (var i = 0; i < otherPending.length; i++) { %>
+						<tr>
+							<td value=<%= otherPending[i] %> type="accept">Accept request from <%= otherPending[i] %></td>
+						</tr>
+						<% } %>
+					</table>
 
 
-	<p>Your pending requests</p>
-	<table id="withdraw" class="genCss">
-		<% for (var i = 0; i < selfPending.length; i++) { %>
-		<tr>
-			<td value=<%= selfPending[i] %> type="withdraw">Withdraw request to <%= selfPending[i] %></td>
-		</tr>
-		<% } %>
-	</table>
+					<p>Your pending requests</p>
+					<table id="withdraw" class="genCss">
+						<% for (var i = 0; i < selfPending.length; i++) { %>
+						<tr>
+							<td value=<%= selfPending[i] %> type="withdraw">Withdraw request to <%= selfPending[i] %></td>
+						</tr>
+						<% } %>
+					</table>
 
 
-	<p>All your friends</p>
-	<table id="delete" class="genCss">
-		<% for (var i = 0; i < allFriends.length; i++) { %>
-		<tr>
-			<td value=<%= allFriends[i] %> type="delete">Unfriend <%= allFriends[i] %></td>
-		</tr>
-	<% } %>
-	</table>
-  </div>
+					<p>All your friends</p>
+					<table id="delete" class="genCss">
+						<% for (var i = 0; i < allFriends.length; i++) { %>
+						<tr>
+							<td value=<%= allFriends[i] %> type="delete">Unfriend <%= allFriends[i] %></td>
+						</tr>
+					<% } %>
+					</table>
+				  </div>
 
-  <div id="viewFriends">
-	  <p>Your friends</p>
-		<ul>
-		<% for (var i = 0; i < allFriends.length; i++) { %>
-			<li>
-				<a href='/<%= user.slug %>/friends/<%= allFriends[i] %>'><%= allFriends[i] %></a>
-			</li>
-		<% } %>
-	</div>
-</div>
+				  <div id="viewFriends">
+					  <p>Your friends</p>
+						<ul>
+						<% for (var i = 0; i < allFriends.length; i++) { %>
+							<li>
+								<a href='/<%= user.slug %>/friends/<%= allFriends[i] %>'><%= allFriends[i] %></a>
+							</li>
+						<% } %>
+					</div>
+				</div>
 
+            <!-- /.container-fluid -->
+        </div>
+        <!-- /#page-wrapper -->
 
-</body>
-<script>
+    </div>
+    <!-- /#wrapper -->
+    <script src="https://www.google.com/jsapi"></script>
+    <script src="/javascript/GoogleLine.js"></script>
+    <script src="/javascript/GoogleTable.js"></script>
+    <script src="/javascript/dashboardChart.js"></script>
+
+  
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="/js/bootstrap.min.js"></script>
+
+    <!-- Metis Menu Plugin JavaScript -->
+    <script src="/js/plugins/metisMenu/metisMenu.min.js"></script>
+
+    <!-- Custom Theme JavaScript -->
+    <script src="/js/sb-admin-2.js"></script>
+
+    <script>
 	var autoCompleteSrc = <%- JSON.stringify(allUsers) %>
 	$('#tabs').tabs()
 	$('#addFriend').autocomplete({
@@ -168,3 +277,8 @@
 	}
 
 </script>
+
+</body>
+
+</html>
+
