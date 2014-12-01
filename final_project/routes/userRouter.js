@@ -19,11 +19,6 @@ userRouter.use('/favorites', require('./favoritesRouter'))
 userRouter.use('/foods', require('./foodRouter'))
 userRouter.use('/progress', require('./progressRouter'))
 userRouter.use('/settings', require('./settingsRouter'))
-
 userRouter.use('/friends', require('./friendRouter'))
-
-
-
-
 
 module.exports = userRouter

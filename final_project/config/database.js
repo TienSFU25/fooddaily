@@ -10,7 +10,7 @@ var Database = function singleton(path){
 		dialect: 'mysql',
 		language: 'en',
 		timezone: '-08:00',
-		// logging: false
+		logging: false
 	})
 
 	var models = {}
@@ -257,12 +257,20 @@ Database.prototype.updateFood = function(userid, foodid, newAmount, timestring, 
 			// console.log(myquery)
 			sq.query(
 				myquery,
-				// sprintf('update hCosenFoods set createdAt=concat(date(createdAt), " %s"), amount="%s" where id="%s"', timestring, newAmount, foodid),
+				// sprintf('update ChosenFoods set createdAt=concat(date(createdAt), " %s"), amount="%s" where id="%s"', timestring, newAmount, foodid),
 				null,
 				{raw: true}
 			).done(callback)
 		}
 	})
+}
+
+Database.prototype.getLatestFoods = function(slug, callback) {
+	this.sequelize.query(
+		sprintf('select f.foodname, f.brandName, f.calories, c.amount, c.createdAt from Chosenfoods c, Foods f, Users3 u where c.foodId = f.id and c.userId = u.userId and u.slug = "%s" ORDER BY c.createdAt DESC LIMIT 5', slug),
+		null,
+		{raw: true}
+	).done(callback)
 }
 
 module.exports = Database
