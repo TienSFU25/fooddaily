@@ -18,34 +18,34 @@ var nutritionix = require('nutritionix')({
 foodRouter.get('/', function(req, response, next) {
 	db.getAllChosenFoods(req.user.id, function(err, allFoods) {
 		if (err) {
-			res.json({err: new Error(err), message: "Error in database query to get all foods"})
-		}
-
-		var allRows = []
-		var thisRow = []
-		if (allFoods == null || allFoods.length == 0) {
-			lastDate = ''
+			response.json({err: new Error(err), message: "Error in database query to get all foods"})
 		} else {
-			lastDate = allFoods[0]['createdAt'].toDateString()
-		}
-		_.each(allFoods, function(foodDict, index){
-			foodDict['createdAt'] = foodDict['createdAt'].toDateString()
-			if (foodDict['createdAt'] == lastDate) {
-				thisRow.push(_.values(foodDict))
+			var allRows = []
+			var thisRow = []
+			if (allFoods == null || allFoods.length == 0) {
+				lastDate = ''
 			} else {
-				allRows.push(thisRow)
-				thisRow = []
-				thisRow.push(_.values(foodDict))
-				lastDate = foodDict['createdAt']
+				lastDate = allFoods[0]['createdAt'].toDateString()
 			}
+			_.each(allFoods, function(foodDict, index){
+				foodDict['createdAt'] = foodDict['createdAt'].toDateString()
+				if (foodDict['createdAt'] == lastDate) {
+					thisRow.push(_.values(foodDict))
+				} else {
+					allRows.push(thisRow)
+					thisRow = []
+					thisRow.push(_.values(foodDict))
+					lastDate = foodDict['createdAt']
+				}
+			})
+
+			if (thisRow.length > 0) {
+				allRows.push(thisRow)
+			}
+
+			response.render('foods', {user:req.user, chartData: allRows, csrfToken: req.csrfToken()})
 		})
-
-		if (thisRow.length > 0) {
-			allRows.push(thisRow)
-		}
-
-		response.render('foods', {user:req.user, chartData: allRows, csrfToken: req.csrfToken()})
-	})
+	}
 })
 
 foodRouter.post('/', function(req, res, next) {

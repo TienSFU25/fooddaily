@@ -10,7 +10,7 @@ var Database = function singleton(path){
 		dialect: 'mysql',
 		language: 'en',
 		timezone: '-08:00',
-		logging: false
+		// logging: false
 	})
 
 	var models = {}
@@ -114,7 +114,7 @@ Database.prototype.getAllChosenFoods = function(userid, callback) {
 	_.each(dbFields, function(value, index) {
 		customQuery += (' Foods.' + value + ',')
 	})
-	customQuery += ' ChosenFoods.amount, ChosenFoods.createdAt, (ChosenFoods.amount*Foods.calories) as "Total Calories", ChosenFoods.id as "ChosenFoodId", time(Chosenfoods.createdAt) from ChosenFoods, Foods, Users3 where ChosenFoods.foodid=Foods.id and ChosenFoods.userId=Users3.userid and Users3.userid=' + userid + ' order by ChosenFoods.createdAt'
+	customQuery += ' ChosenFoods.amount, ChosenFoods.createdAt, (ChosenFoods.amount*Foods.calories) as "Total Calories", ChosenFoods.id as "ChosenFoodId", time(ChosenFoods.createdAt) from ChosenFoods, Foods, Users3 where ChosenFoods.foodid=Foods.id and ChosenFoods.userId=Users3.userid and Users3.userid=' + userid + ' order by ChosenFoods.createdAt'
 	this.sequelize.query(customQuery, null, {raw: true}).done(callback)	
 }
 
