@@ -267,7 +267,7 @@ Database.prototype.updateFood = function(userid, foodid, newAmount, timestring, 
 
 Database.prototype.getLatestFoods = function(slug, callback) {
 	this.sequelize.query(
-		sprintf('select f.foodname, f.brandName, f.calories, c.amount, c.createdAt from Chosenfoods c, Foods f, Users3 u where c.foodId = f.id and c.userId = u.userId and u.slug = "%s" ORDER BY c.createdAt DESC LIMIT 5', slug),
+		sprintf('select f.foodname, f.brandName, f.calories, c.amount, c.createdAt from ChosenFoods c, Foods f, Users3 u where c.foodId = f.id and c.userId = u.userId and u.slug = "%s" ORDER BY c.createdAt DESC LIMIT 5', slug),
 		null,
 		{raw: true}
 	).done(callback)
