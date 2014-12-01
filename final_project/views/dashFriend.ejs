@@ -20,10 +20,11 @@
 
     var fields = ['Date', 'Calories Eaten']
     if (i[0].length > 0) {
+        $('.caloriesEaten').text("You have logged a total of " + i[0][1] + " calories today")
+
         // show the latest day first
         i = i.reverse()
         // magic number 1
-        $('.caloriesEaten').text("You have logged a total of " + i[0][1] + " calories today")
         var lineChart = new GoogleLine('.lineChart', i, function(){}, fields)
         var allRows = []
         _.each(latestFoods, function(food, key){

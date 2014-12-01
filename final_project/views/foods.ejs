@@ -48,31 +48,6 @@
 <script src="/stylesheets/jquery.timepicker.min.js"></script>
 
 <script src="/stylesheets/notify.min.js"></script>
-
-    <script src="/javascript/GoogleLine.js"></script>
-    <script>
-        var i = <%- JSON.stringify(chartData) %>
-        var fields = ['Date', 'Calories Eaten']
-        if (i[0].length > 0) {
-            // show the latest day first
-            i = i.reverse()
-            $('.caloriesEaten').text(i[0]['Total Calories'])
-            var lineChart = new GoogleLine('.lineChart', i, function(){}, fields)
-        } else {
-            $('.caloriesEaten').text("User + <%= user.slug %> has not logged any food. Log your food today to track your calories like in this graph!")
-            var fakeData = [
-            ['Mon Nov 24 2014', 1987],
-            ['Tue Nov 25 2014', 1849],
-            ['Wed Nov 26 2014', 2012],
-            ['Thur Nov 27 2014', 2409],
-            ['Fri Nov 28 2014', 1803],
-            ]
-            var lineChart = new GoogleLine('.lineChart', fakeData, function(){}, fields)
-        }
-
-    </script>
-
-
 </head>
 
 <body>

@@ -280,8 +280,6 @@
                 queryDict["filters"]["item_type"] = $('.itemType').val()
             }
 
-            console.log(queryDict)
-
             $.ajax({
                 type: "POST",
                 url: "https://api.nutritionix.com/v1_1/search",

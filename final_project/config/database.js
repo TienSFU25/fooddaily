@@ -124,7 +124,7 @@ Database.prototype.getCaloriesByDay = function(userid, callback) {
 	}
 	this.sequelize
 	.query(
-		'select date(c.createdAt) as "Date", sum(c.amount*f.calories) as "Total Calories" from ChosenFoods c, Foods f where userid=:id and c.foodid = f.id group by date(c.createdat) order by date(c.createdat) desc',
+		'select date(c.createdAt) as "Date", sum(c.amount*f.calories) as "Total Calories" from ChosenFoods c, Foods f where c.userId=:id and c.foodId = f.id group by date(c.createdAt) ORDER BY date(c.createdAt) DESC',
 		null,
 		{raw: true},
 		{id: userid}
