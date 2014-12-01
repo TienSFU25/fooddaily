@@ -22,15 +22,14 @@
 
     <!-- Custom Fonts -->
     <link href="/font-awesome-4.1.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-    <link href="http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css">
-    <link href="http://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
+
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+
 <script src="http://underscorejs.org/underscore.js"></script>
 
 <link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
@@ -38,14 +37,40 @@
 <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.5.0/pure-min.css">
 <link rel="stylesheet" type="text/css" href="/stylesheets/jquery-ui.min.css">
 <link rel="stylesheet" type="text/css" href="/stylesheets/jquery-ui.theme.min.css">
+<link rel="stylesheet" type="text/css" href="/stylesheets/jquery.timepicker.css">
+
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <script src="https://www.google.com/jsapi"></script>
 <script src="http://underscorejs.org/underscore.js"></script>
 <script src="/magnificPopup/jquery.magnific-popup.js"></script>
 <script src="http://code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
 <script src="/stylesheets/jquery.timepicker.min.js"></script>
-<link rel="stylesheet" type="text/css" href="/stylesheets/jquery.timepicker.css">
+
 <script src="/stylesheets/notify.min.js"></script>
+
+    <script src="/javascript/GoogleLine.js"></script>
+    <script>
+        var i = <%- JSON.stringify(chartData) %>
+        var fields = ['Date', 'Calories Eaten']
+        if (i[0].length > 0) {
+            // show the latest day first
+            i = i.reverse()
+            $('.caloriesEaten').text(i[0]['Total Calories'])
+            var lineChart = new GoogleLine('.lineChart', i, function(){}, fields)
+        } else {
+            $('.caloriesEaten').text("User + <%= user.slug %> has not logged any food. Log your food today to track your calories like in this graph!")
+            var fakeData = [
+            ['Mon Nov 24 2014', 1987],
+            ['Tue Nov 25 2014', 1849],
+            ['Wed Nov 26 2014', 2012],
+            ['Thur Nov 27 2014', 2409],
+            ['Fri Nov 28 2014', 1803],
+            ]
+            var lineChart = new GoogleLine('.lineChart', fakeData, function(){}, fields)
+        }
+
+    </script>
+
 
 </head>
 
@@ -62,7 +87,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="/"><span class="light">Foo</span>daily</a>
+                <a class="navbar-brand" href="index.html">Foodaily</a>
             </div>
 
             <div class="navbar-default sidebar" role="navigation">
@@ -360,30 +385,6 @@
 		});	
 	}
 </script>
-
-    <script src="https://www.google.com/jsapi"></script>
-    <script src="/javascript/GoogleLine.js"></script>
-    <script>
-        var i = <%- JSON.stringify(chartData) %>
-        var fields = ['Date', 'Calories Eaten']
-        if (i[0].length > 0) {
-            // show the latest day first
-            i = i.reverse()
-            $('.caloriesEaten').text(i[0]['Total Calories'])
-            var lineChart = new GoogleLine('.lineChart', i, function(){}, fields)
-        } else {
-            $('.caloriesEaten').text("User + <%= user.slug %> has not logged any food. Log your food today to track your calories like in this graph!")
-            var fakeData = [
-            ['Mon Nov 24 2014', 1987],
-            ['Tue Nov 25 2014', 1849],
-            ['Wed Nov 26 2014', 2012],
-            ['Thur Nov 27 2014', 2409],
-            ['Fri Nov 28 2014', 1803],
-            ]
-            var lineChart = new GoogleLine('.lineChart', fakeData, function(){}, fields)
-        }
-
-    </script>
             <!-- /.container-fluid -->
         </div>
         <!-- /#page-wrapper -->
