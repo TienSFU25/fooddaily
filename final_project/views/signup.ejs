@@ -45,7 +45,7 @@
                                 </div>
                                 <div class="form-group">
                                     <input class="form-control" placeholder="Password" name="password" type="password" value="">
-                                    <input class="form-control" type="password" placeholder="Re-type Password" name="passwordre">
+                                    <input class="form-control" placeholder="Re-type Password" type="password" name="passwordre">
                                 </div>
 								<div class="form-group">
 	                                <input class="form-control" type="text" name="screenname" placeholder="Screen Name">
@@ -82,6 +82,7 @@
                 data: {
                     username: $('input[name="username"]').val(),
                     password: $('input[name="password').val(),
+                    passwordre: $('input[name="passwordre').val(),
                     screenname: $('input[name="screenname').val(),
                     _csrf: csrf
                 },

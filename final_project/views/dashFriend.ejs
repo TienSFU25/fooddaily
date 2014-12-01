@@ -13,44 +13,17 @@
 <script src="https://www.google.com/jsapi"></script>
 <script src="/javascript/GoogleLine.js"></script>
 <script src="/javascript/GoogleTable.js"></script>
+<script src="/javascript/dashboardChart.js"></script>
 <script>
     var i = <%- JSON.stringify(chartData) %>
     var latestFoods = <%- JSON.stringify(latestFoods) %>
-
-    // THIS HAS TO BE IN THE SAME ORDER AS IT WENT OUT FROM DATABASE.JS
-    var chartFields = {
-        foodName: {
-            type: 'string',
-            hidden: false,
-            display: 'Food'
-        },
-        brandName: {
-            type: 'string',
-            hidden: false,
-            display: 'Brand'
-        }, 
-        calories: {
-            type: 'number',
-            hidden: false,
-            display: 'Calories/serving'
-        },
-        amount: {
-            type: 'number',
-            hidden: false,
-            display: 'Amount'
-        },
-        createdAt: {
-            type: 'string',
-            hidden: false,
-            display: "Time eaten"
-        }
-    }
 
     var fields = ['Date', 'Calories Eaten']
     if (i[0].length > 0) {
         // show the latest day first
         i = i.reverse()
-        $('.caloriesEaten').text(i[0]['Total Calories'])
+        // magic number 1
+        $('.caloriesEaten').text("You have logged a total of " + i[0][1] + " calories today")
         var lineChart = new GoogleLine('.lineChart', i, function(){}, fields)
         var allRows = []
         _.each(latestFoods, function(food, key){
@@ -58,21 +31,7 @@
         })
         var myTable = new GoogleTable('.table', allRows, {}, chartFields)
     } else {
-        $('.caloriesEaten').text("User <%= user.slug %> has not logged any food. Log your food today to track your calories like in this graph!")
-        var fakeData = [
-        ['Mon Nov 24 2014', 1987],
-        ['Tue Nov 25 2014', 1849],
-        ['Wed Nov 26 2014', 2012],
-        ['Thur Nov 27 2014', 2409],
-        ['Fri Nov 28 2014', 1803],
-        ]
-        var fakeTable = [
-        ['Chicken Breast', 'McDonalds', 150, 2, 'Sun Nov-30-2014 06:43:55'],
-        ['Tortilla', 'USDA', 237, 1, 'Sun Nov-30-2014 04:41:22'],
-        ['Doritos', 'Frito-Lay', 245, 1, 'Sat Nov-29-2014 23:32:18'],
-        ['Brown Rice', 'USDA', 150, 2, 'Sat Nov-29-2014 22:13:53'],
-        ]
-
+        $('.caloriesEaten').text("User <%= otherUser %> has not logged any food. Log your food today to track your calories!")
         var fakeChart = new GoogleLine('.lineChart', fakeData, function(){}, fields)
         var fakeTable = new GoogleTable('.table', fakeTable, {}, chartFields)
     }
