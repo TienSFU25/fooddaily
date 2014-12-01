@@ -1,4 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
 <head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Foodaily</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- MetisMenu CSS -->
+    <link href="/css/plugins/metisMenu/metisMenu.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="/css/sb-admin-2.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="/font-awesome-4.1.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="http://underscorejs.org/underscore.js"></script>
+
 <link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
 <link rel="stylesheet" href="/magnificPopup/magnific-popup.css">
 <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.5.0/pure-min.css">
@@ -14,246 +47,367 @@
 <script src="/stylesheets/notify.min.js"></script>
 
 </head>
+
 <body>
-<p>Showing food list for <%= user.first + user.last %></p>
-<a href='/<%= user.slug %>'>Back</a></br>
-<a href='/logout'>Log out</a></br>
 
-<div class="allFoods"></div>
-</br>
+    <div id="wrapper">
 
-<div id="tabs" class="mfp-hide white-popup">
-  <ul>
-    <li><a href="#foodInfo">View food information</a></li>
-    <li><a href="#foodEdit">Edit this item</a></li>
-  </ul>
+        <!-- Navigation -->
+        <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="index.html">Foodaily</a>
+            </div>
 
-	<form id="foodInfo" class="pure-form white-popup">
-		<h2 id="foodName"></h3>
-		<div class="pieChart"></div>
-		<div id="nutritionTable"></div>
-		<input type="hidden" id="csrf" name="_csrf" value="<%= csrfToken %>">
-	</form>
+            <div class="navbar-default sidebar" role="navigation">
+                <div class="sidebar-nav navbar-collapse">
+                    <ul class="nav" id="side-menu">
+                        <li class="sidebar-search">
+                            <div class="input-group custom-search-form">
+                                <input type="text" class="form-control" placeholder="Search...">
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default" type="button">
+                                        <i class="fa fa-plus"></i>
+                                    </button>
+                                </span>
+                            </div>
+                            <!-- /input-group -->
+                        </li>
+                        <li>
+                            <a href="/<%= user.slug %>/dashboard"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
+                        </li>
+                        <li>
+                            <a href="/<%= user.slug %>/addfood"><i class="fa fa-table fa-fw"></i> Add Food</a>
+                        </li>
+                        <li>
+                            <a href="/<%= user.slug %>/foods"><i class="fa fa-bar-chart-o fa-fw"></i> Food History</a>
+                        </li>
+                        <li>
+                            <a href="#"><i class="fa fa-edit fa-fw"></i> Recipes<span class="fa arrow"></span></a>
+                            <ul class="nav nav-second-level">
+                                <li>
+                                    <a href="/<%= user.slug %>/recipesearch">Search</a>
+                                </li>
+                                <li>
+                                    <a href="/<%= user.slug %>/favorites">Favorites</a>
+                                </li>
+                            </ul>
+                            <!-- /.nav-second-level -->
+                        </li>
+                        <li>
+                            <a href="/<%= user.slug %>/settings"><i class="fa fa-wrench fa-fw"></i> Settings<span class="fa arrow"></span></a>
+                        </li>
+                    </ul>
+                </div>
+                <!-- /.sidebar-collapse -->
+            </div>
+            <!-- /.navbar-static-side -->
+        </nav>
 
-	<form id="foodEdit" class="pure-form white-popup">
-		<h2 class="foodName"></h2>
-		<label for="spinner">Choose a new amount</label>
-		<input id="spinner" name="value"></br>
-		<label for="timepicker">Edit the time</label>
-		<input id="timepicker" type="text"></br>
-		<label for="datepicker">Edit date</label>
-		<input id="datepicker" type="text"></br>
-		<label for="deleteFood">Delete this food</label>
-		<img src="/images/trashcan.png" id="deleteFood" width="40" height="50"></img></br>
-		<button class="pure-button" id="submitFood">Save your options</button>
-	</form>
-</div>
+        <!-- Page Content -->
+        <div id="page-wrapper">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h1 class="page-header">Food History</h1>
+                    </div>
+                    <!-- /.col-lg-12 -->
+                </div>
+                <!-- /.row -->
 
-<div id="confirmDelete" title="Delete confirmation"></div>
-<script src="/javascript/magnificPopup.js"></script>
-<script src="/javascript/GoogleTable.js"></script>
-<script src="/javascript/GooglePie.js"></script>
-<script src="/javascript/foodConfig.js"></script>
-<script src="/javascript/notify.js"></script>
+                <div class="row">
 
-<script>
-	$('#datepicker').datepicker({
-		dateformat: "yyyy-mm-dd",
-		maxDate: 0,
-		minDate: -30
-	})
-	$('#tabs').tabs()
+                	<div class="allFoods"></div>
+						</br>
 
-	var myPieChart = new GooglePie('.pieChart')
-	var nutritionTable = new GoogleTable('#nutritionTable', [], function(){}, formTableOptions)
+						<div id="tabs" class="mfp-hide white-popup">
+						  <ul>
+						    <li><a href="#foodInfo">View food information</a></li>
+						    <li><a href="#foodEdit">Edit this item</a></li>
+						  </ul>
 
-	// charts is an array of arrays of arrays. first level array is every item eaten in a single day
-	var charts = <%- JSON.stringify(chartData) %>
-	var createdAtIndex = _.indexOf(_.keys(foodTableOptions), "createdAt")
-	var $allFoods = $('.allFoods')
-	var csrf = $('#csrf').val()
-	var rowData = []
-	var rowJson = {}
+							<form id="foodInfo" class="pure-form white-popup">
+								<h2 id="foodName"></h3>
+								<div class="pieChart"></div>
+								<div id="nutritionTable"></div>
+								<input type="hidden" id="csrf" name="_csrf" value="<%= csrfToken %>">
+							</form>
 
-	$('#timepicker').timepicker({
-		step: 10,
-		timeFormat: 'H:i:s'
-	})
-	$('#spinner').spinner()
+							<form id="foodEdit" class="pure-form white-popup">
+								<h2 class="foodName"></h2>
+								<label for="spinner">Choose a new amount</label>
+								<input id="spinner" name="value"></br>
+								<label for="timepicker">Edit the time</label>
+								<input id="timepicker" type="text"></br>
+								<label for="datepicker">Edit date</label>
+								<input id="datepicker" type="text"></br>
+								<label for="deleteFood">Delete this food</label>
+								<img src="/images/trashcan.png" id="deleteFood" width="40" height="50"></img></br>
+								<button class="pure-button" id="submitFood">Save your options</button>
+							</form>
+						</div>
 
-	var allTables = []
-	var allTitles = []
-	var allSelectors = []
-	var selectedTable
+						<div id="confirmDelete" title="Delete confirmation"></div>
+						<script src="/javascript/magnificPopup.js"></script>
+						<script src="/javascript/GoogleTable.js"></script>
+						<script src="/javascript/GooglePie.js"></script>
+						<script src="/javascript/foodConfig.js"></script>
+						<script src="/javascript/notify.js"></script>
 
-	// argh asynch stuff. need to wait for all tables to draw before putting in the titles
-	var count = charts.length
+						<script>
+							$('#datepicker').datepicker({
+								dateformat: "yyyy-mm-dd",
+								maxDate: 0,
+								minDate: -30
+							})
+							$('#tabs').tabs()
 
-	drawAllTables(charts)
+							var myPieChart = new GooglePie('.pieChart')
+							var nutritionTable = new GoogleTable('#nutritionTable', [], function(){}, formTableOptions)
 
-	function drawAllTables(allRows) {
-		allTables = []
-		$('.googleTable').remove()
+							// charts is an array of arrays of arrays. first level array is every item eaten in a single day
+							var charts = <%- JSON.stringify(chartData) %>
+							var createdAtIndex = _.indexOf(_.keys(foodTableOptions), "createdAt")
+							var $allFoods = $('.allFoods')
+							var csrf = $('#csrf').val()
+							var rowData = []
+							var rowJson = {}
 
-		_.each(allRows, function(value, i) {
-			var classname = 'foodChart' + i
-			var fullClass = '<div class ="' + classname + ' googleTable">'
-			var domClass = '.' + classname
+							$('#timepicker').timepicker({
+								step: 10,
+								timeFormat: 'H:i:s'
+							})
+							$('#spinner').spinner()
 
-			allSelectors.push(domClass)
-			allTitles.push(allRows[i][0][createdAtIndex])
+							var allTables = []
+							var allTitles = []
+							var allSelectors = []
+							var selectedTable
 
-			$allFoods.append($(fullClass))
-			
-			var tableHandler = function(e) {
-				var idx = thisTable.googleTable.getSelection()
-				if (!_.isEmpty(idx)) {
-					thisTable.selRow = idx[0]['row']
-				}
+							// argh asynch stuff. need to wait for all tables to draw before putting in the titles
+							var count = charts.length
 
-				// get info from the table
-				rowData = thisTable.dataDump()
-				rowJson = _.object(fields, rowData)
+							drawAllTables(charts)
 
-				// update the pie chart
-				var rows = []
-				_.each(nutrition, function(value, key){
-					rows.push([value, rowJson[key]])
-				})
+							function drawAllTables(allRows) {
+								allTables = []
+								$('.googleTable').remove()
 
-				myPieChart.draw(rows, {
-					id3D: true,
-					title: "Calories by macros",
-					legend: {
-						position: 'labeled',
-						alignment: 'center'
-					}
-				})
+								_.each(allRows, function(value, i) {
+									var classname = 'foodChart' + i
+									var fullClass = '<div class ="' + classname + ' googleTable">'
+									var domClass = '.' + classname
 
-				// set the h2 food name in the form
-				$('#foodName').text(rowJson['foodname'])
+									allSelectors.push(domClass)
+									allTitles.push(allRows[i][0][createdAtIndex])
 
-				// this is for knowing which table got clicked
-				selectedTable = thisTable.myId
+									$allFoods.append($(fullClass))
+									
+									var tableHandler = function(e) {
+										var idx = thisTable.googleTable.getSelection()
+										if (!_.isEmpty(idx)) {
+											thisTable.selRow = idx[0]['row']
+										}
 
-				// dump the json into nutrition table and let it display its own fields
-				// NOTE: keys of the dictionaries need to match
-				drawNutritionTable(rowJson)
-			};
+										// get info from the table
+										rowData = thisTable.dataDump()
+										rowJson = _.object(fields, rowData)
 
-			var handlers = {
-				select: tableHandler,
-				page: loadMagnificPopup,
-				sort: loadMagnificPopup
-			}
-			var thisTable = new GoogleTable(domClass, allRows[i], handlers, foodTableOptions, 
-				function() {
-					count--
-					if (count == 0) {
-						drawTitles()
-					}
-					loadMagnificPopup()
-				}
-					)
-			thisTable.myId = i
-			allTables[i] = thisTable
-		})
-	}
+										// update the pie chart
+										var rows = []
+										_.each(nutrition, function(value, key){
+											rows.push([value, rowJson[key]])
+										})
 
-	function drawTitles() {
-		_.each(allSelectors, function(selector, index) {
-			$(selector).prepend('<h2 class="googleTableTitle">'+ allTitles[index] + '</h2>')
-		})
-	}
+										myPieChart.draw(rows, {
+											id3D: true,
+											title: "Calories by macros",
+											legend: {
+												position: 'labeled',
+												alignment: 'center'
+											}
+										})
 
-	function drawNutritionTable(rowJson) {
-		var row = []
-		_.each(formTableOptions, function(value, key){
-			row.push(rowJson[key])
-		})
-		nutritionTable.draw([row], {showRowNumber: false})
-	}
+										// set the h2 food name in the form
+										$('#foodName').text(rowJson['foodname'])
 
-	var userSlug = '<%= user.slug %>'
-	var amountIndex = _.indexOf(_.keys(foodTableOptions), 'amount')
-	var timeCreatedIndex = _.indexOf(_.keys(foodTableOptions), 'timeCreated')
+										// this is for knowing which table got clicked
+										selectedTable = thisTable.myId
 
-	$('#submitFood').on('click', function(e){
-		e.preventDefault()
-		$.ajax({
-			type: 'PUT',
-			url: ('/' + userSlug + '/foods'),
-			data: {
-				foodId: rowJson['chosenFoodId'],
-				amount: $('#spinner').val(),
-				time: $('#timepicker').val(),
-				date: $('#datepicker').val(),
-				_csrf: csrf
-			},
-			success: function(rtnjson) {
-				if (rtnjson.success) {
-					$.notify(rtnjson.message, {
-						style: 'myStyle'
-					})
-					allTables[selectedTable].setColSelected(amountIndex, rtnjson['updatedAmount'])
-					allTables[selectedTable].setColSelected(timeCreatedIndex, rtnjson['updatedTime'])
-					loadMagnificPopup()
-					$(allSelectors[selectedTable]).prepend('<h2 class="googleTableTitle">'+ allTitles[selectedTable] + '</h2>')
-					$.magnificPopup.close()
-				} else {
-					$.notify(rtnjson.message, {
-						style: 'bootstrap'
-					})
-				}
-			}
-		})
-	})
+										// dump the json into nutrition table and let it display its own fields
+										// NOTE: keys of the dictionaries need to match
+										drawNutritionTable(rowJson)
+									};
 
-	$('#deleteFood').on('click', function(e){
-		$.ajax({
-			type: 'DELETE',
-			url: ('/' + userSlug + '/foods'),
-			data: {
-				_csrf: csrf,
-				foodId: rowJson['chosenFoodId']
-			},
-			success: function(rtnjson) {
-				if (rtnjson.success) {
-					$.notify(rtnjson.message, {
-						style: 'myStyle'
-					})
-					$.magnificPopup.close()
-					allTables[selectedTable].removeSelected()
-					loadMagnificPopup()
-					$(allSelectors[selectedTable]).prepend('<h2 class="googleTableTitle">'+ allTitles[selectedTable] + '</h2>')
-				} else {
-					$.notify(rtnjson.message, {
-						style: 'bootstrap'
-					})
-				}
-			}
-		})
-	})
+									var handlers = {
+										select: tableHandler,
+										page: loadMagnificPopup,
+										sort: loadMagnificPopup
+									}
+									var thisTable = new GoogleTable(domClass, allRows[i], handlers, foodTableOptions, 
+										function() {
+											count--
+											if (count == 0) {
+												drawTitles()
+											}
+											loadMagnificPopup()
+										}
+											)
+									thisTable.myId = i
+									allTables[i] = thisTable
+								})
+							}
 
-	// load the magnific popup hidden form
-	function loadMagnificPopup() {
-		$('.google-visualization-table-table tr:not(.google-visualization-table-tr-head)')
-			.attr({
-			class: 'popup-with-form',
-		})
+							function drawTitles() {
+								_.each(allSelectors, function(selector, index) {
+									$(selector).prepend('<h2 class="googleTableTitle">'+ allTitles[index] + '</h2>')
+								})
+							}
 
-		$('.popup-with-form').magnificPopup({
-			type: 'inline',
-			preloader: true, 
-			removalDelay: 300,
-			mainClass: 'mfp-fade',
-			items: [
-			{
-				src: '#tabs',
-				type: 'inline'
-			}
-			]  
-		});	
-	}
-</script>
+							function drawNutritionTable(rowJson) {
+								var row = []
+								_.each(formTableOptions, function(value, key){
+									row.push(rowJson[key])
+								})
+								nutritionTable.draw([row], {showRowNumber: false})
+							}
+
+							var userSlug = '<%= user.slug %>'
+							var amountIndex = _.indexOf(_.keys(foodTableOptions), 'amount')
+							var timeCreatedIndex = _.indexOf(_.keys(foodTableOptions), 'timeCreated')
+
+							$('#submitFood').on('click', function(e){
+								e.preventDefault()
+								$.ajax({
+									type: 'PUT',
+									url: ('/' + userSlug + '/foods'),
+									data: {
+										foodId: rowJson['chosenFoodId'],
+										amount: $('#spinner').val(),
+										time: $('#timepicker').val(),
+										date: $('#datepicker').val(),
+										_csrf: csrf
+									},
+									success: function(rtnjson) {
+										if (rtnjson.success) {
+											$.notify(rtnjson.message, {
+												style: 'myStyle'
+											})
+											allTables[selectedTable].setColSelected(amountIndex, rtnjson['updatedAmount'])
+											allTables[selectedTable].setColSelected(timeCreatedIndex, rtnjson['updatedTime'])
+											loadMagnificPopup()
+											$(allSelectors[selectedTable]).prepend('<h2 class="googleTableTitle">'+ allTitles[selectedTable] + '</h2>')
+											$.magnificPopup.close()
+										} else {
+											$.notify(rtnjson.message, {
+												style: 'bootstrap'
+											})
+										}
+									}
+								})
+							})
+
+							$('#deleteFood').on('click', function(e){
+								$.ajax({
+									type: 'DELETE',
+									url: ('/' + userSlug + '/foods'),
+									data: {
+										_csrf: csrf,
+										foodId: rowJson['chosenFoodId']
+									},
+									success: function(rtnjson) {
+										if (rtnjson.success) {
+											$.notify(rtnjson.message, {
+												style: 'myStyle'
+											})
+											$.magnificPopup.close()
+											allTables[selectedTable].removeSelected()
+											loadMagnificPopup()
+											$(allSelectors[selectedTable]).prepend('<h2 class="googleTableTitle">'+ allTitles[selectedTable] + '</h2>')
+										} else {
+											$.notify(rtnjson.message, {
+												style: 'bootstrap'
+											})
+										}
+									}
+								})
+							})
+
+							// load the magnific popup hidden form
+							function loadMagnificPopup() {
+								$('.google-visualization-table-table tr:not(.google-visualization-table-tr-head)')
+									.attr({
+									class: 'popup-with-form',
+								})
+
+								$('.popup-with-form').magnificPopup({
+									type: 'inline',
+									preloader: true, 
+									removalDelay: 300,
+									mainClass: 'mfp-fade',
+									items: [
+									{
+										src: '#tabs',
+										type: 'inline'
+									}
+									]  
+								});	
+							}
+						</script>
+
+
+                </div>
+
+
+
+            </div>
+            <!-- /.container-fluid -->
+        </div>
+        <!-- /#page-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+    <script src="https://www.google.com/jsapi"></script>
+    <script src="/javascript/GoogleLine.js"></script>
+    <script>
+        var i = <%- JSON.stringify(chartData) %>
+        var fields = ['Date', 'Calories Eaten']
+        if (i[0].length > 0) {
+            // show the latest day first
+            i = i.reverse()
+            $('.caloriesEaten').text(i[0]['Total Calories'])
+            var lineChart = new GoogleLine('.lineChart', i, function(){}, fields)
+        } else {
+            $('.caloriesEaten').text("User + <%= user.slug %> has not logged any food. Log your food today to track your calories like in this graph!")
+            var fakeData = [
+            ['Mon Nov 24 2014', 1987],
+            ['Tue Nov 25 2014', 1849],
+            ['Wed Nov 26 2014', 2012],
+            ['Thur Nov 27 2014', 2409],
+            ['Fri Nov 28 2014', 1803],
+            ]
+            var lineChart = new GoogleLine('.lineChart', fakeData, function(){}, fields)
+        }
+
+    </script>
+
+    <!-- jQuery -->
+    <script src="/js/jquery.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="/js/bootstrap.min.js"></script>
+
+    <!-- Metis Menu Plugin JavaScript -->
+    <script src="/js/plugins/metisMenu/metisMenu.min.js"></script>
+
+    <!-- Custom Theme JavaScript -->
+    <script src="/js/sb-admin-2.js"></script>
+
 </body>
+
+</html>
