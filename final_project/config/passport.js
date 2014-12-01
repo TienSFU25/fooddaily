@@ -7,13 +7,7 @@ module.exports = function(passport, db) {
 	var LocalStrategy = require('passport-local').Strategy
 	var bcrypt = require('bcrypt-nodejs')
 	var User = db.model('User')
-
-	function PassportUser(first, last, slug, id) {
-		this.first = first
-		this.last = last
-		this.slug = slug
-		this.id = id
-	}
+	var PassportUser = require('../custom/PassportUser.js')
 
 	customDict = {
 		usernameField: 'username',
@@ -26,10 +20,11 @@ module.exports = function(passport, db) {
 		// first, try to search for this user. retrieve the hashed password
 		User.findOne({where: {username: username}}).done(function(err, user) {
 			if (err) {
-				return done(null, false)
+				// this should never happen
+				return done(err, false, {message: "Unknown error in User.findOne " + username})
 			}
-			if (!user) {
-				return done(null, false)
+			if (user == null) {
+				return done(null, false, {message: "Username " + username + " does not exist"})
 			} 
 
 			else {
@@ -38,12 +33,13 @@ module.exports = function(passport, db) {
 				hash = userData['password']
 				bcrypt.compare(password, hash, function(err, match) {
 					if (err)
-						return done(err)
+						return done(err, false, {message: "BCrypt error with password " + password + " and hash " + hash})
+					// in "real life" probably the same error message for both username does not exist and wrong pw
 					if (!match) {
-						return done(null, false)
+						return done(null, false, {message: "Incorrect password"})
 					}
 					else {
-						currUser = new PassportUser(userData['firstname'], userData['lastname'], userData['slug'], userData['userid'])
+						currUser = new PassportUser(userData['slug'], userData['userid'])
 						return done(null, currUser)
 					}
 				})
@@ -55,13 +51,11 @@ module.exports = function(passport, db) {
 		User.count({where: {username: username}}).success(function(count){
 			if (count != 0) {
 				// user name already exists
-				console.log("Username has already been taken")
-				return done(null, false)
+				return done(null, false, {message: "Username " + username + " has already been taken"})
 			} else {
 				User.findAll({attributes: ['slug']}).done(function(err, res) {
 					if (err) {
-						console.log("Unknown error in searchAllSlugs")
-						return done(null, false)
+						return done(err, false, {message: "Unknown error in finding all user slugs"})
 					} else {
 						var allSlugs = {}
 						// copy all slugs into dictionary
@@ -69,14 +63,16 @@ module.exports = function(passport, db) {
 							allSlugs[res[i]['dataValues']['slug']] = true
 						}
 
-						var slug = s(req.body.firstname + ' ' + req.body.lastname).slugify().s
+						var slug = s(req.body.screenname).slugify().s
+						
 						// attempt to make a unique slug by adding 1, 2...to slug if it exists
 						if (allSlugs[slug]) {
 							var j = 1
 							slug += j
 							if (allSlugs[slug]) {
+								// magic number 1000 here, no time to fix
 								j++							
-								for (j; j < 100; j++) {
+								for (j; j < 1000; j++) {
 									slug = slug.substring(0, slug.length - 1) + j
 									if (!allSlugs[slug]) break
 								}
@@ -86,16 +82,14 @@ module.exports = function(passport, db) {
 						// create a(n unsalted for now) hash
 						bcrypt.hash(password, null, null, function(err, hash) {
 							if (err) {
-								console.log(err)
-								return done(null, false)
+								return done(err, false, {message: "BCrypt error in hashing the string " + password})
 							}
 
-							User.createUser(username, hash, req.body.firstname, req.body.lastname, slug, function(err, res) {
+							User.createUser(username, hash, slug, function(err, res) {
 								if (err) {
-									console.log("Unknown error in db.createUser")
-									return done(null, false)
+									return done(err, false, {message: "Sequelize error in creating username " + username + " with slug " + slug})
 								} else {
-									currUser = new PassportUser(req.body.firstname, req.body.lastname, slug, res['dataValues']['userid'])
+									currUser = new PassportUser(slug, res['dataValues']['userid'])
 									return done(null, currUser)
 								}
 							})
@@ -116,7 +110,7 @@ module.exports = function(passport, db) {
 					userData = res.dataValues
 					hash = userData['password']
 					userid = userData['userid']
-					currUser = new PassportUser('b', 'c', 'd', res['dataValues']['userid'])
+					currUser = new PassportUser('d', res['dataValues']['userid'])
 					return done(null, currUser)
 				})
 			}
@@ -124,7 +118,7 @@ module.exports = function(passport, db) {
 			userData = user.dataValues
 			hash = userData['password']
 			userid = userData['userid']
-			currUser = new PassportUser('b', 'c', 'd', user['dataValues']['userid'])
+			currUser = new PassportUser('d', user['dataValues']['userid'])
 			return done(null, currUser)
 		})
 	})
@@ -151,7 +145,7 @@ module.exports = function(passport, db) {
 				return done(null, false)
 			}
 			var userData = user.dataValues
-			currUser = new PassportUser(userData['firstname'], userData['lastname'], slug, user['dataValues']['userid'])
+			currUser = new PassportUser(slug, user['dataValues']['userid'])
 		})
 		return done(null, currUser)
 	})

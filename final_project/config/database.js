@@ -84,7 +84,7 @@ Database.prototype.eatFood = function(userid, foodid, amountEaten, callback) {
 	}
 
 	amountEaten = parseInt(amountEaten)
-	if (amountEaten < 0) {
+	if (amountEaten <= 0) {
 		callback(new Error("Amount must be positive"))
 		return
 	}
@@ -114,7 +114,7 @@ Database.prototype.getAllChosenFoods = function(userid, callback) {
 	_.each(dbFields, function(value, index) {
 		customQuery += (' Foods.' + value + ',')
 	})
-	customQuery += ' chosenfoods.amount, chosenfoods.createdAt, (chosenfoods.amount*foods.calories) as "Total Calories", chosenfoods.id as "ChosenFoodId", time(chosenfoods.createdAt) from chosenfoods, foods, users3 where chosenfoods.foodid=foods.id and chosenfoods.userId=users3.userid and users3.userid=' + userid + ' order by chosenfoods.createdAt'
+	customQuery += ' ChosenFoods.amount, ChosenFoods.createdAt, (ChosenFoods.amount*Foods.calories) as "Total Calories", ChosenFoods.id as "ChosenFoodId", time(ChosenFoods.createdAt) from ChosenFoods, Foods, Users3 where ChosenFoods.foodid=Foods.id and ChosenFoods.userId=Users3.userid and Users3.userid=' + userid + ' order by ChosenFoods.createdAt'
 	this.sequelize.query(customQuery, null, {raw: true}).done(callback)	
 }
 
@@ -124,7 +124,7 @@ Database.prototype.getCaloriesByDay = function(userid, callback) {
 	}
 	this.sequelize
 	.query(
-		'select date(c.createdAt) as "Date", sum(c.amount*f.calories) as "Total Calories" from ChosenFoods c, Foods f where userid=:id and c.foodid = f.id group by date(c.createdat) order by date(c.createdat) desc',
+		'select date(c.createdAt) as "Date", sum(c.amount*f.calories) as "Total Calories" from ChosenFoods c, Foods f where c.userId=:id and c.foodId = f.id group by date(c.createdAt) ORDER BY date(c.createdAt) DESC',
 		null,
 		{raw: true},
 		{id: userid}
@@ -182,18 +182,21 @@ Database.prototype.updateFood = function(userid, foodid, newAmount, timestring, 
 	// validate day requires dd-yyyy-mm
 	if (datestring != "") {
 		if (!Date.validateDay(dd, yyyy, mm-1)) {
-			callback(new Error("Invalid date format. Must be yyyy/mm/dd"))
+			callback(new Error("Invalid date format. Must be mm-dd-yyyy"))
 			return
 		}
 		
 		try {
 			var d = new Date(yyyy, mm - 1, dd, 0, 0, 0, 0)
+			var oneMonthAgo = new Date().remove({months: 1})
 			if (Date.compare(d, new Date()) == 1) {
 				callback(new Error("Cannot set a date later than today"))
 				return
+			} else if (d.isBefore(oneMonthAgo)) {
+				callback(new Error("Cannot set a date later than one month ago"))
 			}
 		} catch(err) {
-			callback(new Error("Cannot parse date. Must be yyyy/mm/dd"))
+			callback(new Error("Cannot parse date. Must be mm-dd-yyyy"))
 			return
 		}
 	}
@@ -240,7 +243,7 @@ Database.prototype.updateFood = function(userid, foodid, newAmount, timestring, 
 				newAmount = parseInt(newAmount)
 				var oldAmount = parseInt(food['dataValues']['amount'])
 				newAmount += oldAmount
-				if (newAmount < 0) {
+				if (newAmount <= 0) {
 					callback(new Error("Cannot change amount to negative value"))
 					return
 				}
@@ -254,12 +257,20 @@ Database.prototype.updateFood = function(userid, foodid, newAmount, timestring, 
 			// console.log(myquery)
 			sq.query(
 				myquery,
-				// sprintf('update hCosenFoods set createdAt=concat(date(createdAt), " %s"), amount="%s" where id="%s"', timestring, newAmount, foodid),
+				// sprintf('update ChosenFoods set createdAt=concat(date(createdAt), " %s"), amount="%s" where id="%s"', timestring, newAmount, foodid),
 				null,
 				{raw: true}
 			).done(callback)
 		}
 	})
+}
+
+Database.prototype.getLatestFoods = function(slug, callback) {
+	this.sequelize.query(
+		sprintf('select f.foodname, f.brandName, f.calories, c.amount, c.createdAt from ChosenFoods c, Foods f, Users3 u where c.foodId = f.id and c.userId = u.userId and u.slug = "%s" ORDER BY c.createdAt DESC LIMIT 5', slug),
+		null,
+		{raw: true}
+	).done(callback)
 }
 
 module.exports = Database

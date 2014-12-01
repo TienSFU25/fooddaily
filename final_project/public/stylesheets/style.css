@@ -1,15 +1,6 @@
-/* Scrollable list */
-/*ul{
-  height:200px; width:18%;
-}
-
-ul{
-  overflow:hidden; 
-  overflow-y:scroll;
-}*/
-
 .chart div {
-  font: 10px sans-serif;
+  font-family: Montserrat,"Helvetica Neue",Helvetica,Arial,sans-serif;
+  font: 10px;
   background-color: steelblue;
   text-align: right;
   padding: 3px;
@@ -133,7 +124,7 @@ input[type=text]{
   text-align:left;
   padding:7px;
   font-size:10px;
-  font-family:Comic Sans MS;
+  font-family: Montserrat,"Helvetica Neue",Helvetica,Arial,sans-serif;
   font-weight:normal;
   color:#000000;
 }.genCss tr:last-child td{

@@ -3,16 +3,6 @@ var dashboardRouter = express.Router()
 var _ = require('underscore')
 
 dashboardRouter.get('/', function(req, res){
-	// db.getCaloriesByDay(req.user.id, function(err, calories){
-	// 	if (!err) {
-	// 		res.render('dashboard', {user: req.user, calories: calories[0]['Total Calories'], csrfToken: req.csrfToken()})
-		
-	// 	} else {
-	// 		res.render('dashboard', {user: req.user, calories: "No foods added today! </br> Error on: calories[0]['Total Calories']", csrfToken: req.csrfToken()})
-
-	// 	}
-	// })
-
 	db.getCaloriesByDay(req.user.id, function(err, result){
 		if (err) {
 			console.log("Error in db.get Amounts")
@@ -28,7 +18,17 @@ dashboardRouter.get('/', function(req, res){
 				var amounts = _.pluck(result, keys[1])
 				rr = _.zip(createds, amounts)
 			}
-			res.render('dashboard', {user: req.user, chartData: rr})
+			db.getLatestFoods(req.user.slug, function(err, latestFoods) {
+				if (err) {
+					res.json({success: false, message: "Error in getting latest foods for " + req.user.slug, err: err})
+				} else {
+					_.each(latestFoods, function(food, key){
+						food['createdAt'] = food['createdAt'].toFormat("DDD MMM-DD-YYYY HH24:MI:SS")
+					})
+
+					res.render('dashboard', {user: req.user, chartData: rr, latestFoods: latestFoods})
+				}
+			})
 		}
 	})
 })

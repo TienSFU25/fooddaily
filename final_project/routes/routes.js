@@ -2,15 +2,32 @@ module.exports = function(app, passport, db, fbProfile) {
 
 	var s = require('string')
 
-	// print user
-	app.use('/', function(req, res, next) {
-		// console.log('logged in user is ' + req.user)
-		// console.log(req.xhr)
-		// console.log(req.path)
-		next()
-	})
-
 	// app.get(/\/user\/(\d*)\/(edit)\/(\d+)/, function(req, res) {
+
+
+// GET /auth/facebook
+//   Use passport.authenticate() as route middleware to authenticate the
+//   request.  The first step in Facebook authentication will involve
+//   redirecting the user to facebook.com.  After authorization, Facebook will
+//   redirect the user back to this application at /auth/facebook/callback
+app.get('/auth/facebook',
+  passport.authenticate('facebook'),
+  function(req, res){
+  	console.log('FACEBOOK UCMNSER')
+    // The request will be redirected to Facebook for authentication, so this function will not be called.
+  });
+
+// GET /auth/facebook/callback
+app.get('/auth/facebook/callback', 
+  passport.authenticate('facebook', { failureRedirect: '/login' }),
+  function(req, res, profile) {
+  	console.log('FACEBOOK UCMNSER')
+  	console.log(req.user)
+  	req.user.username = fbProfile.displayName + " (Facebook)";
+  	req.user.slug = fbProfile.id;
+  	console.log("SLUG IS " + req.user.slug)
+			res.redirect("/" + req.user.slug + '/dashboard')
+  });
 
 	app.get('/test', function(req, res, next){
 		if (!req.isAuthenticated()) {
@@ -45,19 +62,14 @@ module.exports = function(app, passport, db, fbProfile) {
 			res.render('login', { csrfToken: req.csrfToken() })
 		} else if (str == 'signup') {
 			res.render('signup', { csrfToken: req.csrfToken() })
-		//temporary routing for new frontend - tien please fix	
-		} else if (str == 'recipes') {		
-			res.render('recipes', { csrfToken: req.csrfToken(), user: req.user })
-		} else if (str == 'addfood') {		
-			res.render('about', { csrfToken: req.csrfToken(), user: req.user })
 		} else if (str == 'logout') {
 			if (req.isAuthenticated) {
 				req.logout()
 			}
-			res.render('about', { csrfToken: req.csrfToken(), user: req.user })
+			res.render('about')
 		} else {
 			if (!req.isAuthenticated()) {
-				res.render('about', { csrfToken: req.csrfToken(), user: req.user })
+				res.redirect('/')
 			} else {
 				next()
 			}
@@ -66,21 +78,30 @@ module.exports = function(app, passport, db, fbProfile) {
 
 	app.post('/login', function(req, res, next) {
 		passport.authenticate('local-login', function(err, user, info) {
-			console.log(user)
-
+			var rtnjson = {}
 			if (err) {
-				console.log(err)
-				next(err)
-			}
-
-			if (!user) {
-				res.redirect('/login')
+				rtnjson.err = err
+				rtnjson.success = false
+				rtnjson.message = info.message
+				res.json(rtnjson)
+			} else if (!user) {
+				rtnjson.success = false
+				rtnjson.message = info.message
+				res.json(rtnjson)
 			} else {
+				// no error, user is returned (is authenticated)
 				req.logIn(user, function(err){
 					if (err) {
-						next(err)
-					} 
-					res.redirect(user.slug + '/dashboard')
+						rtnjson.err = err
+						rtnjson.success = false
+						rtnjson.message = "Unknown error in passport login"
+						res.json(rtnjson)
+					} else {
+						rtnjson.success = true
+						rtnjson.message = "Successful login!"
+						rtnjson.url = user.slug + '/dashboard'
+						res.json(rtnjson)
+					}
 				})
 			}
 		})
@@ -88,22 +109,42 @@ module.exports = function(app, passport, db, fbProfile) {
 	})
 
 	app.post('/signup', function(req, res, next) {
-		passport.authenticate('local-signup', function(err, user, info) {
-			if (err) {
-				console.log(err)
-				next(err)
-			}
+		var p = req.body
+		var rtnjson = {}
 
-			if (!user) {
-				res.redirect('/signup')
-			} else {
-				req.logIn(user, function(err){
-					if (err) return next(err)
-					res.redirect(user.slug + '/dashboard')
-				})
-			}
-		})
-		(req, res)
+		if (!p.username || !p.password || !p.screenname) {
+			res.json({success: false, message: "All fields are required"})
+		} else if (p.password != p.passwordre) {
+			res.json({success: false, message: "Passwords do not match"})
+		} else {
+			passport.authenticate('local-signup', function(err, user, info) {
+				if (err) {
+					rtnjson.err = err
+					rtnjson.success = false
+					rtnjson.message = info.message
+					res.json(rtnjson)
+				} else if (!user) {
+					rtnjson.success = false
+					rtnjson.message = info.message
+					res.json(rtnjson)
+				} else {
+					// no error, user is returned (is authenticated)
+					req.logIn(user, function(err){
+						if (err) {
+							rtnjson.err = err
+							rtnjson.success = false
+							rtnjson.message = "Unknown error in passport login"
+							res.json(rtnjson)
+						} else {
+							rtnjson.success = true
+							rtnjson.message = "Successful login!"
+							rtnjson.url = user.slug + '/dashboard'
+							res.json(rtnjson)
+						}
+					})
+				}
+			})(req, res)
+		}
 	})
 
 	app.get('/:slug', function(req, res, next) {
@@ -120,34 +161,11 @@ module.exports = function(app, passport, db, fbProfile) {
 	// down here means nobody is authenticated
 	app.get('/', function(req, res, next){
 		if (req.user == null) {
-			res.render('about', { csrfToken: req.csrfToken() })
+			res.render('about')
 		} else {
 			res.redirect(req.user.slug + '/dashboard')
 		}
 	})
-
-
-// GET /auth/facebook
-//   Use passport.authenticate() as route middleware to authenticate the
-//   request.  The first step in Facebook authentication will involve
-//   redirecting the user to facebook.com.  After authorization, Facebook will
-//   redirect the user back to this application at /auth/facebook/callback
-app.get('/auth/facebook',
-  passport.authenticate('facebook'),
-  function(req, res){
-    // The request will be redirected to Facebook for authentication, so this function will not be called.
-  });
-
-// GET /auth/facebook/callback
-app.get('/auth/facebook/callback', 
-  passport.authenticate('facebook', { failureRedirect: '/login' }),
-  function(req, res, profile) {
-  	console.log('FACEBOOK UCMNSER')
-  	console.log(req.user)
-  	req.user.username = fbProfile.displayName + " (Facebook)";
-    res.redirect('/dashboard');
-  });
-
 
 // Simple route middleware to ensure user is authenticated.
 //   Use this route middleware on any resource that needs to be protected.  If

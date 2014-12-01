@@ -22,13 +22,9 @@
 
     <!-- Custom Fonts -->
     <link href="/font-awesome-4.1.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css">
+    <link href="http://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
 
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <script src="http://underscorejs.org/underscore.js"></script>
 </head>
@@ -46,8 +42,14 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="index.html">Foodaily</a>
+                <a class="navbar-brand" href="/"><span class="light">Foo</span>daily</a>
+                    
             </div>
+            <ul class="nav navbar-top-links navbar-right"> 
+                <li><a href="../logout"><i class="fa fa-sign-out"></i></a></li>
+                    <!-- /.dropdown-user -->
+                </li>
+            </ul>
             <div class="navbar-default sidebar" role="navigation">
                 <div class="sidebar-nav navbar-collapse">
                     <ul class="nav" id="side-menu">
@@ -63,13 +65,13 @@
                             <!-- /input-group -->
                         </li>
                         <li>
-                            <a href="/<%= user.slug %>/dashboard"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
+                            <a class="active" href="/<%= user.slug %>/dashboard"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
                         </li>
                         <li>
                             <a href="/<%= user.slug %>/addfood"><i class="fa fa-table fa-fw"></i> Add Food</a>
                         </li>
                         <li>
-                            <a href="/<%= user.slug %>/progress"><i class="fa fa-bar-chart-o fa-fw"></i> Your Progress</a>
+                            <a href="/<%= user.slug %>/foods"><i class="fa fa-list fa-fw"></i> Food History</a>
                         </li>
                         <li>
                             <a href="#"><i class="fa fa-edit fa-fw"></i> Recipes<span class="fa arrow"></span></a>
@@ -84,7 +86,10 @@
                             <!-- /.nav-second-level -->
                         </li>
                         <li>
-                            <a href="/<%= user.slug %>/settings"><i class="fa fa-wrench fa-fw"></i> Settings<span class="fa arrow"></span></a>
+                            <a href="/<%= user.slug %>/friends"><i class="fa fa-users fa-fw"></i> Friends</span></a>
+                        </li>
+                        <li>
+                            <a href="/<%= user.slug %>/settings"><i class="fa fa-wrench fa-fw"></i> Settings</span></a>
                         </li>
                     </ul>
                 </div>
@@ -105,21 +110,12 @@
                 <!-- /.row -->
 
                 <div class="row">
-                    <div class="col-sm-8">
-                    Stats Placeholder
-                    </div>
-                <h3 class="caloriesEaten"></h3>
+
+                <center><h4 class="caloriesEaten"></h4></center>
                 <div class="lineChart"></div>
+                <div class="table"></div>
 
-                    <div class="col-sm-4">
-                        <h4>Friends</h4>
-                        <ul>
-
-                        </ul>
-                    </div>
                 </div>
-
-
 
             </div>
             <!-- /.container-fluid -->
@@ -130,24 +126,28 @@
     <!-- /#wrapper -->
     <script src="https://www.google.com/jsapi"></script>
     <script src="/javascript/GoogleLine.js"></script>
+    <script src="/javascript/GoogleTable.js"></script>
+    <script src="/javascript/dashboardChart.js"></script>
     <script>
         var i = <%- JSON.stringify(chartData) %>
+        var latestFoods = <%- JSON.stringify(latestFoods) %>
+
         var fields = ['Date', 'Calories Eaten']
         if (i[0].length > 0) {
-            $('.caloriesEaten').text(i[0]['Total Calories'])
+            $('.caloriesEaten').text("You have logged a total of " + i[0][1] + " calories today")
+            // show the latest day first
+            i = i.reverse()
             var lineChart = new GoogleLine('.lineChart', i, function(){}, fields)
+            var allRows = []
+            _.each(latestFoods, function(food, key){
+                allRows.push(_.values(food))
+            })
+            var myTable = new GoogleTable('.table', allRows, {}, chartFields)
         } else {
-            $('.caloriesEaten').text("User + <%= user.slug %> has not logged any food. Log your food today to track your calories like in this graph!")
-            var fakeData = [
-            ['Mon Nov 24 2014', 1987],
-            ['Tue Nov 25 2014', 1849],
-            ['Wed Nov 26 2014', 2012],
-            ['Thur Nov 27 2014', 2409],
-            ['Fri Nov 28 2014', 1803],
-            ]
-            var lineChart = new GoogleLine('.lineChart', fakeData, function(){}, fields)
+            $('.caloriesEaten').text("You have not logged any food. Log your food today to track your calories!")
+            var fakeChart = new GoogleLine('.lineChart', fakeData, function(){}, fields)
+            var fakeTable = new GoogleTable('.table', fakeTable, {}, chartFields)
         }
-
     </script>
 
     <!-- jQuery -->

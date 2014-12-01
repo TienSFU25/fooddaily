@@ -6,26 +6,35 @@
 <body>
     <h3>You are viewing the dashboard for <%= otherUser %></h3>
     <a href="/<%= user.slug %>/friends">Back</a>
+    <div class="caloriesEaten"></div>
     <div class="lineChart"></div>
+    <div class="table"></div>
 
 <script src="https://www.google.com/jsapi"></script>
 <script src="/javascript/GoogleLine.js"></script>
+<script src="/javascript/GoogleTable.js"></script>
+<script src="/javascript/dashboardChart.js"></script>
 <script>
     var i = <%- JSON.stringify(chartData) %>
+    var latestFoods = <%- JSON.stringify(latestFoods) %>
+
     var fields = ['Date', 'Calories Eaten']
     if (i[0].length > 0) {
-        $('.caloriesEaten').text(i[0]['Total Calories'])
+        $('.caloriesEaten').text("You have logged a total of " + i[0][1] + " calories today")
+
+        // show the latest day first
+        i = i.reverse()
+        // magic number 1
         var lineChart = new GoogleLine('.lineChart', i, function(){}, fields)
+        var allRows = []
+        _.each(latestFoods, function(food, key){
+            allRows.push(_.values(food))
+        })
+        var myTable = new GoogleTable('.table', allRows, {}, chartFields)
     } else {
-        $('.caloriesEaten').text("User <%= user.slug %> has not logged any food. Log your food today to track your calories like in this graph!")
-        var fakeData = [
-        ['Mon Nov 24 2014', 1987],
-        ['Tue Nov 25 2014', 1849],
-        ['Wed Nov 26 2014', 2012],
-        ['Thur Nov 27 2014', 2409],
-        ['Fri Nov 28 2014', 1803],
-        ]
-        var lineChart = new GoogleLine('.lineChart', fakeData, function(){}, fields)
+        $('.caloriesEaten').text("User <%= otherUser %> has not logged any food. Log your food today to track your calories!")
+        var fakeChart = new GoogleLine('.lineChart', fakeData, function(){}, fields)
+        var fakeTable = new GoogleTable('.table', fakeTable, {}, chartFields)
     }
 
 </script>

@@ -27,6 +27,24 @@ body {
     }
 }
 
+h1,h2,h3,h4,body {
+    font-family: Montserrat,"Helvetica Neue",Helvetica,Arial,sans-serif;
+}
+
+.navbar .navbar-brand {
+    font-family: Montserrat,"Helvetica Neue",Helvetica,Arial,sans-serif;
+    text-transform: uppercase;
+    font-weight: 700;
+}
+
+.light {
+    font-weight: 400;
+}
+
+#datepicker {position: relative; z-index:9999;}
+
+
+
 .navbar-top-links {
     margin-right: 0;
 }
