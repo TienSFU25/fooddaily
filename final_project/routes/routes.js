@@ -69,7 +69,7 @@ app.get('/auth/facebook/callback',
 			res.render('about')
 		} else {
 			if (!req.isAuthenticated()) {
-				res.render('about')
+				res.redirect('/')
 			} else {
 				next()
 			}
