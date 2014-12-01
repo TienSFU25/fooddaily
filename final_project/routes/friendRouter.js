@@ -124,20 +124,31 @@ friendRouter.get('/', function(req, res){
 
 friendRouter.use('/', function(req, res, next){
 	// check whether other user even exists
-	if (req.body.slug == undefined)
-		res.send("Slug must be defined")
+	var rtnjson = {}
 
-	User.findOne({where: {slug: req.body.slug}}).done(function(err, otherUser){
-		if (err) {
-			res.send(err)
-		}
-		if (otherUser== null) {
-			res.send("User " + req.body.slug + " does not exist ")
-		}
-
-		req.user.db2 = otherUser
-		next()
-	})
+	if (req.body.slug == undefined || req.body.slug == null) {
+		rtnjson.success = false
+		rtnjson.message = "Slug field must be defined"
+		res.json(rtnjson)
+	} else if (req.body.slug == "") {
+		rtnjson.success = false
+		rtnjson.message = "Slug cannot be empty"
+	} else {
+		User.findOne({where: {slug: req.body.slug}}).done(function(err, otherUser){
+			if (err) {
+				rtnjson.success = false
+				rtnjson.message = "Sequelize error in friend router"
+				res.json(rtnjson)
+			} else if (otherUser== null) {
+				rtnjson.success = false
+				rtnjson.message = "Cannot find user with the slug " + req.body.slug
+				res.json(rtnjson)
+			} else {
+				req.user.db2 = otherUser
+				next()
+			}
+		})
+	}
 })
 
 friendRouter.post('/', function(req, res){
