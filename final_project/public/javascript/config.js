@@ -84,12 +84,16 @@ var queryDict = {
   "limit": 50,
   "sort": {
     "field": "nf_calories",
-    "order": "desc"
+    "order": "asc"
   },
   "min_score": 0.5,
   "query": "",
   "filters": {
     // "item_type": 3
+    nf_calories: {
+      from: 0,
+      to: 3000
+    }
   }
 }
 

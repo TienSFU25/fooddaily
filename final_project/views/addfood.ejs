@@ -128,7 +128,6 @@
 
 
 <!-- form itself -->
-<div id="notify"></div>
 <form id="foodForm" class="white-popup mfp-hide pure-form">
     <h1 id="foodName"></h1>
     <label for="spinner">Choose an amount</label>
@@ -141,13 +140,28 @@
     <input type="hidden" id="csrf" name="_csrf" value="<%= csrfToken %>">
     <input type="hidden" id="slug" value="<%= user.slug %>">
 </form>
-
  
-<p>Search for a common food here!</p>
+<label for="foodSearch">Search for a food!</label>
 <form id="foodSearch">
     <span><input type="text" placeholder="Search..."></span>
 </form>
-
+<h3>Additional search options</h3>
+    <select class="itemType" data-placeholder="Item Type">
+        <option value></option>
+        <option value="1">Restaurant</option>
+        <option value="2">Consumer packaged</option>
+        <option value="3">USDA</option>
+    </select>
+    <select class="limitResults" data-placeholder="Limit results">
+        <option value></option>
+    </select>
+</div>
+<p class="calorieContainer">
+  <label for="amount">Calorie limit</label>
+  <input type="text" id="amount" readonly>
+  <div id="calorie-range"></div>
+</p>
+<div id="results-range>"></div>
 <div class="foodChart"></div>
 </br>
 
@@ -159,7 +173,30 @@
 <script src="/javascript/formTableConfig.js"></script>
 <script src="/javascript/notify.js"></script>
 <script>
-    
+
+    // initiialize some UI elements
+    for (var i = 1; i < 50; i++) {
+        $('.limitResults').append   ('<option value="' + i + '">' + i + "</option>")
+    }
+
+    $('.itemType').chosen({
+        width: "20%"
+    })
+
+    $('.limitResults').chosen({
+        width: "20%"
+    })
+    $( "#amount" ).val("200 - 1000")
+    $( "#calorie-range" ).slider({
+      range: true,
+      min: 0,
+      max: 3000,
+      values: [200, 1000],
+      slide: function( event, ui ) {
+        $( "#amount" ).val(ui.values[ 0 ] + " - " + ui.values[ 1 ] )
+      }
+    })
+
     $('#datepicker').datepicker({
         dateformat: "yyyy-mm-dd",
         maxDate: 0,
@@ -167,6 +204,8 @@
     })
 
     var spinner = $( "#spinner" ).spinner();
+
+    // actual code starts here
     var myPieChart = new GooglePie('.pieChart')
     // don't draw anything to begin with
     var initRows = []
@@ -232,8 +271,22 @@
             // disable form submission
             e.preventDefault()
 
+            if ($('#foodSearch input').val() == "") {
+                $.notify("Search field cannot be empty")
+                return
+            }
+
             // requests nutritionix, parse json and update google table
             queryDict["query"] = $('#foodSearch input').val();
+            queryDict["limit"] = ($('.limitResults').val()) ? $('.limitResults').val() : queryDict["limit"]
+            queryDict["filters"]["nf_calories"]["from"] = $('#calorie-range').slider("values")[0]
+            queryDict["filters"]["nf_calories"]["to"] = $('#calorie-range').slider("values")[1]
+
+            if ($('.itemType').val()) {
+                queryDict["filters"]["item_type"] = $('.itemType').val()
+            }
+
+            console.log(queryDict)
 
             $.ajax({
                 type: "POST",
