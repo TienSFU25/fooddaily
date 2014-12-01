@@ -15,7 +15,7 @@ var nutritionix = require('nutritionix')({
     appKey: 'ac97e296e021c5ea6c0e51389f966307'
 }, false).v1_1;
 
-function loadAllFoods(req, callback) {
+foodRouter.get('/', function(req, response, next) {
 	db.getAllChosenFoods(req.user.id, function(err, allFoods) {
 		if (err) {
 			callback(new Error(err))
@@ -42,16 +42,6 @@ function loadAllFoods(req, callback) {
 
 		if (thisRow.length > 0) {
 			allRows.push(thisRow)
-		}
-
-		callback(null, allRows)
-	})	
-}
-
-foodRouter.get('/', function(req, response, next) {
-	loadAllFoods(req, function(err, allRows){
-		if (err) {
-			res.json({success: false, message: "Unknown error in getting food list"})
 		}
 
 		response.render('foods', {user:req.user, chartData: allRows, csrfToken: req.csrfToken()})
