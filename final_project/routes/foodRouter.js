@@ -44,8 +44,8 @@ foodRouter.get('/', function(req, response, next) {
 			}
 
 			response.render('foods', {user:req.user, chartData: allRows, csrfToken: req.csrfToken()})
-		})
-	}
+		}
+	})
 })
 
 foodRouter.post('/', function(req, res, next) {
