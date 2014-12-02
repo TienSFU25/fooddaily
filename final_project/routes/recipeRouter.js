@@ -9,7 +9,6 @@ recipeRouter.get('/', function(req, res) {
 		where: {userid: req.user.id},
 		attributes: ['diet', 'dairy', 'eggs', 'gluten', 'peanut', 'seafood', 'sesame', 'soy', 'sulfite', 'treeNut', 'wheat']
 	}).done(function(err, settings){
-		// console.log(settings)
 		res.render('recipes', {user:req.user, row:settings['dataValues'], csrfToken: req.csrfToken()})
 	})
 });

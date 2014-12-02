@@ -291,43 +291,43 @@
 				var constraints = "Your preferences: ";
 
 
-				if(dairy != 0){
+				if(dairy == "true"){
 					call += allergiesURL + dairyString;
 					constraints += "Dairy-free, "
 				}
-				if(eggs != 0){
+				if(eggs == "true"){
 					call += allergiesURL + eggsString;
 					constraints += "Eggs-free, "					
 				}
-				if(gluten != 0){
+				if(gluten == "true"){
 					call += allergiesURL + glutenString;
 					constraints += "Gluten-free, "
 				}
-				if(peanut != 0){
+				if(peanut == "true"){
 					call += allergiesURL + peanutString;
 					constraints += "Peanut-free, "					
 				}
-				if(seafood != 0){
+				if(seafood == "true"){
 					call += allergiesURL + seafoodString;
 					constraints += "Seafood-free, "					
 				}
-				if(sesame != 0){
+				if(sesame == "true"){
 					call += allergiesURL + sesameString;
 					constraints += "Sesame-free, "					
 				}
-				if(soy != 0){
+				if(soy == "true"){
 					call += allergiesURL + soyString;
 					constraints += "Soy-free, "					
 				}
-				if(sulfite != 0){
+				if(sulfite == "true"){
 					call += allergiesURL + sulfiteString;
 					constraints += "Sulfate-free, "					
 				}
-				if(treeNut != 0){
+				if(treeNut == "true"){
 					call += allergiesURL + treeNutString;
 					constraints += "Treenut-free, "					
 				}
-				if(wheat != 0){
+				if(wheat == "true"){
 					call += allergiesURL + wheatString;
 					constraints += "Wheat-free, "					
 				}
@@ -400,10 +400,14 @@
 			});
 		}
 
+		var addOnce = true
 		function updateTableResults(data) {
 			rows = [];
 			
-			$('.yummlyAttribution').prepend(data.attribution.html);
+			if (addOnce) {
+				$('.yummlyAttribution').prepend(data.attribution.html);
+				addOnce = false
+			}
 
 			for(var i = 0; i < data.matches.length; i++) {
 				var imageLink = data.matches[i].imageUrlsBySize[90];

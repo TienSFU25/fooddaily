@@ -132,6 +132,7 @@
   <ul>
     <li><a href="#foodInfo">View food information</a></li>
     <li><a href="#foodEdit">Edit this item</a></li>
+    <li><a href="#foodDelete">Delete this item</a></li>
   </ul>
 
 	<form id="foodInfo" class="pure-form white-popup">
@@ -143,15 +144,18 @@
 
 	<form id="foodEdit" class="pure-form white-popup">
 		<h2 class="foodName"></h2>
-		<label for="spinner">Choose a new amount</label>
+		<label for="spinner">Adjust the amount</label>
 		<input id="spinner" name="value"></br>
 		<label for="timepicker">Edit the time</label>
 		<input id="timepicker" type="text"></br>
 		<label for="datepicker">Edit date</label>
 		<input id="datepicker" type="text"></br>
+		<button class="pure-button" id="submitFood">Save your options</button>
+	</form>
+
+	<form id="foodDelete" class="pure-form white-popup">
 		<label for="deleteFood">Delete this food</label>
 		<img src="/images/trashcan.png" id="deleteFood" width="40" height="50"></img></br>
-		<button class="pure-button" id="submitFood">Save your options</button>
 	</form>
 </div>
 
