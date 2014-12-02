@@ -18,7 +18,9 @@ var Database = function singleton(path){
 	this.sequelize = sq
 
 	var allModelRelationships = {}
-	fs.readdirSync(path).forEach(function(fileName) {
+	var ms = ['User.js', 'Food.js', 'ChosenFood.js', 'FavRecipes.js']
+	// fs.readdirSync(path).forEach(function(fileName) {
+	_.each(ms, function(fileName, index){
 		if (fileName[0] != '.') {	
 			fileName = fileName.replace(/\.js$/i, "")
 			var modelFile = require('.'+path+'/'+fileName)

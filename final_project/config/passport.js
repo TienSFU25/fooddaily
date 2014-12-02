@@ -157,9 +157,6 @@ module.exports = function(passport, db) {
 
 	    			var fbName = genUnique(allNames, "facebook", 100)
 	    			var fbSlug = genUnique(allSlugs, s(displayName).slugify().s, 100)
-	    			console.log(fbName)
-	    			console.log(fbSlug)
-
 	    			User.create({
 	    				username:fbName,
 	    				slug: fbSlug,
