@@ -144,4 +144,9 @@ function ensureAuthenticated(req, res, next) {
     console.log("req.id is : " + req.id);
   res.redirect('/login')
 }
+
+app.get('*', function(req, res){
+  res.render('foodaily404', 404);
+});
+
 }
