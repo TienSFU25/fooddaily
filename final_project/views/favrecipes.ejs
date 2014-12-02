@@ -30,7 +30,7 @@
         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
-	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 
 </head>
 
@@ -115,54 +115,36 @@
                 </div>
                 <!-- /.row -->
 
-                	<ul id="favRecipes">
+                    <ul id="favRecipes">
 
 
-	</ul>
-	
-				<SCRIPT LANGUAGE="JavaScript">
+    </ul>
+    
+        <script>
+                var example = "Hot-Turkey-Salad-Sandwiches-Allrecipes";
+                var example2 = "French-Onion-Soup-The-Pioneer-Woman-Cooks-_-Ree-Drummond-41364";
 
-					 $( document ).ready(function() {
-					 	// User.
-					 	// we need to pass in an array of recipe objects.
-
-
-						var example = "Hot-Turkey-Salad-Sandwiches-Allrecipes";
-						var example2 = "French-Onion-Soup-The-Pioneer-Woman-Cooks-_-Ree-Drummond-41364";
-
-						// var examples = [
-						// 	"Hot-Turkey-Salad-Sandwiches-Allrecipes",
-						// 	"French-Onion-Soup-The-Pioneer-Woman-Cooks-_-Ree-Drummond-41364"
-						// ]
-
-                        <% if (rows.length == 0) { %>
-                            $("#favRecipes").append("You have no favorite recipes added. Start <a href=\"/<%= user.slug %>/recipesearch\">searching</a> Yummly to add some!");
-                        <% } %>
+                <% if (rows.length == 0) { %>
+                    $("#favRecipes").append("You have no favorite recipes added. Start <a href=\"/<%= user.slug %>/recipesearch\">searching</a> Yummly to add some!");
+                <% } %>
 
 
-						<% for (i = 0; i < rows.length; i++) { %>
+                <% for (i = 0; i < rows.length; i++) { %>
 
+                $("#favRecipes").append("<li><%=rows[i].recipeName%></li>");
+                $("#favRecipes").append("<li><img src=\"<%=rows[i].IMG_URL%>\"></img></li>");
+                $("#favRecipes").append("<li>Yield: <%=rows[i].yield%></li>");
 
-
-
-						$("#favRecipes").append("<li><%=rows[i].recipeName%></li>");
-						$("#favRecipes").append("<li><img src=\"<%=rows[i].IMG_URL%>\"></img></li>");
-						$("#favRecipes").append("<li>Yield: <%=rows[i].yield%></li>");
-
-
-						<% var ingredients = rows[i].ingredientsList.split(";"); %>
-						var ing = "<li> Ingredients: <ul>";
-						<% for (x = 0; x < ingredients.length; x++) { %>
-							ing += "<li><%=ingredients[x]%></li>";
-						<% } %>
-						$("#favRecipes").append(ing);
-
-
-						$("#favRecipes").append("<li><a href=\"<%=rows[i].URL%>\">URL</a></li>");
-						$("#favRecipes").append("<br><br><br>");
-						<% } %>
-						});
-				</script>
+                <% var ingredients = rows[i].ingredientsList.split(";"); %>
+                var ing = "<li> Ingredients: <ul>";
+                <% for (x = 0; x < ingredients.length; x++) { %>
+                    ing += "<li><%=ingredients[x]%></li>";
+                <% } %>
+                $("#favRecipes").append(ing);
+                $("#favRecipes").append("<li><a href=\"<%=rows[i].URL%>\">URL</a></li>");
+                $("#favRecipes").append("<br><br><br>");
+                <% } %>
+        </script>
 
 
             </div>
@@ -171,10 +153,6 @@
         <!-- /#page-wrapper -->
 
     </div>
-    <!-- /#wrapper -->
-
-    <!-- jQuery -->
-    <!--  script src="/js/jquery.js"></script>-->
 
     <!-- Bootstrap Core JavaScript -->
     <script src="/js/bootstrap.min.js"></script>

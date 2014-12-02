@@ -24,13 +24,7 @@
     <link href="/font-awesome-4.1.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
     <link href="http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css">
     <link href="http://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
-
+    
 </head>
 
 <body>
@@ -112,61 +106,40 @@
                 </div>
                 <!-- /.row -->
 
-<form action="/settings" method="post">
+<form id="settings">
     <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-    <p>Calorie Intake</p><input type="text" name="caloriesIn"></br><br>
-    <p>Daily current calories</p><input type="text" name="caloriesOut"></br>
-
-
-
-
-
-
-<!-- set_metadata('diet', [{"id":"388","shortDescription":"Lacto vegetarian","longDescription":"Lacto vegetarian","searchValue":"388^Lacto vegetarian","type":"diet","localesAvailableIn":["en-US"]},{"id":"389","shortDescription":"Ovo vegetarian","longDescription":"Ovo vegetarian","searchValue":"389^Ovo vegetarian","type":"diet","localesAvailableIn":["en-US"]},{"id":"390","shortDescription":"Pescetarian","longDescription":"Pescetarian","searchValue":"390^Pescetarian","type":"diet","localesAvailableIn":["en-US"]},{"id":"386","shortDescription":"Vegan","longDescription":"Vegan","searchValue":"386^Vegan","type":"diet","localesAvailableIn":["en-US"]},{"id":"387","shortDescription":"Lacto-ovo vegetarian","longDescription":"Vegetarian","searchValue":"387^Lacto-ovo vegetarian","type":"diet","localesAvailableIn":["en-US"]},{"id":"403","shortDescription":"Paleo","longDescription":"Paleo","searchValue":"403^Paleo","type":"diet","localesAvailableIn":["en-US"]}]); -->
-
-
-
-
-    <br>
     <p>Dietary restrictions (for use with Yummly)</p>
     <select id="restrictions">
-      <option value="none">None</option>
-      <option value="vegan">Vegan</option> <!-- no dairy, no eggs -->
-      <option value="vegetarian">Vegetarian</option>
-      <option value="lacto_vegetarian">Lacto vegetarian</option> <!-- yes dairy, no eggs -->
-      <option value="ovo_vegetarian">Ovo vegetarian</option> <!-- yes eggs, no dairy -->
-      <option value="pescetarian">Pescetarian</option> <!-- yes fish -->
-      <option value="pescetarian_lacto">Pescetarian-lacto</option> <!--  yes fish, yes dairy, no eggs -->
-      <option value="pescetarian_ovo">Pescetarian-ovo</option> <!-- yes fish, no dairy, no eggs   &allowedDiet[]=390^Pescetarian&allowedDiet[]=388^Lacto vegetarian -->
-      <option value="paleo">Paleo</option>
+      <option value="none" <% if (row.diet == 'none') { %> selected="selected" <% } %> >None</option>
+      <option value="vegan" <% if (row.diet == 'vegan') { %> selected="selected" <% } %> >Vegan</option> 
+      <option value="lacto_vege" <% if (row.diet == 'lacto_vege') { %> selected="selected" <% } %> >Lacto vegetarian</option> 
+      <option value="ovo_vege" <% if (row.diet == 'ovo_vege') { %> selected="selected" <% } %> >Ovo vegetarian</option> 
+      <option value="pesc" <% if (row.diet == 'pesc') { %> selected="selected" <% } %> >Pescetarian</option> 
+      <option value="lacto_pesc" <% if (row.diet == 'lacto_pesc') { %> selected="selected" <% } %> >Pescetarian-lacto</option> 
+      <option value="ovo_pesc" <% if (row.diet == 'ovo_pesc') { %> selected="selected" <% } %> >Pescetarian-ovo</option> 
+      <option value="paleo" <% if (row.diet == 'paleo') { %> selected="selected" <% } %> >Paleo</option>
     </select></br>
     <br>
 
 
-
-
-
-<!-- set_metadata('allergy', [{"id":"396","shortDescription":"Dairy-Free","longDescription":"Dairy-Free","searchValue":"396^Dairy-Free","type":"allergy","localesAvailableIn":["en-US"]},{"id":"397","shortDescription":"Egg-Free","longDescription":"Egg-Free","searchValue":"397^Egg-Free","type":"allergy","localesAvailableIn":["en-US"]},{"id":"393","shortDescription":"Gluten-Free","longDescription":"Gluten-Free","searchValue":"393^Gluten-Free","type":"allergy","localesAvailableIn":["en-US"]},{"id":"394","shortDescription":"Peanut-Free","longDescription":"Peanut-Free","searchValue":"394^Peanut-Free","type":"allergy","localesAvailableIn":["en-US"]},{"id":"398","shortDescription":"Seafood-Free","longDescription":"Seafood-Free","searchValue":"398^Seafood-Free","type":"allergy","localesAvailableIn":["en-US"]},{"id":"399","shortDescription":"Sesame-Free","longDescription":"Sesame-Free","searchValue":"399^Sesame-Free","type":"allergy","localesAvailableIn":["en-US"]},{"id":"400","shortDescription":"Soy-Free","longDescription":"Soy-Free","searchValue":"400^Soy-Free","type":"allergy","localesAvailableIn":["en-US"]},{"id":"401","shortDescription":"Sulfite-Free","longDescription":"Sulfite-Free","searchValue":"401^Sulfite-Free","type":"allergy","localesAvailableIn":["en-US"]},{"id":"395","shortDescription":"Tree Nut-Free","longDescription":"Tree Nut-Free","searchValue":"395^Tree Nut-Free","type":"allergy","localesAvailableIn":["en-US"]},{"id":"392","shortDescription":"Wheat-Free","longDescription":"Wheat-Free","searchValue":"392^Wheat-Free","type":"allergy","localesAvailableIn":["en-US"]}]); -->
-
-
 <p>Additional restrictions</p>
-<input type="checkbox" name="restriction" value="Dairy">Dairy-Free<br>
-<input type="checkbox" name="restriction" value="Egg">Egg-Free<br>
-<input type="checkbox" name="restriction" value="Gluten">Gluten-Free<br>
-<input type="checkbox" name="restriction" value="Peanut">Peanut-Free<br>
-<input type="checkbox" name="restriction" value="Seafood">Seafood-Free<br>
-<input type="checkbox" name="restriction" value="Sesame">Sesame-Free<br>
-<input type="checkbox" name="restriction" value="Soy">Soy-Free<br>
-<input type="checkbox" name="restriction" value="Sulfite">Sulfite-Free<br>
-<input type="checkbox" name="restriction" value="Tree">Tree Nut-Free<br>
-<input type="checkbox" name="restriction" value="Wheat">Wheat-Free<br>
-
+<input type="checkbox" id="dairy" <% if (row.dairy) { %> checked <% } %> >Dairy-Free<br>
+<input type="checkbox" id="egg" <% if (row.egg) { %> checked <% } %> >Egg-Free<br>
+<input type="checkbox" id="gluten" <% if (row.gluten) { %> checked <% } %> >Gluten-Free<br>
+<input type="checkbox" id="peanut" <% if (row.peanut) { %> checked <% } %> >Peanut-Free<br>
+<input type="checkbox" id="seafood" <% if (row.seafood) { %> checked <% } %> >Seafood-Free<br>
+<input type="checkbox" id="sesame" <% if (row.sesame) { %> checked <% } %> >Sesame-Free<br>
+<input type="checkbox" id="soy" <% if (row.soy) { %> checked <% } %> >Soy-Free<br>
+<input type="checkbox" id="sulfite" <% if (row.sulfite) { %> checked <% } %> >Sulfite-Free<br>
+<input type="checkbox" id="treeNut" <% if (row.treeNut) { %> checked <% } %> >Tree Nut-Free<br>
+<input type="checkbox" id="wheat" <% if (row.wheat) { %> checked <% } %> >Wheat-Free<br>
 
 
     <br>
-    <input type="submit" value="Save">
-</form>
+    <!-- <input type="submit" value="Save"> -->
+    <button class="pure-button" id="submit">Save your settings</button>
 
+</form>
 
             </div>
             <!-- /.container-fluid -->
@@ -174,11 +147,9 @@
         <!-- /#page-wrapper -->
 
     </div>
-    <!-- /#wrapper -->
-
-    <!-- jQuery -->
-    <script src="/js/jquery.js"></script>
-
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    
+    <script src="/stylesheets/notify.min.js"></script>
     <!-- Bootstrap Core JavaScript -->
     <script src="/js/bootstrap.min.js"></script>
 
@@ -187,7 +158,43 @@
 
     <!-- Custom Theme JavaScript -->
     <script src="/js/sb-admin-2.js"></script>
+<script>
+    var userSlug = '<%= user.slug %>';
+    var csr = "<%= csrfToken %>";
 
+    $('#submit').on('click', function(e){
+        e.preventDefault()
+        $.ajax({
+            type: 'POST',
+            url: ('/' + userSlug + '/settings'),
+            data: {
+                diet: $('#restrictions').val(),
+                dairy: $('#dairy').is(':checked'),
+                eggs: $('#egg').is(':checked'),
+                gluten: $('#gluten').is(':checked'),
+                peanut: $('#peanut').is(':checked'),
+                seafood: $('#seafood').is(':checked'),
+                sesame: $('#sesame').is(':checked'),
+                soy: $('#soy').is(':checked'),
+                sulfite: $('#sulfite').is(':checked'),
+                treeNut: $('#treeNut').is(':checked'),
+                wheat: $('#wheat').is(':checked'),
+                _csrf: csr
+            },
+            success: function(rtnjson) {
+                if (rtnjson.success) {
+                    $.notify(rtnjson["message"],{
+                        className: "success"
+                    })
+                } else {
+                    $.notify(rtnjson["message"],{
+                        className: "error"
+                    })
+                }
+            }
+        })
+    })
+</script>
 </body>
 
 </html>

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 
+
 <head>
 
     <meta charset="utf-8">
@@ -34,13 +35,11 @@
     <link rel="stylesheet" type="text/css" href="/stylesheets/jquery-ui.theme.min.css">
     <link rel="stylesheet" type="text/css" href="/chosen_v1.2.0/chosen.min.css">
     <script src="/chosen_v1.2.0/chosen.jquery.js"></script>
-    <script src="/chosen_v1.2.0/chosen.proto.js"></script>
     <script src="/magnificPopup/jquery.magnific-popup.js"></script> 
     <script src="https://www.google.com/jsapi"></script>
     <script src="http://underscorejs.org/underscore.js"></script>
     <script src="http://code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
-    <script src="/stylesheets/jquery.datetimepicker.js"></script>
-    <link rel="stylesheet" type="text/css" href="/stylesheets/jquery.datetimepicker.css">
+    <script src="/stylesheets/notify.min.js"></script>
 </head>
 
 <body>
@@ -56,13 +55,9 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="/"><span class="light">Foo</span>daily</a>
+                <a class="navbar-brand" href="index.html">Foodaily</a>
             </div>
-            <ul class="nav navbar-top-links navbar-right"> 
-                <li><a href="../logout"><i class="fa fa-sign-out"></i></a></li>
-                    <!-- /.dropdown-user -->
-                </li>
-            </ul>
+
             <div class="navbar-default sidebar" role="navigation">
                 <div class="sidebar-nav navbar-collapse">
                     <ul class="nav" id="side-menu">
@@ -84,13 +79,13 @@
                             <a href="/<%= user.slug %>/addfood"><i class="fa fa-table fa-fw"></i> Add Food</a>
                         </li>
                         <li>
-                            <a href="/<%= user.slug %>/foods"><i class="fa fa-list fa-fw"></i> Food History</a>
+                            <a href="/<%= user.slug %>/foods"><i class="fa fa-bar-chart-o fa-fw"></i> Food History</a>
                         </li>
                         <li>
                             <a href="#"><i class="fa fa-edit fa-fw"></i> Recipes<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
                                 <li>
-                                    <a class="active" href="/<%= user.slug %>/recipesearch">Search</a>
+                                    <a href="/<%= user.slug %>/recipesearch">Search</a>
                                 </li>
                                 <li>
                                     <a href="/<%= user.slug %>/favorites">Favorites</a>
@@ -99,10 +94,7 @@
                             <!-- /.nav-second-level -->
                         </li>
                         <li>
-                            <a href="/<%= user.slug %>/friends"><i class="fa fa-users fa-fw"></i> Friends</a>
-                        </li>
-                        <li>
-                            <a href="/<%= user.slug %>/settings"><i class="fa fa-wrench fa-fw"></i> Settings</a>
+                            <a href="/<%= user.slug %>/settings"><i class="fa fa-wrench fa-fw"></i> Settings<span class="fa arrow"></span></a>
                         </li>
                     </ul>
                 </div>
@@ -125,74 +117,18 @@
                     <!-- ============================================= -->
 
 					<form id="recipeSearch"> <!-- action="/recipes" method="post" onsubmit="return reqYummlyAPI();">-->
-						<input type="hidden" name="_csrf" value="<%= csrfToken %>">
+						<input type="hidden" id="_csrf" value="<%= csrfToken %>">
 						<input type="hidden" id="chosenId" name="chosenId" value="" method="post">
 						<input type="hidden" id="slug" value="<%= user.slug %>">
 						<input id="q" name="q" placeholder="Search for a recipe" type="text" value=""/>
-					  	<!--<button type="submit" value="Submit" id="searchButton">Search</button>-->
+
+                        <p id="constraints"></p>
 					</form>
 
 					<div class="yummlyAttribution"></div>
 					<div class="recipeTable"></div>
 					<br/>
-
-					<!--<script src="http://cmpt470.csil.sfu.ca/~mmilosev/GoogleTable.js"></script>-->
-					<!--<script src="/javascript/GoogleTable.js"></script>-->
-					<!--<script src="/javascript/getrecipes.js"></script>-->
-					<script "text/javascript">
-
-						google.load("visualization", "1", {packages:["table"]});
-						google.setOnLoadCallback(drawTable);
-
-						function drawTable() {
-						table = new google.visualization.Table($('.recipeTable').get(0));
-
-						data = new google.visualization.DataTable();
-
-						var fields = [
-							"Image",
-							"Name",
-							"Source",
-							"Ingredients",
-							"Preparation (secs)",
-							"Rating",
-							"Id"
-						];
-
-						data.addColumn('string', fields[0]);
-						data.addColumn('string', fields[1]);
-						data.addColumn('string', fields[2]);
-						data.addColumn('string', fields[3]);
-						data.addColumn('number', fields[4]);
-						data.addColumn('number', fields[5]);
-						data.addColumn('string', fields[6]);
-
-						data.addRows(rows);
-
-
-						// table.view = new google.visualization.DataView(data);
-					 // 	table.view.hideColumns(fields[5]);
-
-						google.visualization.events.addListener(table, 'select', selectTableListener);
-
-						table.draw(data, {showRowNumber: false, allowHtml: true});
-					}
-
-					function selectTableListener() {
-						var idx = table.getSelection();
-						var selectedRow = idx[0]['row'];
-
-						var recipeId = data.getValue(selectedRow, 6);
-						$("#chosenId").val(recipeId);
-						// alert(recipeId);
-
-						if(confirm("Are you sure you want to add " + recipeId + "to your favourites?")) {
-							getAndPostToFavourites(recipeId);
-						}
-					}
-					</script>
-               
-
+					
                     </div>
                 <!-- /.row -->
             </div>
@@ -204,7 +140,7 @@
     <!-- /#wrapper -->
 
     <!-- jQuery -->
-    <!--<script src="../js/jquery.js"></script> -->
+    <script src="../js/jquery.js"></script> 
 
     <!-- Bootstrap Core JavaScript -->
     <script src="../js/bootstrap.min.js"></script>
@@ -214,19 +150,54 @@
 
     <!-- Custom Theme JavaScript -->
     <script src="../js/sb-admin-2.js"></script>
-
-</body>
-
-</html>
-
-
-
-<head>
-
-	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+	<script src="/stylesheets/notify.min.js"></script>
 	<script src="https://www.google.com/jsapi"></script>
-	<!--<script src="http://underscorejs.org/underscore.js"></script>-->
 	<script>
+			google.load("visualization", "1", {packages:["table"]});
+			google.setOnLoadCallback(drawTable);
+
+			function drawTable() {
+				table = new google.visualization.Table($('.recipeTable').get(0));
+				data = new google.visualization.DataTable();
+
+				var fields = [
+					"Image",
+					"Name",
+					"Source",
+					"Ingredients",
+					"Preparation (secs)",
+					"Rating",
+					"Id"
+				];
+
+				data.addColumn('string', fields[0]);
+				data.addColumn('string', fields[1]);
+				data.addColumn('string', fields[2]);
+				data.addColumn('string', fields[3]);
+				data.addColumn('number', fields[4]);
+				data.addColumn('number', fields[5]);
+				data.addColumn('string', fields[6]);
+
+				data.addRows(rows);
+
+				google.visualization.events.addListener(table, 'select', selectTableListener);
+				var view = new google.visualization.DataView(data)
+				view.hideColumns([6])
+				table.draw(data, {showRowNumber: false, allowHtml: true});
+			}
+
+		function selectTableListener() {
+			var idx = table.getSelection();
+			var selectedRow = idx[0]['row'];
+
+			var recipeId = data.getValue(selectedRow, 6);
+			$("#chosenId").val(recipeId);
+			$.notify("Save to favorites feature coming soon!", {
+				className: "info"
+			})
+		}
+               
+
 
 		var APP_ID = "1aeab161";
 		var APP_KEY = "30949c53cf846dfc493a20eebfbbd422";
@@ -247,22 +218,130 @@
 				call += "+" + params[i];
 			};
 
+				var diet = "<%=row.diet%>";
+				var dietURLString = "&allowedDiet[]=";
+				var lactoString = "388^Lacto vegetarian";
+				var pescetarianString = "390^Pescetarian"
+				var ovoString = "389^Ovo vegetarian";
+				var veganString = "386^Vegan";
+				var paleoString = "403^Paleo";
 
-			// example dietary restrictions
-			// var diet = "&allowedDiet[]=390^Pescetarian&allowedDiet[]=388^Lacto vegetarian";
-			// var allergies = "&allowedAllergy[]=396^Dairy-Free&allowedAllergy[]=393^Gluten-Free";
-			// call += diet;
-			// call += allergies;
+				var dietName = "";
+				// diet = 'vegan'
+				switch(diet){
+					case 'vegan':
+						call += dietURLString + veganString;
+						dietName = "vegan"
+						break;
+					case 'lacto_vege':
+						call += dietURLString + lactoString ;
+						dietName = "lacto-vegetarian"
+						break;
+					case 'ovo_vege':
+						call += dietURLString + ovoString;
+						dietName = "ovo-vegetarian"
+						break;
+					case 'pesc':
+						call += dietURLString + pescetarianString;
+						dietName = "pescatarian"
+						break;
+					case 'ovo_pesc':
+						call += dietURLString + pescetarianString + dietURLString + ovoString;
+						dietName = "ovo-pescatarian"
+						break;
+					case 'lacto_pesc':
+						call += dietURLString + pescetarianString + dietURLString + lactoString;
+						dietName = "lacto-pescatarian"
+						break;
+					case 'paleo':
+						call += dietURLString + paleoString;
+						dietName = "paleolithic"
+						break;
+					default:
+						break;
+				}
 
-			
+
+				var dairy = "<%=row.dairy%>";
+				var eggs =  "<%=row.eggs%>";
+				var gluten = "<%=row.gluten%>";
+				var peanut = "<%=row.peanut%>";
+				var seafood = "<%=row.seafood%>";
+				var sesame = "<%=row.sesame%>";
+				var soy = "<%=row.soy%>";
+				var sulfite = "<%=row.sulfite%>";
+				var treeNut = "<%=row.treeNut%>";
+				var wheat = "<%=row.wheat%>";
 
 
+				var allergiesURL = "&allowedAllergy[]=";
 
-			// call += "app_id=" + APP_ID + "&_app_key=" + APP_KEY + "&q=";
-			
-			// alert(call);
-			// $("#q").val(call);
+				var dairyString = "396^Dairy-Free";
+				var eggsString = "397^Egg-Free";
+				var glutenString = "393^Gluten-Free";
+				var peanutString = "394^Peanut-Free";
+				var seafoodString = "398^Seafood-Free";
+				var sesameString = "399^Sesame-Free";
+				var soyString = "400^Soy-Free";
+				var sulfiteString = "401^Sulfite-Free";
+				var treeNutString = "395^Tree Nut-Free";
+				var wheatString = "392^Wheat-Free";
 
+				// window.alert(wheat);
+				var constraints = "Your preferences: ";
+
+
+				if(dairy != 0){
+					call += allergiesURL + dairyString;
+					constraints += "Dairy-free, "
+				}
+				if(eggs != 0){
+					call += allergiesURL + eggsString;
+					constraints += "Eggs-free, "					
+				}
+				if(gluten != 0){
+					call += allergiesURL + glutenString;
+					constraints += "Gluten-free, "
+				}
+				if(peanut != 0){
+					call += allergiesURL + peanutString;
+					constraints += "Peanut-free, "					
+				}
+				if(seafood != 0){
+					call += allergiesURL + seafoodString;
+					constraints += "Seafood-free, "					
+				}
+				if(sesame != 0){
+					call += allergiesURL + sesameString;
+					constraints += "Sesame-free, "					
+				}
+				if(soy != 0){
+					call += allergiesURL + soyString;
+					constraints += "Soy-free, "					
+				}
+				if(sulfite != 0){
+					call += allergiesURL + sulfiteString;
+					constraints += "Sulfate-free, "					
+				}
+				if(treeNut != 0){
+					call += allergiesURL + treeNutString;
+					constraints += "Treenut-free, "					
+				}
+				if(wheat != 0){
+					call += allergiesURL + wheatString;
+					constraints += "Wheat-free, "					
+				}
+
+
+				if(dietName != "") {
+					constraints += dietName;
+				} 
+				else {
+				 constraints = constraints.substring(0, constraints.length - 2);
+				}
+				constraints += " diet."
+
+		$( '#constraints').text(constraints)
 			var jqhxr = $.ajax({
 				type: "GET",
 				url: call,
@@ -271,7 +350,9 @@
 					updateTableResults(data);
 				}, 
 				error: function() {
-					alert("no results found");
+					$.notify("No results were found!", {
+						className: "error"
+					})
 				}
 			});
 		}
@@ -285,25 +366,28 @@
 				type: "GET",
 				url: call,
 				success: function(data) {
-					// alert("success get by id: " + call);
 					postRecipe(data);
 				}, 
 				error: function() {
-					alert("no results found (by id)");
+					$.notify("No results were found!", {
+						className: "error"
+					})
 				}
 			});
 		}
 
 		function postRecipe(data) {
+			console.log('/'+ $("#slug").val() +'/favorites')
 			$.ajax({
 				type: 'POST',
-				url: '/'+'d'+'/favorites',//userSlug+'/favorites',
+				url: '/'+ $("#slug").val() +'/recipesearch',
 				data: {
+					csrf: $("#_csrf").val(),
 					name: data.name,
 					chosenId: $('#chosenId').val(),
 					yield: data.yield,
 					ingredientsList: data.ingredientLines,
-					source: data.source.sourceRecipeUrl,
+					sourceUrl: data.source.sourceRecipeUrl,
 					image: data.images.hostedSmallUrl,
 					nutrition: data.nutritionEstimates,
 				},
@@ -316,51 +400,8 @@
 			});
 		}
 
-		// function yummlyGetById(foodId) {
-		// 	var call = "http://api.yummly.com/v1/api/recipe/";
-		// 	call += foodId + "?_";
-		// 	call += "app_id=" + APP_ID + "&_app_key=" + APP_KEY;
-
-		// 	// alert(call);
-			
-		// 	var jqhxr = $.ajax({
-		// 		type: "GET",
-		// 		url: call,
-		// 		success: function(data) {
-		// 			alert("success get by id: " + call);
-		// 			// updateResults(data);
-		// 		}, 
-		// 		error: function() {
-		// 			alert("no results found (by id)");
-		// 		}
-		// 	});
-		// }
-
-		// function updateResults(data) {
-		// 	var info = "<li>" + data.name + "</li>";
-		//   	info += "<ul>";
-		//   	info += "<li> img goes here </li>"; // eg 	  	info += "<li><img src=\"http://lh6.ggpht.com/Sn2qCFY3fG8cI71t9BdZ-Jyb9RyPh_0Dg79ii9iRNHhd97yQy5MYg0e9sun3HxY9inRax15XWkBSrQ3RCQGq0A=s360\"></img></li>";
-		// 	info += "<li>Yield: " + data.yield + "</li>";
-
-
-		// 	info += "<li>Ingredients: ";
-		// 	info += "<ul>"
-		// 	for (i = 0; i < data.ingredientLines.length; i++){
-		// 		info += "<li>" + data.ingredientLines[i] + "</li>";
-		// 	}
-		// 	info += "</ul></li>"
-
-		// 	info += "<li><a href=\"" + data.source.sourceRecipeUrl + "\">URL</a></li>";
-		// 	info += "</ul><br>"
-		// 	// info += "<li><img src=\"" + data.images.hostedLargeUrl + "\"></img></li>";
-		// 	// info += data.images.hostedLargeUrl; // <img src="http://i2.yummly.com/Hot-Turkey-Salad-Sandwiches-Allrecipes.l.png"></img>
-		// 	// info +="<li><img src=\"http://i2.yummly.com/Hot-Turkey-Salad-Sandwiches-Allrecipes.l.png\"></img></li>";
-				
-		// 	$("searchResults").append(info);
-		// }
-
 		function updateTableResults(data) {
-			rows = new Array();
+			rows = [];
 			
 			$('.yummlyAttribution').prepend(data.attribution.html);
 
@@ -396,18 +437,15 @@
 			drawTable(rows);
 		}
 
-		$(document).ready(function() {
-
-			// event listener
-			$('#recipeSearch').keypress(function(e){
-				if(e.keyCode == 13) {
-					// disable form submission
-					e.preventDefault();
-					var query = $('#q').val(); //"Hot-Turkey-Salad-Sandwiches-Allrecipes";
-					// alert(query);
-					queryYummly(query);
-				}
-			});
+		// event listener
+		$('#recipeSearch').keypress(function(e){
+			if(e.keyCode == 13) {
+				// disable form submission
+				e.preventDefault();
+				var query = $('#q').val(); //"Hot-Turkey-Salad-Sandwiches-Allrecipes";
+				// alert(query);
+				queryYummly(query);
+			}
 		});
 	</script>
-</head>
+</body>
