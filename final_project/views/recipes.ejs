@@ -94,6 +94,9 @@
                             <!-- /.nav-second-level -->
                         </li>
                         <li>
+                            <a href="/<%= user.slug %>/friends"><i class="fa fa-users fa-fw"></i> Friends</a>
+                        </li>
+                        <li>
                             <a href="/<%= user.slug %>/settings"><i class="fa fa-wrench fa-fw"></i> Settings<span class="fa arrow"></span></a>
                         </li>
                     </ul>
@@ -116,7 +119,7 @@
                     <!-- ======= MAIN PAGE CONTENT BEGINS HERE ======= -->
                     <!-- ============================================= -->
 
-					<form id="recipeSearch"> <!-- action="/recipes" method="post" onsubmit="return reqYummlyAPI();">-->
+					<form id="recipeSearch" class="foodSearch"> 
 						<input type="hidden" id="_csrf" value="<%= csrfToken %>">
 						<input type="hidden" id="chosenId" name="chosenId" value="" method="post">
 						<input type="hidden" id="slug" value="<%= user.slug %>">

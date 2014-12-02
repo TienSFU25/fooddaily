@@ -13,7 +13,7 @@ module.exports = function(passport, db) {
 	var FACEBOOK_APP_ID = '1501083956817978';
 	var FACEBOOK_APP_SECRET = 'a8170539de31afad201eb9f48b904758';
 	var WEBSITE_URL = "http://localhost:8080/";
-	var WEBSITE_URL = "http://cmpt470.csil.sfu.ca:9001/"
+	// var WEBSITE_URL = "http://cmpt470.csil.sfu.ca:9001/"
 	customDict = {
 		usernameField: 'username',
 		passwordField: 'password',

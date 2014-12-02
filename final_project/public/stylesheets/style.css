@@ -17,6 +17,14 @@
   /*background: url('/images/searchIcon.png') no-repeat 8px 6px; */
 }
 
+.foodSearch input{
+    padding:6px 15px 6px 30px;
+  margin:3px;
+  border-radius:15px; 
+  -moz-border-radius:15px; 
+  -webkit-border-radius:15px; 
+}
+
 input[type=text]{
   color:black;
 }
@@ -64,8 +72,7 @@ input[type=text]{
 .genCss {
   margin:0px;padding:0px;
   width:100%;
-  box-shadow: 10px 10px 5px #888888;
-  border:1px solid #ffffff;
+  border:1px solid #000000;
   
   -moz-border-radius-bottomleft:0px;
   -webkit-border-bottom-left-radius:0px;
@@ -113,19 +120,16 @@ input[type=text]{
 }
 .genCss td{
   vertical-align:middle;
-    background:-o-linear-gradient(bottom, #ffaa56 5%, #ffffff 100%);  background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #ffaa56), color-stop(1, #ffffff) ); 
-  background:-moz-linear-gradient( center top, #ffaa56 5%, #ffffff 100% );
-  filter:progid:DXImageTransform.Microsoft.gradient(startColorstr="#ffaa56", endColorstr="#ffffff");  background: -o-linear-gradient(top,#ffaa56,ffffff);
-
+  
   background-color:#ffaa56;
 
-  border:1px solid #ffffff;
+  border:1px solid #000000;
   border-width:0px 1px 1px 0px;
   text-align:left;
   padding:7px;
   font-size:10px;
-  font-family: Montserrat,"Helvetica Neue",Helvetica,Arial,sans-serif;
-  font-weight:normal;
+  font-family:Times New Roman;
+  font-weight:bold;
   color:#000000;
 }.genCss tr:last-child td{
   border-width:0px 1px 0px 0px;
@@ -134,7 +138,21 @@ input[type=text]{
 }.genCss tr:last-child td:last-child{
   border-width:0px 0px 0px 0px;
 }
-.genCss tr:hover td{
+.genCss tr:first-child td{
+    background:-o-linear-gradient(bottom, #ff7f00 5%, #bf5f00 100%);  background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #ff7f00), color-stop(1, #bf5f00) );
+  background:-moz-linear-gradient( center top, #ff7f00 5%, #bf5f00 100% );
+  filter:progid:DXImageTransform.Microsoft.gradient(startColorstr="#ff7f00", endColorstr="#bf5f00");  background: -o-linear-gradient(top,#ff7f00,bf5f00);
+
+  background-color:#ff7f00;
+  border:0px solid #000000;
+  text-align:center;
+  border-width:0px 0px 1px 1px;
+  font-size:14px;
+  font-family:Times New Roman;
+  font-weight:bold;
+  color:#ffffff;
+}
+.genCss tr:first-child:hover td{
   background:-o-linear-gradient(bottom, #ff7f00 5%, #bf5f00 100%);  background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #ff7f00), color-stop(1, #bf5f00) );
   background:-moz-linear-gradient( center top, #ff7f00 5%, #bf5f00 100% );
   filter:progid:DXImageTransform.Microsoft.gradient(startColorstr="#ff7f00", endColorstr="#bf5f00");  background: -o-linear-gradient(top,#ff7f00,bf5f00);

@@ -116,12 +116,15 @@
 
 				<div id="tabs">
 				  <ul>
+				  	<li><a href="#readme">Read me</a></li>
 				    <li><a href="#addFriends">Add friends</a></li>
 				    <li><a href="#editFriends">Friend settings</a></li>
-				    <li><a href="#viewFriends">View your friends here</a></li>
+				    <li><a href="#viewFriends">View other dashboards here</a></li>
 				  </ul>
+				  <div id="readme">
+  					<p>This is an exploratory feature to view the dashboard of other users. To view another user's dashboard, search for their screenname below and send them a request (the text area is a Jquery autocomplete, press delete to view other screennames). When the other user approves of your request, you will be able to view their dashboard at /your-screen-name/friends/friends-screen-name. If more development time were allowed, this feature could be expanded to more interesting stuff.</p>
+  				</div>
 				  <div id="addFriends">
-					<p>Here are all the users</p>
 					<div class="ui-widget">
 					  <label for="addFriend">Find other users</label>
 					  <input id="addFriend">
@@ -130,7 +133,7 @@
 				  </div>
 				  <div id="editFriends">
 
-					<p>Pending requests to you</p>
+					<p>Pending (incoming) requests</p>
 					<table id="accept" class="genCss">
 						<% for (var i = 0; i < otherPending.length; i++) { %>
 						<tr>
@@ -140,7 +143,7 @@
 					</table>
 
 
-					<p>Your pending requests</p>
+					<p>Your (outgoing) pending requests</p>
 					<table id="withdraw" class="genCss">
 						<% for (var i = 0; i < selfPending.length; i++) { %>
 						<tr>
@@ -150,7 +153,7 @@
 					</table>
 
 
-					<p>All your friends</p>
+					<p>You are allowed to see the dashboard of the following users</p>
 					<table id="delete" class="genCss">
 						<% for (var i = 0; i < allFriends.length; i++) { %>
 						<tr>
@@ -161,7 +164,7 @@
 				  </div>
 
 				  <div id="viewFriends">
-					  <p>Your friends</p>
+					  <p>View dashboards</p>
 						<ul>
 						<% for (var i = 0; i < allFriends.length; i++) { %>
 							<li>
@@ -194,6 +197,7 @@
     <script src="/js/sb-admin-2.js"></script>
 
     <script>
+
 	var autoCompleteSrc = <%- JSON.stringify(allUsers) %>
 	$('#tabs').tabs()
 	$('#addFriend').autocomplete({
