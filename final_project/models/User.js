@@ -4,9 +4,9 @@ module.exports = {
 	model: {
 		userid: {type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true},
 		username: {type: Sequelize.STRING, allowNull: false, unique: true},
-		password: {type: Sequelize.STRING, allowNull: false},
+		password: {type: Sequelize.STRING, allowNull: true},
 		slug: {type: Sequelize.STRING, allowNull: false, unique: true},
-		description: {type: Sequelize.STRING}
+		facebookId: {type: Sequelize.STRING, defaultValue: null}
 	},
 	relations: {
 		// hasMany: {
@@ -22,8 +22,7 @@ module.exports = {
 				this.build({
 					username: username,
 					password: password,
-					slug: slug,
-					description: "some desc"
+					slug: slug
 				})
 				.save()
 				.done(callback)

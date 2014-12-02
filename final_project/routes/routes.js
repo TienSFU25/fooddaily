@@ -1,54 +1,20 @@
-module.exports = function(app, passport, db, fbProfile) {
+module.exports = function(app, passport, db) {
 
 	var s = require('string')
 
 	// app.get(/\/user\/(\d*)\/(edit)\/(\d+)/, function(req, res) {
+	app.get('/auth/facebook',
+	  passport.authenticate('facebook'),
+	  function(req, res){
+	    // The request will be redirected to Facebook for authentication, so this function will not be called.
+	  });
 
-
-// GET /auth/facebook
-//   Use passport.authenticate() as route middleware to authenticate the
-//   request.  The first step in Facebook authentication will involve
-//   redirecting the user to facebook.com.  After authorization, Facebook will
-//   redirect the user back to this application at /auth/facebook/callback
-app.get('/auth/facebook',
-  passport.authenticate('facebook'),
-  function(req, res){
-  	console.log('FACEBOOK UCMNSER')
-    // The request will be redirected to Facebook for authentication, so this function will not be called.
-  });
-
-// GET /auth/facebook/callback
-app.get('/auth/facebook/callback', 
-  passport.authenticate('facebook', { failureRedirect: '/login' }),
-  function(req, res, profile) {
-  	console.log('FACEBOOK UCMNSER')
-  	console.log(req.user)
-  	req.user.username = fbProfile.displayName + " (Facebook)";
-  	req.user.slug = fbProfile.id;
-  	console.log("SLUG IS " + req.user.slug)
-			res.redirect("/" + req.user.slug + '/dashboard')
-  });
-
-	app.get('/test', function(req, res, next){
-		if (!req.isAuthenticated()) {
-			req.body.username = 'u'
-			req.body.password = 'p'
-			passport.authenticate('debug-login', function(err, user) {
-				if (err) {
-					console.log(err)
-					next(err)
-				} else {
-					req.logIn(user, function(err){
-						if (err) return next(err)
-						res.redirect(user.slug + '/dashboard')
-					})
-				}
-			})
-			(req, res)
-		} else {
-			next()
-		}
-	})
+	// GET /auth/facebook/callback
+	app.get('/auth/facebook/callback', 
+	  passport.authenticate('facebook', { failureRedirect: '/login' }),
+	  function(req, res) {
+		res.redirect("/" + req.user.slug + "/dashboard")
+	});
 
 	// right now routing goes like this
 	// test (if not logged in) -> login/signup/logout -> if not auth: about -> if auth: check slug

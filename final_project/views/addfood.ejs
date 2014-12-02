@@ -387,18 +387,18 @@
             success: function(rtnjson) {
                 if (rtnjson.success) {
                     $.notify(rtnjson['message'], {
-                        style: 'myStyle'
+                        className: 'success'
                     })
                     magnificPopup.close()
                 } else {
                     $.notify(rtnjson['message'], {
-                        style: 'bootstrap'
+                        className: 'error'
                     })
                 }
             },
             error: function(xhr, textStatus) {
               $.notify(textStatus, {
-                style: 'bootstrap'
+                className: 'error'
               })
             }
         })

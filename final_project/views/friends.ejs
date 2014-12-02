@@ -257,7 +257,9 @@
 	}
 
 	function changeNotification(text) {
-		$.notify(text)
+		$.notify(text, {
+			className: 'success'
+		})
 	}
 
 	// PROBABLY NOT THE BEST WAY TO DO THIS

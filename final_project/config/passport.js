@@ -4,10 +4,15 @@
 
 module.exports = function(passport, db) {
 	var s = require('string')
+	var _ = require('underscore')
 	var LocalStrategy = require('passport-local').Strategy
 	var bcrypt = require('bcrypt-nodejs')
 	var User = db.model('User')
 	var PassportUser = require('../custom/PassportUser.js')
+	var FacebookStrategy = require('passport-facebook').Strategy;
+	var FACEBOOK_APP_ID = '1501083956817978';
+	var FACEBOOK_APP_SECRET = 'a8170539de31afad201eb9f48b904758';
+	var WEBSITE_URL = "http://localhost:8080/";
 
 	customDict = {
 		usernameField: 'username',
@@ -127,6 +132,72 @@ module.exports = function(passport, db) {
 	passport.use('local-login', customLogin)
 	passport.use('local-signup', customSignup)
 
+	passport.use(new FacebookStrategy({
+	    clientID: FACEBOOK_APP_ID,
+	    clientSecret: FACEBOOK_APP_SECRET,
+	    callbackURL: WEBSITE_URL + "auth/facebook/callback"
+	  },
+	  function(accessToken, refreshToken, profile, done) {
+	    // asynchronous verification, for effect...
+	    var userInfo = profile._json
+	    var displayName = profile["displayName"]
+
+	    User.findOne({where: {facebookId: userInfo["id"]}}).done(function(err, fbUser){
+	    	if (err) {
+	    		return done(err, {message: "Unknown error in finding user in passport.js"})
+	    	} else if (!fbUser) {
+	    		User.findAll().done(function(err, allUsers){
+	    			var allNames = []
+	    			var allSlugs = []
+
+	    			_.each(allUsers, function(user, index){
+	    				allNames.push(user['dataValues']['username'])
+	    				allSlugs.push(user['dataValues']['slug'])
+	    			})
+
+	    			var fbName = genUnique(allNames, "facebook", 100)
+	    			var fbSlug = genUnique(allSlugs, s(displayName).slugify().s, 100)
+
+	    			User.create({
+	    				username:fbName,
+	    				slug: fbSlug,
+	    				facebookId: userInfo["id"]
+	    			}).done(function(err, newFbUser){
+	    				if (err) {
+				    		return done(err, {message: "Unknown error in creating fb user in passport.js"})
+	    				} else {
+	    					return done(null, new PassportUser(newFbUser['dataValues']['slug'], newFbUser['dataValues']['id']))
+	    				}
+	    			})
+	    		})
+	    	} else {
+	    		// fb user already exists in db, use this
+	    		return done(null, new PassportUser(fbUser['dataValues']['slug'], fbUser['dataValues']['id']))
+	    	}
+	    })
+	  }
+	));
+
+	function genUnique(all, prefix, end) {
+		// let all be an array
+		var tempArr = _.range(all.length)
+		var allObj = _.object(all, tempArr)
+
+		if (!allObj[prefix]) {
+			return prefix
+		}
+
+		for (var i = 1; i < end; i++) {
+			if (!allObj[(prefix + i.toString())]) {
+				return (prefix + i.toString())
+			}
+		}
+
+		console.log("Reached the end of genUnique")
+		return false
+	}
+
+
 	// use userid for deserializing
 	passport.serializeUser(function(user, done) {
 		done(null, user.slug)
@@ -145,9 +216,9 @@ module.exports = function(passport, db) {
 				return done(null, false)
 			}
 			var userData = user.dataValues
-			currUser = new PassportUser(slug, user['dataValues']['userid'])
+			var currUser = new PassportUser(slug, user['dataValues']['userid'])
+			return done(null, currUser)
 		})
-		return done(null, currUser)
 	})
 
 }
