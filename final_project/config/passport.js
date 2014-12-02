@@ -13,7 +13,7 @@ module.exports = function(passport, db) {
 	var FACEBOOK_APP_ID = '1501083956817978';
 	var FACEBOOK_APP_SECRET = 'a8170539de31afad201eb9f48b904758';
 	var WEBSITE_URL = "http://localhost:8080/";
-
+// http://cmpt470.csil.sfu.ca:9001/
 	customDict = {
 		usernameField: 'username',
 		passwordField: 'password',
@@ -157,6 +157,8 @@ module.exports = function(passport, db) {
 
 	    			var fbName = genUnique(allNames, "facebook", 100)
 	    			var fbSlug = genUnique(allSlugs, s(displayName).slugify().s, 100)
+	    			console.log(fbName)
+	    			console.log(fbSlug)
 
 	    			User.create({
 	    				username:fbName,
@@ -183,12 +185,12 @@ module.exports = function(passport, db) {
 		var tempArr = _.range(all.length)
 		var allObj = _.object(all, tempArr)
 
-		if (!allObj[prefix]) {
+		if (allObj[prefix] == undefined) {
 			return prefix
 		}
 
 		for (var i = 1; i < end; i++) {
-			if (!allObj[(prefix + i.toString())]) {
+			if (allObj[(prefix + i.toString())] == undefined) {
 				return (prefix + i.toString())
 			}
 		}
