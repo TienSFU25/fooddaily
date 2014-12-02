@@ -120,31 +120,61 @@
 
     </ul>
     
-        <script>
-                var example = "Hot-Turkey-Salad-Sandwiches-Allrecipes";
-                var example2 = "French-Onion-Soup-The-Pioneer-Woman-Cooks-_-Ree-Drummond-41364";
+                <SCRIPT LANGUAGE="JavaScript">
 
-                <% if (rows.length == 0) { %>
-                    $("#favRecipes").append("You have no favorite recipes added. Start <a href=\"/<%= user.slug %>/recipesearch\">searching</a> Yummly to add some!");
-                <% } %>
+                     $( document ).ready(function() {
+                        // User.
+                        // we need to pass in an array of recipe objects.
 
 
-                <% for (i = 0; i < rows.length; i++) { %>
+                        var example = "Hot-Turkey-Salad-Sandwiches-Allrecipes";
+                        var example2 = "French-Onion-Soup-The-Pioneer-Woman-Cooks-_-Ree-Drummond-41364";
 
-                $("#favRecipes").append("<li><%=rows[i].recipeName%></li>");
-                $("#favRecipes").append("<li><img src=\"<%=rows[i].IMG_URL%>\"></img></li>");
-                $("#favRecipes").append("<li>Yield: <%=rows[i].yield%></li>");
+                        // var examples = [
+                        //  "Hot-Turkey-Salad-Sandwiches-Allrecipes",
+                        //  "French-Onion-Soup-The-Pioneer-Woman-Cooks-_-Ree-Drummond-41364"
+                        // ]
 
-                <% var ingredients = rows[i].ingredientsList.split(";"); %>
-                var ing = "<li> Ingredients: <ul>";
-                <% for (x = 0; x < ingredients.length; x++) { %>
-                    ing += "<li><%=ingredients[x]%></li>";
-                <% } %>
-                $("#favRecipes").append(ing);
-                $("#favRecipes").append("<li><a href=\"<%=rows[i].URL%>\">URL</a></li>");
-                $("#favRecipes").append("<br><br><br>");
-                <% } %>
-        </script>
+                        <% if (rows.length == 0) { %>
+                            $("#favRecipes").append("You have no favorite recipes added. Start <a href=\"/<%= user.slug %>/recipesearch\">searching</a> Yummly to add some!");
+                        <% } %>
+
+                        $("#favRecipes").append('<table>');
+                            $("#favRecipes").append("<thead>");
+                                $("#favRecipes").append("<tr>");
+                                    $("#favRecipes").append("<th>Image</th>");
+                                    $("#favRecipes").append("<th>Recipe</th>");
+                                    $("#favRecipes").append("<th>Yield</th>");
+                                    $("#favRecipes").append("<th style='width:40%'>Ingredients</th>");
+                                $("#favRecipes").append("</tr>");
+                            $("#favRecipes").append("</thead>");
+
+                        <% for (i = 0; i < rows.length; i++) { %>
+
+
+
+                        $("#favRecipes").append("<tr>");
+                        $("#favRecipes").append("<td style='padding-bottom:15px'><img style='max-width: 200px;' src=\"<%=rows[i].IMG_URL%>\"></img></td>");
+                        $("#favRecipes").append("<td><%=rows[i].recipeName%></td>");
+                        $("#favRecipes").append("<td>Yield: <%=rows[i].yield%></td>");
+                        
+
+                        <% var ingredients = rows[i].ingredientsList.split(";"); %>
+                        var ing = "<td>Ingredients: ";
+                        <% for (x = 0; x < ingredients.length; x++) { %>
+                            ing += "<%=ingredients[x]%>";
+                        <% } %>
+                        $("#favRecipes").append(ing);
+                        $("#favRecipes").append("</td>");
+
+
+                        $("#favRecipes").append("<td><a href=\"<%=rows[i].URL%>\">URL</a></td>");
+                        $("#favRecipes").append("</tr>");
+                        //$("#favRecipes").append("<br><br><br>");
+                        <% } %>
+                        $("#favRecipes").append("</table>");
+                        });
+                </script>
 
 
             </div>
