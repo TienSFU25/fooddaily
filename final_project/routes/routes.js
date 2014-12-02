@@ -145,8 +145,4 @@ function ensureAuthenticated(req, res, next) {
   res.redirect('/login')
 }
 
-app.get('*', function(req, res){
-  res.render('foodaily404', 404);
-});
-
 }

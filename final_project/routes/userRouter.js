@@ -20,4 +20,7 @@ userRouter.use('/foods', require('./foodRouter'))
 userRouter.use('/settings', require('./settingsRouter'))
 userRouter.use('/friends', require('./friendRouter'))
 
+userRouter.get('*', function(req, res){
+  res.render('foodaily404', 404);
+});
 module.exports = userRouter
