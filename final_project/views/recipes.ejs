@@ -192,9 +192,13 @@
 
 			var recipeId = data.getValue(selectedRow, 6);
 			$("#chosenId").val(recipeId);
-			$.notify("Save to favorites feature coming soon!", {
-				className: "info"
-			})
+
+			if(confirm("Are you sure you want to add " + recipeId + "to your favourites?")) {
+				getAndPostToFavourites(recipeId);
+			}
+			// $.notify("Save to favorites feature coming soon!", {
+			// 	className: "info"
+			// })
 		}
                
 
@@ -377,28 +381,35 @@
 		}
 
 		function postRecipe(data) {
-			console.log('/'+ $("#slug").val() +'/favorites')
-			$.ajax({
-				type: 'POST',
-				url: '/'+ $("#slug").val() +'/recipesearch',
-				data: {
-					csrf: $("#_csrf").val(),
+
+	    	var userSlug = '<%= user.slug %>';
+	    	var csr = "<%= csrfToken %>";
+	 
+	        $.ajax({
+	            type: 'POST',
+	            url: ('/' + userSlug + '/recipesearch'),
+	            data: {
 					name: data.name,
 					chosenId: $('#chosenId').val(),
 					yield: data.yield,
 					ingredientsList: data.ingredientLines,
 					sourceUrl: data.source.sourceRecipeUrl,
-					image: data.images.hostedSmallUrl,
-					nutrition: data.nutritionEstimates,
-				},
-				success: function(d) {
-					alert("added recipe to favs");
-				},
-				error: function(xhr, textStatus) {
-					alert("error adding recipe to favs");
-				}
-			});
-		}
+					image: data.images[0].hostedLargeUrl,
+	                _csrf: csr
+	            }, 
+	            success: function(rtnjson) {
+	            	if (rtnjson.success) {
+	            		$.notify(rtnjson.message, {
+	            			className: "success"
+	            		})
+	            	} else {
+	            		$.notify(rtnjson.message, {
+	            			className: "error"
+	            		})
+	            	}
+	            }
+	        })
+	    }
 
 		var addOnce = true
 		function updateTableResults(data) {

@@ -5,14 +5,14 @@ module.exports = {
 		id: {type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true},
 		recipeName: {type: Sequelize.STRING, allowNull: false},
 		yield: {type: Sequelize.STRING},
-		ingredientsList: {type: Sequelize.STRING},
+		ingredientsList: {type: Sequelize.STRING(2000)},
 		URL: {type: Sequelize.STRING},
 		IMG_URL: {type: Sequelize.STRING},
 	},
 	relations: {
-		belongsTo: {
-			User: {foreignKey: 'userId', allowNull: false}
-		}
+		// belongsTo: {
+		// 	User: {foreignKey: 'userId', allowNull: false}
+		// }
 	},
 	options: {
 		tableName: "FavRecipes",

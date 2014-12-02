@@ -20,11 +20,9 @@ module.exports = {
 		wheat: {type: Sequelize.BOOLEAN, defaultValue: false},
 	},
 	relations: {
-		// hasMany: {
-			// ChosenFood: {foreignKey: "userId", allowNull: false}
-			// User: {through: 'Friends', as: 'Friend', foreignKey: 'befrienderId'}
-			// Friends: {foreignKey: "userId", allowNull: false}
-		// },
+		hasMany: {
+			FavRecipes: {foreignKey: "userId", allowNull: false}
+		},
 	},
 	options: {
 		tableName: "Users3",
