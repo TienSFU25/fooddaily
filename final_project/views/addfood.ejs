@@ -174,7 +174,7 @@
 <script src="/javascript/notify.js"></script>
 <script>
 
-    // initiialize some UI elements
+    // initialize some UI elements
     for (var i = 1; i < 50; i++) {
         $('.limitResults').append   ('<option value="' + i + '">' + i + "</option>")
     }
@@ -264,6 +264,7 @@
 
     var $foodIn = $('#foodSearch')
     var $foodForm = $('#foodForm')
+    var searched = false
 
     // event listener for search box
     $foodIn.keypress(function(e){
@@ -274,6 +275,13 @@
             if ($('#foodSearch input').val() == "") {
                 $.notify("Search field cannot be empty")
                 return
+            }
+
+            if (!searched) {
+                $.notify('Click on an item in the table to view its nutritional information!', {
+                    className: 'info'
+                })
+                searched = true
             }
 
             // requests nutritionix, parse json and update google table
