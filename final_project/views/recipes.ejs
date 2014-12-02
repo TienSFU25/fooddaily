@@ -127,7 +127,7 @@
 
                         <p id="constraints"></p>
 					</form>
-
+					<div id="confirm" title="Favourite recipes" class="ui-dialog ui-dialog-titlebar"><p class="ui-dialog-content">Are you sure you want to add this item?</p></div>
 					<div class="yummlyAttribution"></div>
 					<div class="recipeTable"></div>
 					<br/>
@@ -140,10 +140,6 @@
         <!-- /#page-wrapper -->
 
     </div>
-    <!-- /#wrapper -->
-
-    <!-- jQuery -->
-    <script src="../js/jquery.js"></script> 
 
     <!-- Bootstrap Core JavaScript -->
     <script src="../js/bootstrap.min.js"></script>
@@ -186,9 +182,10 @@
 				google.visualization.events.addListener(table, 'select', selectTableListener);
 				var view = new google.visualization.DataView(data)
 				view.hideColumns([6])
-				table.draw(data, {showRowNumber: false, allowHtml: true});
+				table.draw(view, {showRowNumber: false, allowHtml: true});
 			}
 
+		$("#confirm").hide()
 		function selectTableListener() {
 			var idx = table.getSelection();
 			var selectedRow = idx[0]['row'];
@@ -196,12 +193,21 @@
 			var recipeId = data.getValue(selectedRow, 6);
 			$("#chosenId").val(recipeId);
 
-			if(confirm("Are you sure you want to add " + recipeId + "to your favourites?")) {
+			$( "#confirm" ).dialog({
+		      buttons: {
+		        "Add to favourites!": function() {
 				getAndPostToFavourites(recipeId);
-			}
-			// $.notify("Save to favorites feature coming soon!", {
-			// 	className: "info"
-			// })
+		          $( this ).dialog( "close" );
+		        },
+		        Cancel: function() {
+		          $( this ).dialog( "close" );
+		        }
+		      },
+		      show: {
+		      	effect: "slide",
+		      	duration: 500
+		      }
+		    });
 		}
                
 
